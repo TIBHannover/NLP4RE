@@ -18,7 +18,7 @@ class TemplateCreator:
 
     def create_template_from_json(self, json_file_path, template_label):
         """
-        Create an ORKG template from a JSON file
+        Create an ORKG template from a JSON file using the proper ORKG template API
 
         Args:
             json_file_path (str): Path to the JSON file containing form data
@@ -32,12 +32,14 @@ class TemplateCreator:
         # Load JSON data
         data = self._load_json_data(json_file_path)
 
-        # Create main class and template with custom IDs
+        # Create main class for the template
         main_class_id = self._create_main_class(template_label)
-        template_id = self._create_template_resource(template_label, main_class_id)
 
-        # Process questions from the JSON data
-        self._process_questions(data, template_id, template_label)
+        # Build template data using ORKG template API format
+        template_data = self._build_template_data(data, template_label, main_class_id)
+
+        # Create template using ORKG template API
+        template_id = self.orkg_conn.create_template(template_data)
 
         print(f"Template creation for '{template_label}' is complete!")
         print(f"Template URL: https://incubating.orkg.org/template/{template_id}")
@@ -122,6 +124,135 @@ class TemplateCreator:
         """Create the main class for the template"""
         class_id = self.orkg_conn.generate_unique_id("C")
         return self.orkg_conn.create_or_find_class(template_label, custom_id=class_id)
+
+    def _build_template_data(self, data, template_label, target_class_id):
+        """
+        Build template data in ORKG template API format
+
+        Args:
+            data (dict): JSON data with questions
+            template_label (str): Label for the template
+            target_class_id (str): ID of the target class
+
+        Returns:
+            dict: Template data in ORKG API format
+        """
+        questions = data.get("questions", [])
+        properties = []
+
+        for question in questions:
+            question_text = question.get("question_text")
+            question_type = question.get("type")
+
+            # Skip internal or irrelevant fields
+            if not self._is_valid_question(question_text, question_type):
+                continue
+
+            print(f"Processing question: '{question_text}'")
+
+            # Create predicate for this property
+            predicate_id = self.orkg_conn.create_or_find_predicate(question_text)
+
+            # Build property data based on question type
+            property_data = {
+                "label": question_text,
+                "path": predicate_id,
+                "min_count": 0,  # Optional by default
+                "max_count": None,  # No limit by default
+            }
+
+            if question_type == "Text":
+                property_data["datatype"] = "String"
+                print(f"    -> Set property type to 'String'")
+
+            elif question_type == "RadioButton":
+                # For radio buttons, create class and set max_count to 1
+                options_class_id = self._create_options_class(question, template_label)
+                property_data["class"] = options_class_id
+                property_data["max_count"] = 1  # Single selection
+                print(f"    -> Set property type to class with single selection")
+
+            elif question_type == "CheckBox":
+                # For checkboxes, create class but allow multiple selections
+                options_class_id = self._create_options_class(question, template_label)
+                property_data["class"] = options_class_id
+                print(f"    -> Set property type to class with multiple selection")
+
+            properties.append(property_data)
+
+        # Build the complete template data
+        template_data = {
+            "label": template_label,
+            "description": f"Template for {template_label} with {len(properties)} properties",
+            "formatted_label": "{P32}",  # Default formatted label
+            "target_class": target_class_id,
+            "relations": {
+                "research_fields": [],
+                "research_problems": [],
+                "predicate": "P32",  # Default predicate
+            },
+            "properties": properties,
+            "is_closed": False,  # Allow additional properties
+            "organizations": [],  # Empty list for organizations
+            "observatories": [],  # Empty list for observatories
+            "extraction_method": "MANUAL",
+        }
+
+        return template_data
+
+    def _create_options_class(self, question, template_label):
+        """
+        Create a class for question options and populate it with option resources
+
+        Args:
+            question (dict): Question data with options
+            template_label (str): Template label for naming
+
+        Returns:
+            str: ID of the created options class
+        """
+        question_text = question.get("question_text")
+        options_class_label = f"{template_label}: {question_text}"
+
+        # Create the options class
+        options_class_id = self.orkg_conn.generate_unique_id("OC")
+        actual_options_class_id = self.orkg_conn.create_or_find_class(
+            options_class_label, custom_id=options_class_id
+        )
+
+        # Create resources for each option
+        all_options = question.get("all_options", [])
+        created_count = 0
+
+        for option_label in all_options:
+            if isinstance(option_label, str) and option_label.strip():
+                option_resource_id = self.orkg_conn.generate_unique_id("O")
+                self.orkg_conn.create_resource(
+                    label=option_label,
+                    classes=[actual_options_class_id],
+                    custom_id=option_resource_id,
+                )
+                created_count += 1
+
+        if created_count > 0:
+            print(f"    -> Created {created_count} option resources")
+
+        return actual_options_class_id
+
+    def _process_questions_shacl(self, data, template_id, template_label):
+        """Process all questions from the JSON data using SHACL approach"""
+        questions = data.get("questions", [])
+
+        for question in questions:
+            question_text = question.get("question_text")
+            question_type = question.get("type")
+
+            # Skip internal or irrelevant fields
+            if not self._is_valid_question(question_text, question_type):
+                continue
+
+            print(f"Processing question: '{question_text}'")
+            self._create_property_shape(question, template_id, template_label)
 
     def _create_template_resource(self, template_label, main_class_id):
         """Create the template resource (NodeShape)"""

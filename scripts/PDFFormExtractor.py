@@ -107,10 +107,15 @@ class PDFFormExtractor:
             # Otherwise, assume choice-type (Radio / Checkbox) with options
             selected_options = []
             all_options = []
-
+            text_input_value = None
             for field in fields:
+                if field["type"] == "Text":
+                    if field["label"] == "N/A":
+                        if not field["value"]:
+                            continue
+                        text_input_value = field["value"]
                 option_info = {
-                    "label": field["label"],
+                    "label": text_input_value or field["label"],
                     "field_name": field["name"],
                     "field_value": field["value"],
                     "is_selected": self._is_field_selected(field),

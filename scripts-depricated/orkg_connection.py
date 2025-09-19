@@ -12,7 +12,14 @@ class ORKGConnection:
 
     def __init__(self):
         """Initialize connection to ORKG"""
-        self.orkg = ORKG(host=ORKG_HOST, creds=(ORKG_USERNAME, ORKG_PASSWORD))
+        self.orkg = ORKG(
+            host=ORKG_HOST,
+            creds=(ORKG_USERNAME, ORKG_PASSWORD),
+        )
+        self.token = self.orkg.session.get_access_token()
+        print("*" * 100)
+        print(f"Token: {self.token[:50]}...")
+        print("*" * 100)
         print("Successfully connected to ORKG.")
 
     def generate_unique_id(self, prefix="R"):
@@ -224,4 +231,48 @@ class ORKGConnection:
         """Add a statement to ORKG"""
         return self.orkg.statements.add(
             subject_id=subject_id, predicate_id=predicate_id, object_id=object_id
+        )
+
+    def create_template(self, template_data):
+        """
+        Create a template using the ORKG template API
+
+        Args:
+            template_data (dict): Template data following ORKG template API format
+
+        Returns:
+            str: The ID of the created template
+        """
+        import requests
+        import json
+
+        # Prepare the API request
+        url = f"{self.orkg.host}/api/templates"
+        headers = {
+            "Content-Type": "application/vnd.orkg.template.v1+json;charset=UTF-8",
+            "Accept": "application/vnd.orkg.template.v1+json",
+        }
+
+        headers["Authorization"] = f"Bearer {self.token}"
+        print("*" * 100)
+        print(self.token)
+        print("*" * 100)
+        response = requests.post(url, headers=headers, json=template_data)
+
+        if response.status_code == 201:
+            # Extract template ID from Location header
+            location = response.headers.get("Location", "")
+            if location:
+                template_id = location.split("/")[-1]
+                return template_id
+            else:
+                # Fallback: try to get ID from response body
+                try:
+                    result = response.json()
+                    return result.get("id")
+                except:
+                    pass
+
+        raise RuntimeError(
+            f"Template creation failed: {response.status_code} {response.text}"
         )

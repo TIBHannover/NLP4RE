@@ -10,7 +10,7 @@ from scripts.template_creator import TemplateCreator
 
 def main():
     json_file = "pdf2JSON_Results/Example1-Yang-etal-2011.json"
-    template_name = "NLP4RE Paper Analysis Survey new2"
+    template_name = "NLP4RE Paper Analysis Survey new final with api"
 
     creator = TemplateCreator()
 
@@ -62,12 +62,7 @@ def _create_instances_from_json(orkg, json_file, template_name, template_id=None
     unique_name = f"{pdf_name} - {timestamp}"
     instance_id = orkg.create_resource(unique_name, classes=[paper_class])
 
-    # Link instance to template if template_id is provided
-    if template_id:
-        # Add statement linking instance to template
-        orkg.add_statement(
-            instance_id, "P6004", template_id
-        )  # has property/template relation
+    # Instance should automatically be linked to template via the target class
 
     # Process questions and add as properties
     questions = data.get("questions", [])
