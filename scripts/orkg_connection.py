@@ -19,6 +19,21 @@ class ORKGConnection:
         """Generate a unique ID for ORKG resources"""
         return f"{prefix}{uuid.uuid4().hex[:10]}"
 
+    def _extract_list(self, response_content):
+        """Return a list of items from an ORKG client response content.
+
+        Depending on the client and endpoint, the wrapped response `.content` can
+        be either a list of items or a dict with a `content` list inside. This
+        helper normalizes both shapes to a list.
+        """
+        if isinstance(response_content, list):
+            return response_content
+        if isinstance(response_content, dict) and "content" in response_content:
+            inner = response_content.get("content")
+            if isinstance(inner, list):
+                return inner
+        return []
+
     def create_or_find_class(self, label, custom_id=None):
         """
         Create or find a class in ORKG with optional custom ID
@@ -31,9 +46,10 @@ class ORKGConnection:
             str: The ID of the class
         """
         # First, try to find existing class
-        find_class = self.orkg.classes.get_all(q=label, exact=True).content
-        if find_class["content"]:
-            return find_class["content"][0]["id"]
+        find_resp = self.orkg.classes.get_all(q=label, exact=True)
+        existing = self._extract_list(find_resp.content)
+        if existing:
+            return existing[0]["id"]
 
         # Create new class with custom ID if provided
         if custom_id:
@@ -53,14 +69,21 @@ class ORKGConnection:
             return custom_id
 
         # Otherwise, find the newly created class
-        find_new_class = self.orkg.classes.get_all(q=label, exact=True).content
-        if find_new_class["content"]:
-            return find_new_class["content"][0]["id"]
+        find_new_resp = self.orkg.classes.get_all(q=label, exact=True)
+        new_list = self._extract_list(find_new_resp.content)
+        if new_list:
+            return new_list[0]["id"]
 
         # Fallback: get the most recently created class with this label
-        all_classes = self.orkg.classes.get_all(q=label).content["content"]
-        all_classes.sort(key=lambda x: x["created_at"], reverse=True)
-        return all_classes[0]["id"]
+        all_resp = self.orkg.classes.get_all(q=label)
+        all_classes = self._extract_list(all_resp.content)
+        if all_classes:
+            try:
+                all_classes.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+            except Exception:
+                pass
+            return all_classes[0]["id"]
+        raise RuntimeError(f"Unable to find or create class '{label}'")
 
     def create_or_find_predicate(self, label, custom_id=None):
         """
@@ -74,9 +97,10 @@ class ORKGConnection:
             str: The ID of the predicate
         """
         # First, try to find existing predicate
-        find_predicate = self.orkg.predicates.get(q=label, exact=True).content
-        if find_predicate["content"]:
-            return find_predicate["content"][0]["id"]
+        find_resp = self.orkg.predicates.get(q=label, exact=True)
+        existing = self._extract_list(find_resp.content)
+        if existing:
+            return existing[0]["id"]
 
         # Create new predicate with custom ID if provided
         if custom_id:
@@ -96,9 +120,15 @@ class ORKGConnection:
             return custom_id
 
         # Otherwise, find the newly created predicate
-        predicates = self.orkg.predicates.get(q=label).content["content"]
-        predicates.sort(key=lambda x: x["created_at"], reverse=True)
-        return predicates[0]["id"]
+        get_resp = self.orkg.predicates.get(q=label)
+        predicates = self._extract_list(get_resp.content)
+        if predicates:
+            try:
+                predicates.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+            except Exception:
+                pass
+            return predicates[0]["id"]
+        raise RuntimeError(f"Unable to find or create predicate '{label}'")
 
     def create_resource(self, label, classes=None, custom_id=None):
         """
@@ -132,15 +162,22 @@ class ORKGConnection:
 
         # Otherwise, find the newly created resource
         try:
-            resource = self.orkg.resources.get(q=label, exact=True).content["content"][
-                0
-            ]
-            return resource["id"]
-        except (IndexError, KeyError):
-            # Fallback: get the most recently created resource with this label
-            resources = self.orkg.resources.get(q=label).content["content"]
-            resources.sort(key=lambda x: x["created_at"], reverse=True)
+            get_resp = self.orkg.resources.get(q=label, exact=True)
+            items = self._extract_list(get_resp.content)
+            if items:
+                return items[0]["id"]
+        except Exception:
+            pass
+        # Fallback: get the most recently created resource with this label
+        list_resp = self.orkg.resources.get(q=label)
+        resources = self._extract_list(list_resp.content)
+        if resources:
+            try:
+                resources.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+            except Exception:
+                pass
             return resources[0]["id"]
+        raise RuntimeError(f"Unable to locate created resource '{label}'")
 
     def create_literal(self, label, datatype="xsd:string", custom_id=None):
         """
@@ -155,9 +192,10 @@ class ORKGConnection:
             str: The ID of the created literal
         """
         # First, try to find existing literal
-        existing = self.orkg.literals.get_all(q=label, exact=True).content
-        if existing["content"]:
-            return existing["content"][0]["id"]
+        existing_resp = self.orkg.literals.get_all(q=label, exact=True)
+        existing = self._extract_list(existing_resp.content)
+        if existing:
+            return existing[0]["id"]
 
         # Note: ORKG literals API doesn't support custom IDs
         resp = self.orkg.literals.add(label=label, datatype=datatype)
@@ -167,9 +205,20 @@ class ORKGConnection:
                 f"Literal '{label}' creation failed: {resp.status_code} {resp.content}"
             )
 
-        # Find the newly created literal
-        new_literal = self.orkg.literals.get_all(q=label, exact=True).content
-        return new_literal["content"][0]["id"]
+        # The response `.content` for POST returns the created object; try to extract id
+        created = resp.content
+        try:
+            if isinstance(created, dict) and "id" in created:
+                return created["id"]
+        except Exception:
+            pass
+
+        # Fallback to exact lookup if response does not contain ID
+        new_resp = self.orkg.literals.get_all(q=label, exact=True)
+        new_list = self._extract_list(new_resp.content)
+        if new_list:
+            return new_list[0]["id"]
+        raise RuntimeError(f"Unable to locate created literal '{label}'")
 
     def add_statement(self, subject_id, predicate_id, object_id):
         """Add a statement to ORKG"""

@@ -10,7 +10,7 @@ from scripts.template_creator import TemplateCreator
 
 def main():
     json_file = "pdf2JSON_Results/Example1-Yang-etal-2011.json"
-    template_name = "NLP4RE Paper Analysis Survey2"
+    template_name = "NLP4RE Paper Analysis Survey new2"
 
     creator = TemplateCreator()
 
@@ -28,7 +28,9 @@ def main():
             print(f"Template URL: https://incubating.orkg.org/template/{template_id}")
 
             # Create instances from JSON data
-            _create_instances_from_json(creator.orkg_conn, json_file, template_name)
+            _create_instances_from_json(
+                creator.orkg_conn, json_file, template_name, template_id
+            )
 
         elif choice == "2":
             # Create working instances without template
@@ -38,7 +40,7 @@ def main():
         print(f"Error: {e}")
 
 
-def _create_instances_from_json(orkg, json_file, template_name):
+def _create_instances_from_json(orkg, json_file, template_name, template_id=None):
     """Create instances from the actual JSON data"""
     import json
 
@@ -48,12 +50,24 @@ def _create_instances_from_json(orkg, json_file, template_name):
     with open(json_file, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    # Get the target class
+    # Get the target class - same as used by template
     paper_class = orkg.create_or_find_class(template_name)
 
     # Create main instance from JSON data
     pdf_name = data.get("pdf_name", "Unknown Paper")
-    instance_id = orkg.create_resource(pdf_name, classes=[paper_class])
+    # Add timestamp to ensure unique instance names
+    import datetime
+
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    unique_name = f"{pdf_name} - {timestamp}"
+    instance_id = orkg.create_resource(unique_name, classes=[paper_class])
+
+    # Link instance to template if template_id is provided
+    if template_id:
+        # Add statement linking instance to template
+        orkg.add_statement(
+            instance_id, "P6004", template_id
+        )  # has property/template relation
 
     # Process questions and add as properties
     questions = data.get("questions", [])
