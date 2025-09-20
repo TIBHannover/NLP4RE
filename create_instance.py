@@ -166,12 +166,20 @@ class TemplateInstanceCreator:
             answer = question_data["answer"].strip()
             if answer:
                 answers.append(answer)
+        # if question_text == "VI.1. What is the type of proposed solution?":
+        #     print("*"*100)
+        #     print("answers", answers)
+        #     print("*"*100)
 
         # Extract selected answers from multiple choice
         if question_data.get("selected_answers"):
             for answer in question_data["selected_answers"]:
                 if answer and answer.strip():
                     answers.append(answer.strip())
+        # if question_text == "VI.1. What is the type of proposed solution?":
+        #     print("*"*100)
+        #     print("selected_answers", answers)
+        #     print("*"*100)
 
         # Extract from options details
         if question_data.get("options_details"):
@@ -179,7 +187,9 @@ class TemplateInstanceCreator:
                 if option.get("is_selected"):
                     # Add label if it exists and is not empty
                     if option.get("label") and option["label"].strip():
-                        answers.append(option["label"].strip())
+                        answer_to_add = option["label"].strip()
+                        if answer_to_add not in answers:
+                            answers.append(option["label"].strip())
 
                     # Add field value if it exists and is meaningful
                     field_value = option.get("field_value", "")
@@ -188,7 +198,8 @@ class TemplateInstanceCreator:
                         and field_value.strip()
                         and field_value not in ["Yes", "Off", "", "None"]
                     ):
-                        answers.append(field_value.strip())
+                        if field_value.strip() not in answers:
+                            answers.append(field_value.strip())
 
         # Extract text input value for "Other/Comments" fields
         if question_data.get("text_input_value"):
@@ -508,7 +519,7 @@ def main():
     creator = TemplateInstanceCreator()
 
     # Process the JSON file
-    json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example1-Yang-etal-2011.json"
+    json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example2-Aydemir-etal-RE19.json"
 
     instance_id = creator.process_json_file(json_file)
 
