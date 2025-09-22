@@ -143,6 +143,7 @@ class TemplateInstanceCreator:
                                 "description": "Please list which domains your data belongs to?",
                                 "question_mapping": "IV.8",
                                 "resource_mapping_key": "NLP data source domain",
+                                "comma_separated": True,
                             },
                         },
                     },
@@ -364,6 +365,7 @@ class TemplateInstanceCreator:
                         "description": "What algorithms are used in the tool?",
                         "question_mapping": "VI.2",
                         "resource_mapping_key": "Algorithm used",
+                        "comma_separated": True,
                     },
                     "P181047": {
                         "label": "Running requirements",
@@ -438,6 +440,7 @@ class TemplateInstanceCreator:
                         "description": "What metrics are used to evaluate the approach?",
                         "question_mapping": "VII.1",
                         "resource_mapping_key": "Evaluation metric",
+                        "comma_separated": True,
                     },
                     "P181054": {
                         "label": "Validation procedure",
@@ -765,7 +768,14 @@ class TemplateInstanceCreator:
         if question_data.get("selected_answers"):
             for answer in question_data["selected_answers"]:
                 if answer and answer.strip() and answer.strip() not in ["None"]:
-                    answers.append(answer.strip())
+                    # Split comma-separated answers
+                    if "," in answer and len(answer.split(",")) > 1:
+                        for sub_answer in answer.split(","):
+                            sub_answer = sub_answer.strip()
+                            if sub_answer and sub_answer not in answers:
+                                answers.append(sub_answer)
+                    else:
+                        answers.append(answer.strip())
 
         # Extract from options details
         if question_data.get("options_details"):
@@ -773,7 +783,7 @@ class TemplateInstanceCreator:
                 if option.get("is_selected"):
                     # Add label if it exists and is not empty
                     if option.get("label") and option["label"].strip():
-                        answer_to_add = option["label"].strip()
+                        answer_to_add = option["label"].strip().lower()
                         if answer_to_add not in answers and answer_to_add not in [
                             "None"
                         ]:
@@ -838,7 +848,20 @@ class TemplateInstanceCreator:
 
         # Handle "Other/Comments" case - create new resource
         if "other" in answer_lower or "comment" in answer_lower:
-            return self.create_new_resource_for_other(answer, resource_mapping_key)
+            # Check if this is just "Other/Comments" or has additional text
+            if answer.strip().lower() in [
+                "other",
+                "comments",
+                "other/comments",
+                "other (e.g., models, trace links, diagrams, code comments)/comments",
+            ]:
+                # Just "Other/Comments" without specific text - use "Unknown"
+                return self.create_new_resource_for_other(
+                    "Unknown", resource_mapping_key
+                )
+            else:
+                # There's specific text - use it as the resource label
+                return self.create_new_resource_for_other(answer, resource_mapping_key)
 
         return None
 
@@ -936,24 +959,14 @@ class TemplateInstanceCreator:
                     except Exception as e:
                         print(f"  ⚠️ Could not create literal for '{answer}': {e}")
                 else:
-                    # For unmapped categorical answers, create "Not reported" or new resource
+                    # For unmapped categorical answers, create new resource
                     if resource_mapping_key in self.resource_mappings:
-                        # Check if "Not reported" exists
-                        not_reported_id = self.resource_mappings[
-                            resource_mapping_key
-                        ].get("Not reported")
-                        if not_reported_id:
-                            result_ids.append(not_reported_id)
-                            print(
-                                f"  ✅ Using 'Not reported' for '{answer}': {not_reported_id}"
-                            )
-                        else:
-                            # Create new resource
-                            new_resource_id = self.create_new_resource_for_other(
-                                answer, resource_mapping_key
-                            )
-                            if new_resource_id:
-                                result_ids.append(new_resource_id)
+                        # Create new resource for unmapped answers
+                        new_resource_id = self.create_new_resource_for_other(
+                            answer, resource_mapping_key
+                        )
+                        if new_resource_id:
+                            result_ids.append(new_resource_id)
 
         return result_ids
 
@@ -1008,11 +1021,23 @@ class TemplateInstanceCreator:
         if not all_answers:
             return None
 
+        # Handle comma separation if specified
+        if property_info.get("comma_separated", False):
+            expanded_answers = []
+            for answer in all_answers:
+                if "," in answer and len(answer.split(",")) > 1:
+                    for sub_answer in answer.split(","):
+                        sub_answer = sub_answer.strip()
+                        if sub_answer:
+                            expanded_answers.append(sub_answer)
+                else:
+                    expanded_answers.append(answer)
+            all_answers = expanded_answers
+
         # Create literals or resources
         result_ids = self.create_literal_or_resource(all_answers, resource_mapping_key)
 
-        return result_ids[0] if result_ids else None
-
+        return result_ids  # Return all IDs to handle multiple answers
 
     def create_subtemplate_instance_new(
         self, subtemplate_info: Dict, json_data: Dict[str, Any], paper_title: str
@@ -1025,7 +1050,8 @@ class TemplateInstanceCreator:
             label = subtemplate_info.get("label", "Unknown")
 
             instance_response = self.orkg.resources.add(
-                label=f"{paper_title} - {label}", classes=[class_id] if class_id else []
+                label=label,
+                classes=[class_id] if class_id else [],  # Remove paper title prefix
             )
 
             if not instance_response.succeeded:
@@ -1043,7 +1069,7 @@ class TemplateInstanceCreator:
                     print(f"  ℹ️ Class {class_id} should already exist in ORKG")
                     # Try creating without class specification
                     retry_response = self.orkg.resources.add(
-                        label=f"{paper_title} - {label}", classes=[]
+                        label=label, classes=[]  # Remove paper title prefix
                     )
                     if retry_response.succeeded:
                         instance_id = retry_response.content["id"]
@@ -1051,7 +1077,9 @@ class TemplateInstanceCreator:
                             f"  ✅ Created subtemplate instance without class specification: {instance_id}"
                         )
                     else:
-                        print(f"  ❌ Failed to create subtemplate instance even without class")
+                        print(
+                            f"  ❌ Failed to create subtemplate instance even without class"
+                        )
                         return None
                 else:
                     return None
@@ -1081,16 +1109,23 @@ class TemplateInstanceCreator:
                             print(f"    ✅ Linked nested subtemplate {prop_id}")
                     else:
                         # Handle regular property
-                        result_id = self.process_property(
+                        result_ids = self.process_property(
                             json_data, prop_info, instance_id
                         )
-                        if result_id:
-                            self.orkg.statements.add(
-                                subject_id=instance_id,
-                                predicate_id=prop_id,
-                                object_id=result_id,
+                        if result_ids:
+                            # Handle multiple results (for comma-separated answers)
+                            if not isinstance(result_ids, list):
+                                result_ids = [result_ids]
+
+                            for result_id in result_ids:
+                                self.orkg.statements.add(
+                                    subject_id=instance_id,
+                                    predicate_id=prop_id,
+                                    object_id=result_id,
+                                )
+                            print(
+                                f"    ✅ Added property {prop_id} with {len(result_ids)} value(s)"
                             )
-                            print(f"    ✅ Added property {prop_id}")
 
             return instance_id
 
@@ -1265,10 +1300,10 @@ class TemplateInstanceCreator:
         print(f"\n📄 Creating instance for: {paper_title}")
 
         try:
-            # Create the main instance
+            # Create the main instance with the target class
             instance_response = self.orkg.resources.add(
                 label=paper_title,
-                classes=[self.target_class_id],
+                classes=[self.target_class_id],  # Use the target class directly
             )
             print(instance_response.content)
 
@@ -1279,8 +1314,10 @@ class TemplateInstanceCreator:
             instance_id = instance_response.content["id"]
             print(f"✅ Created instance: {instance_id}")
 
-            # Note: Templates already exist in ORKG, no need to materialize
-            print("✅ Using existing templates in ORKG")
+            # Instance should be automatically linked to template through the class
+            print(
+                "✅ Instance created with target class - should be linked to template"
+            )
 
             # Process each predicate in the template
             for predicate_id, predicate_info in self.predicates.items():
@@ -1312,31 +1349,40 @@ class TemplateInstanceCreator:
 
                 else:
                     # Handle simple fields (without subtemplates)
-                    result_id = self.process_property(
+                    result_ids = self.process_property(
                         json_data, predicate_info, instance_id
                     )
 
-                    if result_id:
-                        # Link the result to the instance using the correct predicate
-                        try:
-                            link_stmt = self.orkg.statements.add(
-                                subject_id=instance_id,
-                                predicate_id=predicate_id,
-                                object_id=result_id,
-                            )
+                    if result_ids:
+                        # Handle multiple results (for comma-separated answers)
+                        if not isinstance(result_ids, list):
+                            result_ids = [result_ids]
 
-                            if link_stmt.succeeded:
-                                print(
-                                    f"  ✅ Linked to instance with predicate {predicate_id}"
+                        for result_id in result_ids:
+                            # Link the result to the instance using the correct predicate
+                            try:
+                                link_stmt = self.orkg.statements.add(
+                                    subject_id=instance_id,
+                                    predicate_id=predicate_id,
+                                    object_id=result_id,
                                 )
-                            else:
+
+                                if link_stmt.succeeded:
+                                    print(
+                                        f"  ✅ Linked to instance with predicate {predicate_id}"
+                                    )
+                                else:
+                                    print(
+                                        f"  ⚠️ Failed to link to instance: {link_stmt.content if hasattr(link_stmt, 'content') else 'Unknown error'}"
+                                    )
+                                    print(
+                                        f"  ℹ️ Predicate {predicate_id} should already exist in ORKG"
+                                    )
+                            except Exception as e:
+                                print(f"  ⚠️ Error linking to instance: {e}")
                                 print(
-                                    f"  ⚠️ Failed to link to instance: {link_stmt.content if hasattr(link_stmt, 'content') else 'Unknown error'}"
+                                    f"  ℹ️ Predicate {predicate_id} should already exist in ORKG"
                                 )
-                                print(f"  ℹ️ Predicate {predicate_id} should already exist in ORKG")
-                        except Exception as e:
-                            print(f"  ⚠️ Error linking to instance: {e}")
-                            print(f"  ℹ️ Predicate {predicate_id} should already exist in ORKG")
                     else:
                         print(f"  ⚠️ No data found - skipping field")
 
@@ -1372,7 +1418,7 @@ def main():
 
     if instance_id:
         print(f"\n🎉 SUCCESS! Instance ID: {instance_id}")
-        print(f"🌐 View at: https://incubating.orkg.org/resource/{instance_id}")
+        print(f"🌐 View at: https://orkg.org/resource/{instance_id}")
     else:
         print(f"\n❌ Failed to create instance")
 
