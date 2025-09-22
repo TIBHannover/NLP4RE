@@ -27,7 +27,7 @@ predicates_mapping = {
                 "question_mapping": "III.1",
                 "resource_mapping_key": "NLP task input",
             },
-            "P181006": {
+            "P181007": {
                 "label": "NLP task output type",
                 "cardinality": "one to many",
                 "description": "What is the output of your natural language processing task?",
@@ -40,21 +40,21 @@ predicates_mapping = {
                 ],
                 "resource_mapping_key": "NLP task output type",
             },
-            "P181007": {
+            "P181008": {
                 "label": "NLP task output classification label",
                 "cardinality": "one to one",
                 "description": "What are the labels that can be assigned?",
                 "question_mapping": "III.3",
                 "resource_mapping_key": "NLP task output classification label",
             },
-            "P181008": {
+            "P181009": {
                 "label": "NLP task output extracted element",
                 "cardinality": "one to one",
                 "description": "What is the type of the extracted elements?",
                 "question_mapping": "III.5",
                 "resource_mapping_key": "NLP task output extracted element",
             },
-            "P181009": {
+            "P181010": {
                 "label": "NLP task output translation mapping cardinality",
                 "cardinality": "one to one",
                 "description": "What is the translation mapping cardinality between initial input and final output?",
