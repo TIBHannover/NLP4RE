@@ -203,14 +203,6 @@ class TemplateInstanceCreator:
             "other (e.g., models, trace links, diagrams, code comments)/comments",
         ]:
             return self.create_new_resource_for_other(answer, resource_mapping_key)
-        # if resource_mapping_key == "NLP task input":
-        #     print("*************************")
-        #     print(f"  🔍 Debug info: {answer}")
-        #     print("*************************")
-        #     print(f"  🔍 Debug info: {resource_mapping_key}")
-        #     print("*************************")
-        #     print(f"  🔍 Debug info: {prev_answer}")
-        #     print("*************************")
         # Try case-insensitive match
         for key, value in resource_map.items():
             if key.lower() == answer.lower():
@@ -244,13 +236,6 @@ class TemplateInstanceCreator:
                 else:
                     return "resource should not be created"
             else:
-                # if resource_mapping_key == "NLP task input":
-                #     print("*************************")
-                #     print(f"  🔍 Debug info: {answer}")
-                #     print("*************************")
-                #     print(f"  🔍 Debug info: {resource_mapping_key}")
-                #     print("*************************")
-
                 # There's specific text - use it as the resource label
                 return self.create_new_resource_for_other(answer, resource_mapping_key)
 
@@ -284,13 +269,6 @@ class TemplateInstanceCreator:
     ) -> List[str]:
         """Create literals or map to resources based on the answers"""
         result_ids = []
-        if resource_mapping_key == "NLP task input":
-            print("*************************")
-            print(f"  🔍 Debug info: {answers}")
-            print("*************************")
-            print(f"  🔍 Debug info: {resource_mapping_key}")
-            print("*************************")
-
         for answer_obj in answers:
             # answer_obj is dict with keys: label, description
             answer = answer_obj.get("label", "")
@@ -407,18 +385,36 @@ class TemplateInstanceCreator:
 
         if not all_answers:
             return None
-
+        # Handle comma separation only when explicitly specified
         # Handle comma separation only when explicitly specified
         if property_info.get("comma_separated", True):
             expanded_answers = []
             for answer in all_answers:
-                if "," in answer and len(answer.split(",")) > 1:
-                    for sub_answer in answer.split(","):
-                        sub_answer = sub_answer.strip()
-                        if sub_answer:
-                            expanded_answers.append(sub_answer)
+                if type(answer) == dict:
+                    answer_text = answer.get("label", "")
+                    # Keep the dictionary format for create_literal_or_resource
+                    if "," in answer_text and len(answer_text.split(",")) > 1:
+                        for sub_answer in answer_text.split(","):
+                            sub_answer = sub_answer.strip()
+                            if sub_answer:
+                                expanded_answers.append({"label": sub_answer, "description": answer.get("description")})
+                    else:
+                        expanded_answers.append(answer)
+                elif type(answer) == str:
+                    # Handle string answers
+                    if "," in answer and len(answer.split(",")) > 1:
+                        for sub_answer in answer.split(","):
+                            # if sub_answer is the last index and it contains "and" remove the "and"
+                            index = answer.split(",").index(sub_answer)
+                            if index == len(answer.split(",")) - 1 and "and" in sub_answer:
+                                sub_answer = sub_answer.replace("and", "")
+                            sub_answer = sub_answer.strip()
+                            if sub_answer:
+                                expanded_answers.append({"label": sub_answer, "description": None})
+                    else:
+                        expanded_answers.append({"label": answer, "description": None})
                 else:
-                    expanded_answers.append(answer)
+                    raise ValueError(f"  ❌ Invalid answer type: {type(answer)}")
             all_answers = expanded_answers
 
         # Create literals or resources
@@ -435,10 +431,6 @@ class TemplateInstanceCreator:
             subtemplate_id = subtemplate_info.get("subtemplate_id")
             class_id = subtemplate_info.get("class_id")
             label = subtemplate_info.get("label", "Unknown")
-            # if label == "Evaluation":
-            #     print("*************************")
-            #     print(subtemplate_id, class_id, label)
-            #     print("*************************")
 
             instance_response = self.orkg.resources.add(
                 label=label,
@@ -474,10 +466,6 @@ class TemplateInstanceCreator:
                         return None
             else:
                 instance_id = instance_response.content["id"]
-                # if label == "Evaluation":
-                #     print("*************************")
-                #     print(subtemplate_id, class_id, label)
-                #     print("*************************")
                 print(f"  ✅ Created subtemplate instance: {instance_id}")
 
             # Note: Subtemplates already exist in ORKG, no need to materialize
@@ -520,18 +508,7 @@ class TemplateInstanceCreator:
                                 f"    ✅ Added property {prop_id} with {len(result_ids)} value(s)"
                             )
                         else:
-                            if (
-                                prop_info.get("resource_mapping_key")
-                                == "NLP task output translation mapping cardinality"
-                            ):
-                                print("*************************")
-                                print(
-                                    f"  🔍 Debug info: {prop_info.get('resource_mapping_key')}"
-                                )
-                                print("*************************")
-                                print(f"  🔍 Debug info: {prop_id}")
-                                print("*************************")
-                            # if prop_id exists in resource_mappings and the value is "Not reported", then create a literal
+                            # if prop_id exists in resource_mappings and the value is "Not reported", then use the mapped resource ID
                             if (
                                 prop_info.get("resource_mapping_key")
                                 in self.resource_mappings
@@ -540,18 +517,17 @@ class TemplateInstanceCreator:
                                     prop_info.get("resource_mapping_key")
                                 ]
                             ):
-                                result_ids = self.create_literal_for_field(
-                                    "Not reported"
+                                not_reported_id = self.resource_mappings[
+                                    prop_info.get("resource_mapping_key")
+                                ]["Not reported"]
+                                self.orkg.statements.add(
+                                    subject_id=instance_id,
+                                    predicate_id=prop_id,
+                                    object_id=not_reported_id,
                                 )
-                                if result_ids:
-                                    self.orkg.statements.add(
-                                        subject_id=instance_id,
-                                        predicate_id=prop_id,
-                                        object_id=result_ids[0],
-                                    )
-                                    print(
-                                        f"    ✅ Added property {prop_id} with value {result_ids[0]}"
-                                    )
+                                print(
+                                    f"    ✅ Added property {prop_id} with value {not_reported_id} (Not reported)"
+                                )
                             else:
                                 print(f"    ⚠️ No data found - skipping field")
 
@@ -656,15 +632,6 @@ class TemplateInstanceCreator:
                         for result_id in result_ids:
                             # Link the result to the instance using the correct predicate
                             try:
-                                # if predicate is "RE task" and result_id is not a resource, then create a literal
-                                # if predicate_id == "P181002":
-                                #     # print debug info
-                                #     print("*************************")
-                                #     print(f"  🔍 Debug info: {result_id}")
-                                #     print("*************************")
-                                #     # end the program
-                                #     exit()
-
                                 link_stmt = self.orkg.statements.add(
                                     subject_id=instance_id,
                                     predicate_id=predicate_id,
@@ -688,17 +655,7 @@ class TemplateInstanceCreator:
                                     f"  ℹ️ Predicate {predicate_id} should already exist in ORKG"
                                 )
                     else:
-                        # if the field has Not reported in resource mappings, then create a literal
-                        if (
-                            predicate_info.get("resource_mapping_key")
-                            == "NLP task output translation mapping cardinality"
-                        ):
-                            print("*************************")
-                            print(
-                                f"  🔍 Debug info: {predicate_info.get('resource_mapping_key')}"
-                            )
-                            print("*************************")
-                            print(f"  🔍 Debug info: {predicate_id}")
+                        # if the field has Not reported in resource mappings
                         if (
                             predicate_info.get("resource_mapping_key")
                             in self.resource_mappings
@@ -707,16 +664,17 @@ class TemplateInstanceCreator:
                                 predicate_info.get("resource_mapping_key")
                             ]
                         ):
-                            result_ids = self.create_literal_for_field("Not reported")
-                            if result_ids:
-                                self.orkg.statements.add(
-                                    subject_id=instance_id,
-                                    predicate_id=predicate_id,
-                                    object_id=result_ids[0],
-                                )
-                                print(
-                                    f"  ✅ Linked to instance with predicate {predicate_id}"
-                                )
+                            not_reported_id = self.resource_mappings[
+                                predicate_info.get("resource_mapping_key")
+                            ]["Not reported"]
+                            self.orkg.statements.add(
+                                subject_id=instance_id,
+                                predicate_id=predicate_id,
+                                object_id=not_reported_id,
+                            )
+                            print(
+                                f"  ✅ Linked to instance with predicate {predicate_id} and value {not_reported_id} (Not reported)"
+                            )
                         else:
                             print(f"  ⚠️ No data found - skipping field")
 
