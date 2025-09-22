@@ -5,6 +5,7 @@ predicates_mapping = {
         "description": "What requirements engineering task is your study addressing?",
         "question_mapping": "I.1",
         "resource_mapping_key": "RE task",
+        "comma_separated": False,
     },
     "P181003": {
         "label": "NLP task",
@@ -41,6 +42,7 @@ predicates_mapping = {
                     "III.9",
                 ],
                 "resource_mapping_key": "NLP task output type",
+                "comma_separated": False,
             },
             "P181008": {
                 "label": "NLP task output classification label",
@@ -48,6 +50,7 @@ predicates_mapping = {
                 "description": "What are the labels that can be assigned?",
                 "question_mapping": "III.3",
                 "resource_mapping_key": "NLP task output classification label",
+                "comma_separated": False,
             },
             "P181009": {
                 "label": "NLP task output extracted element",
@@ -55,6 +58,7 @@ predicates_mapping = {
                 "description": "What is the type of the extracted elements?",
                 "question_mapping": "III.5",
                 "resource_mapping_key": "NLP task output extracted element",
+                "comma_separated": False,
             },
             "P181010": {
                 "label": "NLP task output translation mapping cardinality",
@@ -62,6 +66,7 @@ predicates_mapping = {
                 "description": "What is the translation mapping cardinality between initial input and final output?",
                 "question_mapping": "III.7",
                 "resource_mapping_key": "NLP task output translation mapping cardinality",
+                "comma_separated": False,
             },
         },
     },
@@ -78,6 +83,7 @@ predicates_mapping = {
                 "description": "How many data items do you process?",
                 "question_mapping": "IV.1",
                 "resource_mapping_key": "NLP data item",
+                "comma_separated": False,
             },
             "P181016": {
                 "label": "NLP data production time",
@@ -85,6 +91,7 @@ predicates_mapping = {
                 "description": "In which year or interval of year were the data produced?",
                 "question_mapping": "IV.2",
                 "resource_mapping_key": "NLP data prodcution time",
+                "comma_separated": False,
             },
             "P181017": {
                 "label": "NLP data source",
@@ -107,6 +114,7 @@ predicates_mapping = {
                         "description": "From how many different sources your data comes from?",
                         "question_mapping": "IV.9",
                         "resource_mapping_key": "Number of data sources",
+                        "comma_separated": False,
                     },
                     "P181020": {
                         "label": "NLP data source domain",
@@ -139,6 +147,7 @@ predicates_mapping = {
                         "description": "What is the format of the data?",
                         "question_mapping": "IV.5",
                         "resource_mapping_key": "NLP data format",
+                        "comma_separated": False,
                     },
                     "P181024": {
                         "label": "Rigor of data format",
@@ -146,6 +155,7 @@ predicates_mapping = {
                         "description": "How rigorous is the data format?",
                         "question_mapping": "IV.6",
                         "resource_mapping_key": "Rigor of data format",
+                        "comma_separated": False,
                     },
                     "P181025": {
                         "label": "Natural language",
@@ -153,6 +163,7 @@ predicates_mapping = {
                         "description": "What is the natural language of the data?",
                         "question_mapping": "IV.7",
                         "resource_mapping_key": "Natural language",
+                        "comma_separated": False,
                     },
                 },
             },
@@ -169,6 +180,7 @@ predicates_mapping = {
                         "description": "Is the dataset publicly available?",
                         "question_mapping": "IV.10",
                         "resource_mapping_key": "Public availability",
+                        "comma_separated": False,
                     },
                     "P181027": {
                         "label": "License type",
@@ -176,6 +188,7 @@ predicates_mapping = {
                         "description": "What is the type of the license?",
                         "question_mapping": "IV.11",
                         "resource_mapping_key": "License type",
+                        "comma_separated": False,
                     },
                 },
             },
@@ -192,6 +205,7 @@ predicates_mapping = {
                         "description": "Where is the dataset stored?",
                         "question_mapping": "IV.12",
                         "resource_mapping_key": "Location type",
+                        "comma_separated": False,
                     },
                     "P1003": {
                         "label": "URL",
@@ -199,6 +213,7 @@ predicates_mapping = {
                         "description": "Provide a URL to the dataset",
                         "question_mapping": "IV.13",
                         "resource_mapping_key": "url",
+                        "comma_separated": False,
                     },
                 },
             },
@@ -224,6 +239,7 @@ predicates_mapping = {
                         "description": "How many annotators have been involved?",
                         "question_mapping": "V.1",
                         "resource_mapping_key": "Number of annotators",
+                        "comma_separated": False,
                     },
                     "P181033": {
                         "label": "Annotator assignment",
@@ -231,6 +247,7 @@ predicates_mapping = {
                         "description": "How are the entries annotated?",
                         "question_mapping": "V.2",
                         "resource_mapping_key": "Annotator assignment",
+                        "comma_separated": False,
                     },
                     "P181034": {
                         "label": "Level of application domain experience",
@@ -238,6 +255,7 @@ predicates_mapping = {
                         "description": "What is the level of application domain experience?",
                         "question_mapping": "V.3",
                         "resource_mapping_key": "Level of application domain experience",
+                        "comma_separated": False,
                     },
                     "P181035": {
                         "label": "Annotator identity",
@@ -245,6 +263,7 @@ predicates_mapping = {
                         "description": "Who are the annotators?",
                         "question_mapping": "V.4",
                         "resource_mapping_key": "Annotator identity",
+                        "comma_separated": False,
                     },
                 },
             },
@@ -261,6 +280,7 @@ predicates_mapping = {
                         "description": "How was the annotation scheme established?",
                         "question_mapping": "V.5",
                         "resource_mapping_key": "Scheme establishement",
+                        "comma_separated": False,
                     },
                     "P181038": {
                         "label": "Guideline availability",
@@ -268,6 +288,7 @@ predicates_mapping = {
                         "description": "Did you make the written guidelines public?",
                         "question_mapping": "V.6",
                         "resource_mapping_key": "Guideline availability",
+                        "comma_separated": False,
                     },
                 },
             },
@@ -277,6 +298,7 @@ predicates_mapping = {
                 "description": "Did you share other information to support annotators?",
                 "question_mapping": "V.7",
                 "resource_mapping_key": "Shared material",
+                "comma_separated": False,
             },
             "P181040": {
                 "label": "Fatigue mitigation technique",
@@ -284,6 +306,7 @@ predicates_mapping = {
                 "description": "Did you employ techniques to mitigate fatigue effects?",
                 "question_mapping": "V.8",
                 "resource_mapping_key": "Fatigue mitigation technique",
+                "comma_separated": False,
             },
             "P181041": {
                 "label": "Annotator agreement",
@@ -298,6 +321,7 @@ predicates_mapping = {
                         "description": "What are the metrics used to measure intercoder reliability?",
                         "question_mapping": "V.9",
                         "resource_mapping_key": "Intercoder reliability metric",
+                        "comma_separated": False,
                     },
                     "P181044": {
                         "label": "Conflict resolution",
@@ -305,6 +329,7 @@ predicates_mapping = {
                         "description": "How were conflicts resolved?",
                         "question_mapping": "V.10",
                         "resource_mapping_key": "Conflict resolution",
+                        "comma_separated": False,
                     },
                     "P181045": {
                         "label": "Measured agreement",
@@ -312,6 +337,7 @@ predicates_mapping = {
                         "description": "What is the measured agreement?",
                         "question_mapping": "V.11",
                         "resource_mapping_key": "Measured agreement",
+                        "comma_separated": False,
                     },
                 },
             },
@@ -330,6 +356,7 @@ predicates_mapping = {
                 "description": "What is the type of proposed solution?",
                 "question_mapping": "VI.1",
                 "resource_mapping_key": "Approach type",
+                "comma_separated": False,
             },
             "P58069": {
                 "label": "Algorithm used",
@@ -345,6 +372,7 @@ predicates_mapping = {
                 "description": "What needs to be done for running the tool?",
                 "question_mapping": "VI.4",
                 "resource_mapping_key": "Running requirements",
+                "comma_separated": False,
             },
             "P41835": {
                 "label": "Documentation",
@@ -352,6 +380,7 @@ predicates_mapping = {
                 "description": "What type of documentation has been provided?",
                 "question_mapping": "VI.5",
                 "resource_mapping_key": "Documentation",
+                "comma_separated": False,
             },
             "P181048": {
                 "label": "Dependency",
@@ -359,6 +388,7 @@ predicates_mapping = {
                 "description": "What type of dependencies does the tool have?",
                 "question_mapping": "VI.6",
                 "resource_mapping_key": "Dependency",
+                "comma_separated": False,
             },
             "P181049": {
                 "label": "License type",
@@ -366,6 +396,7 @@ predicates_mapping = {
                 "description": "What license has been used?",
                 "question_mapping": "VI.8",
                 "resource_mapping_key": "license type",
+                "comma_separated": False,
             },
             "release": {
                 "label": "Release",
@@ -380,6 +411,7 @@ predicates_mapping = {
                         "description": "What has been released?",
                         "question_mapping": "VI.3",
                         "resource_mapping_key": "Release format",
+                        "comma_separated": False,
                     },
                     "P181029": {
                         "label": "Location type",
@@ -387,6 +419,7 @@ predicates_mapping = {
                         "description": "How is the tool released?",
                         "question_mapping": "VI.7",
                         "resource_mapping_key": "Location type",
+                        "comma_separated": False,
                     },
                     "P1003": {
                         "label": "URL",
@@ -394,6 +427,7 @@ predicates_mapping = {
                         "description": "Where is the tool released?",
                         "question_mapping": "VI.9",
                         "resource_mapping_key": "url",
+                        "comma_separated": False,
                     },
                 },
             },
@@ -420,6 +454,7 @@ predicates_mapping = {
                 "description": "What is the validation procedure?",
                 "question_mapping": "VII.2",
                 "resource_mapping_key": "Validation procedure",
+                "comma_separated": False,
             },
             "P181051": {
                 "label": "Baseline comparison",
@@ -434,6 +469,7 @@ predicates_mapping = {
                         "description": "What baseline do you compare against?",
                         "question_mapping": "VII.3",
                         "resource_mapping_key": "Baseline comparsion type",
+                        "comma_separated": False,
                     },
                     "P181053": {
                         "label": "Baseline comparison details",
@@ -441,6 +477,7 @@ predicates_mapping = {
                         "description": "Please provide more details about the baseline?",
                         "question_mapping": "VII.4",
                         "resource_mapping_key": "Baseline comparison details",
+                        "comma_separated": False,
                     },
                 },
             },

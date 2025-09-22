@@ -498,17 +498,6 @@ class TemplateInstanceCreator:
                             )
                             print(f"    ✅ Linked nested subtemplate {prop_id}")
                     else:
-                        if (
-                            prop_info.get("resource_mapping_key")
-                            == "NLP data source type"
-                        ):
-                            print("*************************")
-                            print(f"  🔍 Debug info #prop_info: {prop_info}")
-                            print("*************************")
-                            print(f"  🔍 Debug info #prop_id: {prop_id}")
-                            print("*************************")
-                            print(f"  🔍 Debug info #instance_id: {instance_id}")
-                            print("*************************")
                         # Handle regular property
                         result_ids = self.process_property(
                             json_data, prop_info, instance_id
@@ -578,17 +567,95 @@ class TemplateInstanceCreator:
             print(f"  ❌ Error creating literal: {e}")
             return None
 
+    def extract_paper_title_and_authors(
+        self, json_data: Dict[str, Any]
+    ) -> tuple[str, str]:
+        """Extract paper title and authors from JSON data"""
+        questions = json_data.get("questions", [])
+
+        for question in questions:
+            if question.get("question_text", "").lower() == "title and authors":
+                answer = question.get("answer", "")
+                if "\r\r" in answer:
+                    title, authors = answer.split("\r\r", 1)
+                    return title.strip(), authors.strip()
+                elif ",\r" in answer:
+                    title, authors = answer.split(",\r", 1)
+                    return title.strip(), authors.strip()
+                elif "\r" in answer:
+                    title, authors = answer.split("\r", 1)
+                    return title.strip(), authors.strip()
+                else:
+                    return answer.strip(), ""
+
+        return "Unknown Paper", ""
+
+    def search_paper_in_orkg(self, paper_title: str) -> Optional[str]:
+        """Search for existing paper in ORKG by title"""
+        try:
+            # Search for papers with similar title
+            search_results = self.orkg.resources.get(q=paper_title, exact=False)
+
+            if search_results.succeeded and search_results.content:
+                # Look for exact title match first
+                for resource in search_results.content:
+                    if resource.get("label", "").lower() == paper_title.lower():
+                        print(f"  ✅ Found exact match for paper: {resource['id']}")
+                        return resource["id"]
+
+                # If no exact match, return the first result
+                if search_results.content:
+                    first_result = search_results.content[0]
+                    print(
+                        f"  ⚠️ Found similar paper: {first_result['id']} - {first_result.get('label', '')}"
+                    )
+                    return first_result["id"]
+
+            print(f"  ⚠️ No existing paper found for: {paper_title}")
+            return None
+
+        except Exception as e:
+            print(f"  ❌ Error searching for paper: {e}")
+            return None
+
+    def link_paper_to_template(self, paper_id: str, template_instance_id: str) -> bool:
+        """Create a statement linking paper to template instance"""
+        try:
+            # Create statement: paper -> contribution -> template_instance
+            # The property ID for "contribution" - you may need to adjust this based on your mappings
+            contribution_property_id = (
+                "P181002"  # This should be the correct property ID for "contribution"
+            )
+
+            statement_response = self.orkg.statements.add(
+                subject_id=paper_id,
+                predicate_id=contribution_property_id,
+                object_id=template_instance_id,
+            )
+
+            if statement_response.succeeded:
+                print(
+                    f"  ✅ Created statement: {paper_id} -> contribution -> {template_instance_id}"
+                )
+                return True
+            else:
+                print(f"  ❌ Failed to create statement: {statement_response.errors}")
+                return False
+
+        except Exception as e:
+            print(f"  ❌ Error creating statement: {e}")
+            return False
+
     def create_template_instance(self, json_data: Dict[str, Any]) -> Optional[str]:
         """Create a template instance"""
 
-        # Get paper title
-        paper_title = json_data.get("pdf_name", "").replace(".pdf", "")
-        if not paper_title:
-            questions = json_data.get("questions", [])
-            if questions and "title" in questions[0].get("question_text", "").lower():
-                paper_title = questions[0].get("answer", "Unknown Paper")
+        # Extract paper title and authors from JSON data
+        paper_title, paper_authors = self.extract_paper_title_and_authors(json_data)
+        print(f"\n📄 Paper: {paper_title}")
+        print(f"👥 Authors: {paper_authors}")
 
-        print(f"\n📄 Creating instance for: {paper_title}")
+        # Search for existing paper in ORKG
+        paper_id = self.search_paper_in_orkg(paper_title)
 
         try:
             # Create the main instance with the target class
@@ -698,6 +765,12 @@ class TemplateInstanceCreator:
                         else:
                             print(f"  ⚠️ No data found - skipping field")
 
+            # Link paper to template instance if paper was found
+            if paper_id:
+                self.link_paper_to_template(paper_id, instance_id)
+            else:
+                print(f"  ⚠️ Cannot link paper to template - paper not found in ORKG")
+
             print(f"\n✅ Instance created successfully!")
             print(f"Instance URL: https://orkg.org/resource/{instance_id}")
             return instance_id
@@ -724,7 +797,7 @@ def main():
     creator = TemplateInstanceCreator()
 
     # Process the JSON file
-    json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example1-Yang-etal-2011.json"
+    json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example2-Aydemir-etal-RE19.json"
 
     instance_id = creator.process_json_file(json_file)
 
