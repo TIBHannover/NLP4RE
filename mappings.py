@@ -363,7 +363,7 @@ predicates_mapping = {
                 "question_mapping": "VI.8",
                 "resource_mapping_key": "license type",
             },
-            "P181050": {
+            "release": {
                 "label": "Release",
                 "cardinality": "one to one",
                 "description": "How was the tool released?",

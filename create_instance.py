@@ -178,7 +178,7 @@ class TemplateInstanceCreator:
         return None
 
     def map_answer_to_resource(
-        self, answer: str, resource_mapping_key: str
+        self, answer: str, resource_mapping_key: str, is_last_answer: bool
     ) -> Optional[str]:
         """Map an answer to a predefined ORKG resource if available"""
         if resource_mapping_key not in self.resource_mappings:
@@ -211,12 +211,17 @@ class TemplateInstanceCreator:
                 "other",
                 "comments",
                 "other/comments",
+                "other /comments",
+                "other / comments",
                 "other (e.g., models, trace links, diagrams, code comments)/comments",
             ]:
-                # Just "Other/Comments" without specific text - use "Unknown"
-                return self.create_new_resource_for_other(
-                    "Unknown", resource_mapping_key
-                )
+                if is_last_answer:
+                    # Just "Other/Comments" without specific text - use "Unknown"
+                    return self.create_new_resource_for_other(
+                        "Unknown", resource_mapping_key
+                    )
+                else:
+                    return "resource should not be created"
             else:
                 # There's specific text - use it as the resource label
                 return self.create_new_resource_for_other(answer, resource_mapping_key)
@@ -257,7 +262,13 @@ class TemplateInstanceCreator:
             answer = answer_obj.get("label", "")
             example_desc = answer_obj.get("description")
             # First try to map to existing resource
-            resource_id = self.map_answer_to_resource(answer, resource_mapping_key)
+            index = answers.index(answer_obj)
+            is_last_answer = index == len(answers) - 1
+            resource_id = self.map_answer_to_resource(
+                answer, resource_mapping_key, is_last_answer
+            )
+            if resource_id == "resource should not be created":
+                continue
 
             if resource_id:
                 result_ids.append(resource_id)
