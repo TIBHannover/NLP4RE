@@ -152,21 +152,21 @@ predicates_mapping = {
                     },
                 },
             },
-            "P181026": {
+            "license": {
                 "label": "License",
                 "cardinality": "one to one",
                 "description": "What license information applies?",
                 "subtemplate_id": "R1544265",
                 "class_id": "C121018",
                 "subtemplate_properties": {
-                    "P181027": {
+                    "P181026": {
                         "label": "Public availability",
                         "cardinality": "one to one",
                         "description": "Is the dataset publicly available?",
                         "question_mapping": "IV.10",
                         "resource_mapping_key": "Public availability",
                     },
-                    "P181028": {
+                    "P181027": {
                         "label": "License type",
                         "cardinality": "one to one",
                         "description": "What is the type of the license?",
@@ -175,7 +175,7 @@ predicates_mapping = {
                     },
                 },
             },
-            "P181029": {
+            "P181028": {
                 "label": "Dataset location",
                 "cardinality": "one to one",
                 "description": "Where is the dataset stored?",
@@ -377,7 +377,7 @@ predicates_mapping = {
                         "question_mapping": "VI.3",
                         "resource_mapping_key": "Release format",
                     },
-                    "P181052": {
+                    "P181029": {
                         "label": "Location type",
                         "cardinality": "one to many",
                         "description": "How is the tool released?",
