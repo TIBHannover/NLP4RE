@@ -386,7 +386,6 @@ class TemplateInstanceCreator:
         if not all_answers:
             return None
         # Handle comma separation only when explicitly specified
-        # Handle comma separation only when explicitly specified
         if property_info.get("comma_separated", True):
             expanded_answers = []
             for answer in all_answers:
@@ -397,20 +396,30 @@ class TemplateInstanceCreator:
                         for sub_answer in answer_text.split(","):
                             sub_answer = sub_answer.strip()
                             if sub_answer:
-                                expanded_answers.append({"label": sub_answer, "description": answer.get("description")})
+                                expanded_answers.append(
+                                    {
+                                        "label": sub_answer,
+                                        "description": answer.get("description"),
+                                    }
+                                )
                     else:
                         expanded_answers.append(answer)
                 elif type(answer) == str:
                     # Handle string answers
                     if "," in answer and len(answer.split(",")) > 1:
                         for sub_answer in answer.split(","):
-                            # if sub_answer is the last index and it contains "and" remove the "and"
+                            # TODO: if sub_answer is the last index and it contains "and" remove the "and"
                             index = answer.split(",").index(sub_answer)
-                            if index == len(answer.split(",")) - 1 and "and" in sub_answer:
+                            if (
+                                index == len(answer.split(",")) - 1
+                                and "and" in sub_answer
+                            ):
                                 sub_answer = sub_answer.replace("and", "")
                             sub_answer = sub_answer.strip()
                             if sub_answer:
-                                expanded_answers.append({"label": sub_answer, "description": None})
+                                expanded_answers.append(
+                                    {"label": sub_answer, "description": None}
+                                )
                     else:
                         expanded_answers.append({"label": answer, "description": None})
                 else:
@@ -489,6 +498,17 @@ class TemplateInstanceCreator:
                             )
                             print(f"    ✅ Linked nested subtemplate {prop_id}")
                     else:
+                        if (
+                            prop_info.get("resource_mapping_key")
+                            == "NLP data source type"
+                        ):
+                            print("*************************")
+                            print(f"  🔍 Debug info #prop_info: {prop_info}")
+                            print("*************************")
+                            print(f"  🔍 Debug info #prop_id: {prop_id}")
+                            print("*************************")
+                            print(f"  🔍 Debug info #instance_id: {instance_id}")
+                            print("*************************")
                         # Handle regular property
                         result_ids = self.process_property(
                             json_data, prop_info, instance_id

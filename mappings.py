@@ -19,6 +19,7 @@ predicates_mapping = {
                 "description": "What type of natural language processing task is your study tackling?",
                 "question_mapping": "II.1",
                 "resource_mapping_key": "NLP task type",
+                "comma_separated": False,
             },
             "P181005": {
                 "label": "NLP task input",
@@ -26,6 +27,7 @@ predicates_mapping = {
                 "description": "What is the input of your natural language processing task?",
                 "question_mapping": "III.1",
                 "resource_mapping_key": "NLP task input",
+                "comma_separated": False,
             },
             "P181007": {
                 "label": "NLP task output type",
@@ -97,6 +99,7 @@ predicates_mapping = {
                         "description": "What is the source type of the data?",
                         "question_mapping": "IV.3",
                         "resource_mapping_key": "NLP data source type",
+                        "comma_separated": False,
                     },
                     "P181019": {
                         "label": "Number of data sources",
@@ -121,6 +124,7 @@ predicates_mapping = {
                 "description": "What is the level of abstraction of the data?",
                 "question_mapping": "IV.4",
                 "resource_mapping_key": "NLP data abstraction level",
+                "comma_separated": False,
             },
             "P181022": {
                 "label": "NLP data type",
