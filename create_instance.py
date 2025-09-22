@@ -7,6 +7,7 @@ Maps JSON questions to template fields and creates properly typed resources.
 """
 
 import json
+import re
 from orkg import ORKG
 from typing import Dict, Any, List, Optional
 from scripts.config import ORKG_HOST, ORKG_USERNAME, ORKG_PASSWORD
@@ -68,9 +69,9 @@ class TemplateInstanceCreator:
             print(f"❌ Error loading JSON file: {e}")
             return {}
 
-    def extract_answer_from_question(self, question_data: Dict) -> List[str]:
+    def extract_answer_from_question(self, question_data: Dict) -> List[Dict[str, str]]:
         """Extract the answer from a question data structure"""
-        answers = []
+        answers: List[Dict[str, str]] = []
 
         # Check if question has any meaningful content
         question_text = question_data.get("question_text", "").strip()
@@ -81,20 +82,16 @@ class TemplateInstanceCreator:
         if question_data.get("answer"):
             answer = question_data["answer"].strip()
             if answer:
-                answers.append(answer)
+                label, desc = self._split_label_and_example(answer)
+                answers.append({"label": label, "description": desc})
 
         # Extract selected answers from multiple choice
         if question_data.get("selected_answers"):
             for answer in question_data["selected_answers"]:
                 if answer and answer.strip() and answer.strip() not in ["None"]:
-                    # Split comma-separated answers
-                    if "," in answer and len(answer.split(",")) > 1:
-                        for sub_answer in answer.split(","):
-                            sub_answer = sub_answer.strip()
-                            if sub_answer and sub_answer not in answers:
-                                answers.append(sub_answer)
-                    else:
-                        answers.append(answer.strip())
+                    # Do NOT split here. Splitting (comma_separated) is handled later per property.
+                    label, desc = self._split_label_and_example(answer.strip())
+                    answers.append({"label": label, "description": desc})
 
         # Extract from options details
         if question_data.get("options_details"):
@@ -103,10 +100,9 @@ class TemplateInstanceCreator:
                     # Add label if it exists and is not empty
                     if option.get("label") and option["label"].strip():
                         answer_to_add = option["label"].strip()
-                        if answer_to_add not in answers and answer_to_add not in [
-                            "None"
-                        ]:
-                            answers.append(answer_to_add)
+                        if answer_to_add and answer_to_add not in ["None"]:
+                            label, desc = self._split_label_and_example(answer_to_add)
+                            answers.append({"label": label, "description": desc})
 
                     # Add field value if it exists and is meaningful
                     field_value = option.get("field_value", "")
@@ -117,18 +113,59 @@ class TemplateInstanceCreator:
                         # field value is not a number string
                         and not field_value.strip().isdigit()
                     ):
-                        if field_value.strip() not in answers:
-                            answers.append(field_value.strip())
+                        label, desc = self._split_label_and_example(field_value.strip())
+                        answers.append({"label": label, "description": desc})
 
         # Extract text input value for "Other/Comments" fields
         if question_data.get("text_input_value"):
             text_input = question_data["text_input_value"].strip()
             if text_input and text_input not in ["", "None"]:
-                answers.append(text_input)
+                label, desc = self._split_label_and_example(text_input)
+                answers.append({"label": label, "description": desc})
+
+        # Clean answers: remove any parenthetical (e.g., ...) fragments and normalize whitespace
+        cleaned_answers: List[Dict[str, str]] = []
+        for raw in answers:
+            if not raw:
+                continue
+            # raw is dict
+            cleaned_label = self._clean_answer_text(raw.get("label", ""))
+            cleaned_desc = raw.get("description")
+            if cleaned_label:
+                candidate = {"label": cleaned_label, "description": cleaned_desc}
+                if candidate not in cleaned_answers:
+                    cleaned_answers.append(candidate)
 
         # Filter out empty answers and return
-        filtered_answers = [ans for ans in answers if ans and ans.strip()]
+        filtered_answers = [
+            ans for ans in cleaned_answers if ans and ans.get("label", "").strip()
+        ]
         return filtered_answers
+
+    def _clean_answer_text(self, text: str) -> str:
+        """Remove unwanted parenthetical fragments like (e.g., ...) and trim punctuation/whitespace."""
+        if not isinstance(text, str):
+            return text
+        cleaned = text
+        # Remove any parenthetical that starts with e.g. (handles (e.g ...), (e.g., ...))
+        cleaned = re.sub(r"\(\s*e\.g\.,?[^)]*\)", "", cleaned, flags=re.IGNORECASE)
+        # Also remove stray multiple spaces and trailing commas
+        cleaned = re.sub(r"\s+", " ", cleaned).strip().strip(",")
+        return cleaned
+
+    def _split_label_and_example(self, text: str) -> (str, Optional[str]):
+        """Return (label, example_text) where example_text captures (e.g., ...) content if present."""
+        if not isinstance(text, str):
+            return text, None
+        match = re.search(r"\(\s*e\.g\.,?\s*([^)]*)\)", text, flags=re.IGNORECASE)
+        example = None
+        if match:
+            example = match.group(1).strip()
+        label = self._clean_answer_text(text)
+        if example:
+            # Normalize example by removing trailing punctuation
+            example = example.strip().strip(",")
+        return label, example
 
     def find_question_by_pattern(
         self, questions: List[Dict], question_id: str
@@ -210,18 +247,35 @@ class TemplateInstanceCreator:
         return None
 
     def create_literal_or_resource(
-        self, answers: List[str], resource_mapping_key: str
+        self, answers: List[Dict[str, str]], resource_mapping_key: str
     ) -> List[str]:
         """Create literals or map to resources based on the answers"""
         result_ids = []
 
-        for answer in answers:
+        for answer_obj in answers:
+            # answer_obj is dict with keys: label, description
+            answer = answer_obj.get("label", "")
+            example_desc = answer_obj.get("description")
             # First try to map to existing resource
             resource_id = self.map_answer_to_resource(answer, resource_mapping_key)
 
             if resource_id:
                 result_ids.append(resource_id)
                 print(f"  ✅ Mapped '{answer}' to resource: {resource_id}")
+                # If we captured an example/description, attach it via description predicate if available
+                if example_desc:
+                    try:
+                        literal_resp = self.orkg.literals.add(label=example_desc)
+                        if literal_resp.succeeded:
+                            # TODO: This doesnt work yet
+                            description_predicate = "description"
+                            self.orkg.statements.add(
+                                subject_id=resource_id,
+                                predicate_id=description_predicate,
+                                object_id=literal_resp.content["id"],
+                            )
+                    except Exception:
+                        pass
             else:
                 # Create literal for text-based answers or unmapped answers
                 if resource_mapping_key in [
@@ -308,8 +362,8 @@ class TemplateInstanceCreator:
         if not all_answers:
             return None
 
-        # Handle comma separation if specified
-        if property_info.get("comma_separated", False):
+        # Handle comma separation only when explicitly specified
+        if property_info.get("comma_separated", True):
             expanded_answers = []
             for answer in all_answers:
                 if "," in answer and len(answer.split(",")) > 1:
@@ -344,7 +398,7 @@ class TemplateInstanceCreator:
                 label=label,
                 classes=[class_id] if class_id else [],  # Remove paper title prefix
             )
-            
+
             if not instance_response.succeeded:
                 error_msg = (
                     instance_response.content
