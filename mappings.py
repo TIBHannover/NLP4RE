@@ -395,7 +395,7 @@ predicates_mapping = {
             },
         },
     },
-    "P181053": {
+    "HAS_EVALUATION": {
         "label": "Evaluation",
         "cardinality": "one to one",
         "description": "What evaluation did you apply?",
@@ -417,21 +417,21 @@ predicates_mapping = {
                 "question_mapping": "VII.2",
                 "resource_mapping_key": "Validation procedure",
             },
-            "P181055": {
+            "P181051": {
                 "label": "Baseline comparison",
                 "cardinality": "one to one",
                 "description": "What is the baseline comparison?",
                 "subtemplate_id": "R1544450",
                 "class_id": "C121050",
                 "subtemplate_properties": {
-                    "P181056": {
+                    "P181052": {
                         "label": "Baseline comparison type",
                         "cardinality": "one to many",
                         "description": "What baseline do you compare against?",
                         "question_mapping": "VII.3",
                         "resource_mapping_key": "Baseline comparsion type",
                     },
-                    "P181057": {
+                    "P181053": {
                         "label": "Baseline comparison details",
                         "cardinality": "one to one",
                         "description": "Please provide more details about the baseline?",

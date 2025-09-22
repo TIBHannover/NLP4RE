@@ -335,12 +335,16 @@ class TemplateInstanceCreator:
             subtemplate_id = subtemplate_info.get("subtemplate_id")
             class_id = subtemplate_info.get("class_id")
             label = subtemplate_info.get("label", "Unknown")
+            if label == "Evaluation":
+                print("*************************")
+                print(subtemplate_id, class_id, label)
+                print("*************************")
 
             instance_response = self.orkg.resources.add(
                 label=label,
                 classes=[class_id] if class_id else [],  # Remove paper title prefix
             )
-
+            
             if not instance_response.succeeded:
                 error_msg = (
                     instance_response.content
@@ -370,6 +374,10 @@ class TemplateInstanceCreator:
                         return None
             else:
                 instance_id = instance_response.content["id"]
+                if label == "Evaluation":
+                    print("*************************")
+                    print(subtemplate_id, class_id, label)
+                    print("*************************")
                 print(f"  ✅ Created subtemplate instance: {instance_id}")
 
             # Note: Subtemplates already exist in ORKG, no need to materialize
