@@ -1,0 +1,59 @@
+NLP4RE ID Card
+	- RE task -> Question I.1
+	- NLP task
+		- NLP task type -> Question II.1
+		- NLP task input -> Question III.1
+			- NLP task output type -> Question III.2, III.4, III.6, III.8, III.9
+			- NLP task output classification label -> Question III.3
+			- NLP task output extracted element -> Question III.5
+			- NLP task output translation mapping cardinality -> Question III.7
+	- NLP dataset
+		- NLP data item -> Question IV.1
+		- NLP data prodcution time -> Question IV.2
+		- NLP data source 
+			- NLP data source type -> Question IV.3
+			- Number of data sources -> Question IV.9
+			- NLP data source domain -> Question IV.8 (comma-separated list must be splitted)
+		- NLP data abstraction level -> Question IV.4
+		- NLP data type
+			- NLP data format -> Question IV.5
+			- Rigor of data format -> Question IV.6
+			- Natural language -> Question IV.7
+		- License
+			- Public availability -> Question IV.10
+			- License type -> Question IV.11
+		- Dataset location
+			- Location type -> Question IV.12
+			- url -> Question IV.13
+	- Annotation Process
+		- Annotator
+			- Number of annotators -> Question V.1
+			- Annotator assignment -> Question V.2
+			- Level of application domain experience -> Question V.3
+			- Annotator identity -> Question V.4
+		- Annotation scheme
+			- Scheme establishement -> Question V.5
+			- Guideline availability -> Question V.6
+		- Shared material -> Question V.7
+		- Fatigue mitigation technique -> Question V.8
+		- Annotator agreement
+			- Intercoder reliability metric -> Question V.9
+			- Conflict resolution -> Question V.10
+			- Measured agreement -> Question V.11
+	- Implemented approach
+		- Approach type -> Question VI.1
+		- Algorithm used -> Question VI.2
+		- Running requirements -> Question VI.4
+		- Documentation -> Question VI.5
+		- Dependency -> Question VI.6
+		- license type -> Question VI.8
+		- Release
+			- Release format -> Question VI.3
+			- Location type -> Question VI.7
+			- url -> Question VI.9
+	- Evaluation
+		- Evaluation metric -> Question VII.1
+		- Validation procedure -> Question VII.2
+		- Baseline comparison
+			- Baseline comparsion type -> Question VII.3
+			- Baseline comparison details -> Question VII.4
