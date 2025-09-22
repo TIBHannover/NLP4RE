@@ -410,7 +410,7 @@ predicates_mapping = {
                 "resource_mapping_key": "Evaluation metric",
                 "comma_separated": True,
             },
-            "P181054": {
+            "P181050": {
                 "label": "Validation procedure",
                 "cardinality": "one to many",
                 "description": "What is the validation procedure?",
