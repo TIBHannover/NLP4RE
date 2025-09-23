@@ -14,7 +14,12 @@ import os
 from orkg import ORKG
 from typing import Dict, Any, List, Optional
 from scripts.config import ORKG_HOST, ORKG_USERNAME, ORKG_PASSWORD
-from mappings import predicates_mapping, resource_mappings, class_mappings
+from mappings import (
+    predicates_mapping,
+    resource_mappings,
+    class_mappings,
+    integer_literal_keys,
+)
 
 
 class NLPRunLogger:
@@ -390,7 +395,26 @@ class TemplateInstanceCreator:
                 ]:
                     # These should be literals
                     try:
-                        literal_response = self.orkg.literals.add(label=answer)
+                        # Integer literal handling for specific keys
+                        if resource_mapping_key in {
+                            "Number of data sources",
+                            "Number of annotators",
+                        }:
+                            import re as _re
+
+                            match = _re.search(r"[-+]?\\d+", str(answer))
+                            if match:
+                                int_value = match.group(0)
+                                literal_response = self.orkg.literals.add(
+                                    label=str(int_value), datatype="xsd:integer"
+                                )
+                            else:
+                                # Fallback to text literal if no integer could be parsed
+                                literal_response = self.orkg.literals.add(
+                                    label=str(answer)
+                                )
+                        else:
+                            literal_response = self.orkg.literals.add(label=answer)
                         if literal_response.succeeded:
                             literal_id = literal_response.content["id"]
                             result_ids.append(literal_id)
@@ -667,17 +691,15 @@ class TemplateInstanceCreator:
                             )
                         else:
                             # if prop_id exists in resource_mappings and the value is "Not reported", then use the mapped resource ID
+                            mapping_key = prop_info.get("resource_mapping_key")
                             if (
-                                prop_info.get("resource_mapping_key")
-                                in self.resource_mappings
+                                mapping_key in self.resource_mappings
                                 and "Not reported"
-                                in self.resource_mappings[
-                                    prop_info.get("resource_mapping_key")
-                                ]
+                                in self.resource_mappings[mapping_key]
                             ):
-                                not_reported_id = self.resource_mappings[
-                                    prop_info.get("resource_mapping_key")
-                                ]["Not reported"]
+                                not_reported_id = self.resource_mappings[mapping_key][
+                                    "Not reported"
+                                ]
                                 self.orkg.statements.add(
                                     subject_id=instance_id,
                                     predicate_id=prop_id,
@@ -687,7 +709,29 @@ class TemplateInstanceCreator:
                                     f"    ✅ Added property {prop_id} with value {not_reported_id} (Not reported)"
                                 )
                             else:
-                                print(f"    ⚠️ No data found - skipping field")
+                                # If not reported mapping is missing, create a text literal 'Not reported'
+                                try:
+                                    lit = self.orkg.literals.add(label="Not reported")
+                                    if lit.succeeded:
+                                        self.orkg.statements.add(
+                                            subject_id=instance_id,
+                                            predicate_id=prop_id,
+                                            object_id=lit.content["id"],
+                                        )
+                                        print(
+                                            f"    ✅ Added property {prop_id} with text literal 'Not reported'"
+                                        )
+                                        self.run_logger.log(
+                                            "literal",
+                                            "created",
+                                            key=mapping_key,
+                                            answer="Not reported",
+                                            id=lit.content["id"],
+                                        )
+                                    else:
+                                        print(f"    ⚠️ No data found - skipping field")
+                                except Exception:
+                                    print(f"    ⚠️ No data found - skipping field")
 
             # Run log: subtemplate end and closing divider
             self.run_logger.log(
@@ -949,17 +993,14 @@ class TemplateInstanceCreator:
                                 )
                     else:
                         # if the field has Not reported in resource mappings
+                        mapping_key = predicate_info.get("resource_mapping_key")
                         if (
-                            predicate_info.get("resource_mapping_key")
-                            in self.resource_mappings
-                            and "Not reported"
-                            in self.resource_mappings[
-                                predicate_info.get("resource_mapping_key")
-                            ]
+                            mapping_key in self.resource_mappings
+                            and "Not reported" in self.resource_mappings[mapping_key]
                         ):
-                            not_reported_id = self.resource_mappings[
-                                predicate_info.get("resource_mapping_key")
-                            ]["Not reported"]
+                            not_reported_id = self.resource_mappings[mapping_key][
+                                "Not reported"
+                            ]
                             self.orkg.statements.add(
                                 subject_id=instance_id,
                                 predicate_id=predicate_id,
@@ -969,7 +1010,29 @@ class TemplateInstanceCreator:
                                 f"  ✅ Linked to instance with predicate {predicate_id} and value {not_reported_id} (Not reported)"
                             )
                         else:
-                            print(f"  ⚠️ No data found - skipping field")
+                            # If not reported mapping is missing, create a text literal 'Not reported'
+                            try:
+                                lit = self.orkg.literals.add(label="Not reported")
+                                if lit.succeeded:
+                                    self.orkg.statements.add(
+                                        subject_id=instance_id,
+                                        predicate_id=predicate_id,
+                                        object_id=lit.content["id"],
+                                    )
+                                    print(
+                                        f"  ✅ Linked to instance with predicate {predicate_id} and text literal 'Not reported'"
+                                    )
+                                    self.run_logger.log(
+                                        "literal",
+                                        "created",
+                                        key=mapping_key,
+                                        answer="Not reported",
+                                        id=lit.content["id"],
+                                    )
+                                else:
+                                    print(f"  ⚠️ No data found - skipping field")
+                            except Exception:
+                                print(f"  ⚠️ No data found - skipping field")
 
             # Link paper to template instance if paper was found
             if paper_id:

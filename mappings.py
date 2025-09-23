@@ -753,3 +753,5 @@ class_mappings = {
     "Validation procedure": "C121049",
     "Baseline comparsion type": "C121051",
 }
+
+integer_literal_keys = {"Number of data sources", "Number of annotators"}
