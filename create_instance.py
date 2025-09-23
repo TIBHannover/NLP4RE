@@ -8,10 +8,55 @@ Maps JSON questions to template fields and creates properly typed resources.
 
 import json
 import re
+import logging
+import uuid
+import os
 from orkg import ORKG
 from typing import Dict, Any, List, Optional
 from scripts.config import ORKG_HOST, ORKG_USERNAME, ORKG_PASSWORD
 from mappings import predicates_mapping, resource_mappings, class_mappings
+
+
+class NLPRunLogger:
+    """Simple file logger focused on domain events (no HTTP noise).
+    Writes compact one-line entries without timestamps.
+    """
+
+    def __init__(self, run_id: str, base_dir: str):
+        self.run_id = run_id
+        self.base_dir = base_dir
+        self.logs_dir = os.path.join(base_dir, "run_logs")
+        os.makedirs(self.logs_dir, exist_ok=True)
+        self.log_path = os.path.join(self.logs_dir, f"nlp4re_run_{run_id}.log")
+        self._fh = open(self.log_path, "a", encoding="utf-8")
+        self.log("run", "start", run_id=run_id)
+
+    def log(self, section: str, message: str, **kwargs):
+        parts = [f"[{section}]", message]
+        if kwargs:
+            kv = " ".join(f"{k}={repr(v)}" for k, v in kwargs.items())
+            parts.append(kv)
+        line = " ".join(parts)
+        self._fh.write(line + "\n")
+        self._fh.flush()
+
+    def divider(self, title: Optional[str] = None):
+        # Visual divider line in logs to separate sections
+        bar = "─" * 60
+        if title:
+            self.log("sep", f"{bar} {title} {bar}")
+        else:
+            self.log("sep", bar)
+
+    def close(self):
+        try:
+            self.log("run", "end", run_id=self.run_id)
+        except Exception:
+            pass
+        try:
+            self._fh.close()
+        except Exception:
+            pass
 
 
 class TemplateInstanceCreator:
@@ -19,11 +64,18 @@ class TemplateInstanceCreator:
 
     def __init__(self):
         """Initialize ORKG connection"""
+        # Create domain logger (file only)
+        self.run_id = str(uuid.uuid4())[:8]
+        self.run_logger = NLPRunLogger(
+            self.run_id, os.path.dirname(os.path.abspath(__file__))
+        )
+
         self.orkg = ORKG(
             host=ORKG_HOST,
             creds=(ORKG_USERNAME, ORKG_PASSWORD),
         )
         print("✅ Connected to ORKG")
+        self.run_logger.log("connect", "ok", host=ORKG_HOST)
 
         self.template_id = "R1544125"
         self.target_class_id = "C121001"
@@ -64,9 +116,11 @@ class TemplateInstanceCreator:
             with open(json_file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
             print(f"✅ Loaded JSON data from {json_file_path}")
+            self.run_logger.log("json", "loaded", path=json_file_path)
             return data
         except Exception as e:
             print(f"❌ Error loading JSON file: {e}")
+            self.run_logger.log("json", "error", path=json_file_path, error=str(e))
             return {}
 
     def extract_answer_from_question(self, question_data: Dict) -> List[Dict[str, str]]:
@@ -202,42 +256,18 @@ class TemplateInstanceCreator:
             "other / comments",
             "other (e.g., models, trace links, diagrams, code comments)/comments",
         ]:
-            return self.create_new_resource_for_other(answer, resource_mapping_key)
+            return None
         # Try case-insensitive match
         for key, value in resource_map.items():
             if key.lower() == answer.lower():
                 return value
 
-        # Try partial match for common variations
-        answer_lower = answer.lower()
-        for key, value in resource_map.items():
-            key_lower = key.lower()
-            if (answer_lower in key_lower or key_lower in answer_lower) and len(
-                answer_lower
-            ) > 3:
-                return value
+        # Avoid partial matches to prevent wrong class/resource links
 
-        # Handle "Other/Comments" case - create new resource
+        # Handle "Other/Comments" case - do not create any resource; skip
+        answer_lower = answer.lower()
         if "other" in answer_lower or "comment" in answer_lower:
-            # Check if this is just "Other/Comments" or has additional text
-            if answer.strip().lower() in [
-                "other",
-                "comments",
-                "other/comments",
-                "other /comments",
-                "other / comments",
-                "other (e.g., models, trace links, diagrams, code comments)/comments",
-            ]:
-                if is_last_answer:
-                    # Just "Other/Comments" without specific text - use "Unknown"
-                    return self.create_new_resource_for_other(
-                        "Unknown", resource_mapping_key
-                    )
-                else:
-                    return "resource should not be created"
-            else:
-                # There's specific text - use it as the resource label
-                return self.create_new_resource_for_other(answer, resource_mapping_key)
+            return None
 
             return None
 
@@ -257,7 +287,13 @@ class TemplateInstanceCreator:
 
                 if resource_response.succeeded:
                     resource_id = resource_response.content["id"]
-                    print(f"  ✅ Created new resource for '{answer}': {resource_id}")
+                    self.run_logger.log(
+                        "resource",
+                        "created",
+                        label=answer,
+                        class_id=class_id,
+                        id=resource_id,
+                    )
                     return resource_id
         except Exception as e:
             print(f"  ⚠️ Could not create new resource for '{answer}': {e}")
@@ -269,6 +305,8 @@ class TemplateInstanceCreator:
     ) -> List[str]:
         """Create literals or map to resources based on the answers"""
         result_ids = []
+        # Do not allow creating new categorical resources when not explicitly mapped
+        allow_unmapped_resource_creation: set[str] = set()
         for answer_obj in answers:
             # answer_obj is dict with keys: label, description
             answer = answer_obj.get("label", "")
@@ -286,20 +324,13 @@ class TemplateInstanceCreator:
             if resource_id:
                 result_ids.append(resource_id)
                 print(f"  ✅ Mapped '{answer}' to resource: {resource_id}")
-                # If we captured an example/description, attach it via description predicate if available
-                if example_desc:
-                    try:
-                        literal_resp = self.orkg.literals.add(label=example_desc)
-                        if literal_resp.succeeded:
-                            # TODO: This doesnt work yet
-                            description_predicate = "description"
-                            self.orkg.statements.add(
-                                subject_id=resource_id,
-                                predicate_id=description_predicate,
-                                object_id=literal_resp.content["id"],
-                            )
-                    except Exception:
-                        pass
+                self.run_logger.log(
+                    "map",
+                    "to_resource",
+                    key=resource_mapping_key,
+                    answer=answer,
+                    object_id=resource_id,
+                )
             else:
                 # Create literal for text-based answers or unmapped answers
                 if resource_mapping_key in [
@@ -324,14 +355,13 @@ class TemplateInstanceCreator:
                     except Exception as e:
                         print(f"  ⚠️ Could not create literal for '{answer}': {e}")
                 else:
-                    # For unmapped categorical answers, create new resource
-                    if resource_mapping_key in self.resource_mappings:
-                        # Create new resource for unmapped answers
-                        new_resource_id = self.create_new_resource_for_other(
-                            answer, resource_mapping_key
-                        )
-                        if new_resource_id:
-                            result_ids.append(new_resource_id)
+                    # Otherwise skip to avoid introducing noise (only reuse predefined resources)
+                    self.run_logger.log(
+                        "unmapped",
+                        "categorical_skipped",
+                        key=resource_mapping_key,
+                        answer=answer,
+                    )
 
         return result_ids
 
@@ -348,6 +378,15 @@ class TemplateInstanceCreator:
         question_mapping = property_info.get("question_mapping")
         resource_mapping_key = property_info.get(
             "resource_mapping_key", property_info.get("label", "")
+        )
+        property_label = property_info.get("label", "")
+        self.run_logger.log(
+            "property",
+            "start",
+            predicate_id=property_info.get("predicate_id", ""),
+            property_label=property_label,
+            key=resource_mapping_key,
+            mapping=str(question_mapping),
         )
 
         # If no explicit mapping, try to find question based on description
@@ -384,6 +423,7 @@ class TemplateInstanceCreator:
             all_answers = self.extract_answer_from_question(question)
 
         if not all_answers:
+            self.run_logger.log("property", "no_answers", property_label=property_label)
             return None
         # Handle comma separation only when explicitly specified
         if property_info.get("comma_separated", True):
@@ -427,6 +467,20 @@ class TemplateInstanceCreator:
             all_answers = expanded_answers
 
         # Create literals or resources
+        try:
+            extracted = [
+                a.get("label", "") if isinstance(a, dict) else str(a)
+                for a in all_answers
+            ]
+            self.run_logger.log(
+                "property",
+                "answers",
+                property_label=property_label,
+                key=resource_mapping_key,
+                answers=extracted,
+            )
+        except Exception:
+            pass
         result_ids = self.create_literal_or_resource(all_answers, resource_mapping_key)
 
         return result_ids  # Return all IDs to handle multiple answers
@@ -440,12 +494,20 @@ class TemplateInstanceCreator:
             subtemplate_id = subtemplate_info.get("subtemplate_id")
             class_id = subtemplate_info.get("class_id")
             label = subtemplate_info.get("label", "Unknown")
-
+            # Run log: subtemplate header and divider
+            self.run_logger.divider(f"SUBTEMPLATE {label}")
+            self.run_logger.log(
+                "subtemplate",
+                "start",
+                label=label,
+                class_id=class_id,
+                subtemplate_id=subtemplate_id,
+            )
+            # Always create a new subtemplate resource (no ORKG search/reuse)
             instance_response = self.orkg.resources.add(
                 label=label,
                 classes=[class_id] if class_id else [],  # Remove paper title prefix
             )
-
             if not instance_response.succeeded:
                 error_msg = (
                     instance_response.content
@@ -455,34 +517,32 @@ class TemplateInstanceCreator:
                 print(
                     f"  ❌ Failed to create subtemplate instance for {label}: {error_msg}"
                 )
-
-                # Classes should already exist in ORKG
-                if "invalid_class" in str(error_msg) and class_id:
-                    print(f"  ℹ️ Class {class_id} should already exist in ORKG")
-                    # Try creating without class specification
-                    retry_response = self.orkg.resources.add(
-                        label=label, classes=[]  # Remove paper title prefix
+                # Try creating without class specification as fallback
+                retry_response = self.orkg.resources.add(label=label, classes=[])
+                if retry_response.succeeded:
+                    instance_id = retry_response.content["id"]
+                    print(
+                        f"  ✅ Created subtemplate instance without class specification: {instance_id}"
                     )
-                    if retry_response.succeeded:
-                        instance_id = retry_response.content["id"]
-                        print(
-                            f"  ✅ Created subtemplate instance without class specification: {instance_id}"
-                        )
-                    else:
-                        print(
-                            f"  ❌ Failed to create subtemplate instance even without class"
-                        )
-                        return None
+                else:
+                    print(
+                        f"  ❌ Failed to create subtemplate instance even without class"
+                    )
+                    return None
             else:
                 instance_id = instance_response.content["id"]
                 print(f"  ✅ Created subtemplate instance: {instance_id}")
 
-            # Note: Subtemplates already exist in ORKG, no need to materialize
-            print(f"    ✅ Using existing subtemplate {subtemplate_id}")
+                # Note: Subtemplates already exist in ORKG, no need to materialize
+                print(f"    ✅ Using existing subtemplate {subtemplate_id}")
 
             # Process subtemplate properties
             subtemplate_properties = subtemplate_info.get("subtemplate_properties", {})
+            # Visual divider before listing properties in console
+            print("    " + "─" * 56)
             for prop_id, prop_info in subtemplate_properties.items():
+                # Run log: light divider for each property block
+                self.run_logger.divider()
                 if isinstance(prop_info, dict):
                     # Handle nested subtemplates
                     if "subtemplate_properties" in prop_info:
@@ -539,6 +599,16 @@ class TemplateInstanceCreator:
                                 )
                             else:
                                 print(f"    ⚠️ No data found - skipping field")
+
+            # Run log: subtemplate end and closing divider
+            self.run_logger.log(
+                "subtemplate",
+                "end",
+                label=label,
+                class_id=class_id,
+                subtemplate_id=subtemplate_id,
+            )
+            self.run_logger.divider()
 
             return instance_id
 
@@ -661,7 +731,10 @@ class TemplateInstanceCreator:
             # Create the main instance with the target class
             instance_response = self.orkg.resources.add(
                 label="NLP4RE ID Card Automated Creation",
-                classes=[self.target_class_id],  # Use the target class directly
+                classes=[
+                    self.target_class_id,
+                    "Contribution",
+                ],  # Use the target class directly
             )
             print(instance_response.content)
 
@@ -677,13 +750,36 @@ class TemplateInstanceCreator:
                 "✅ Instance created with target class - should be linked to template"
             )
 
+            # ANSI colors for console headings
+            ANSI = {
+                "reset": "\033[0m",
+                "bold": "\033[1m",
+                "blue": "\033[34m",
+                "magenta": "\033[35m",
+                "cyan": "\033[36m",
+                "yellow": "\033[33m",
+            }
+
             # Process each predicate in the template
             for predicate_id, predicate_info in self.predicates.items():
-                print(f"\n🔍 Processing: {predicate_info['label']}")
+                # Run log section divider
+                self.run_logger.divider(f"PREDICATE {predicate_id}")
+                self.run_logger.log(
+                    "section",
+                    "predicate",
+                    id=predicate_id,
+                    label=predicate_info["label"],
+                )
+                # Console heading with color
+                print(
+                    f"\n{ANSI['bold']}{ANSI['blue']}🔍 Processing: {predicate_info['label']} ({predicate_id}){ANSI['reset']}"
+                )
 
                 if "subtemplate_properties" in predicate_info:
                     # Handle subtemplate fields
-                    print(f"  📋 Creating subtemplate for {predicate_info['label']}")
+                    print(
+                        f"{ANSI['magenta']}  📋 Creating subtemplate for {predicate_info['label']}{ANSI['reset']}"
+                    )
                     subtemplate_id = self.create_subtemplate_instance_new(
                         predicate_info, json_data, paper_title
                     )
@@ -797,7 +893,8 @@ def main():
     creator = TemplateInstanceCreator()
 
     # Process the JSON file
-    json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example2-Aydemir-etal-RE19.json"
+    json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example1-Yang-etal-2011.json"
+    # json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example2-Aydemir-etal-RE19.json"
 
     instance_id = creator.process_json_file(json_file)
 

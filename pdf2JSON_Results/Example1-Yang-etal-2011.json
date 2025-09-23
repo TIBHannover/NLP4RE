@@ -804,7 +804,7 @@
     {
       "question_text": "IV.8. Please list which domains your data belongs to (e.g., automotive, satellite, entertainment, information systems) [comma separated text]",
       "type": "Text",
-      "answer": "transportation, engineering, communication, and web applications",
+      "answer": "transportation, engineering, communication, web applications",
       "field_name": "IV_8_ Please list which domain_NYlac2L3QVbZmLXoDehjHA"
     },
     {

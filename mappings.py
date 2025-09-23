@@ -390,7 +390,7 @@ predicates_mapping = {
                 "resource_mapping_key": "Dependency",
                 "comma_separated": False,
             },
-            "P181049": {
+            "P181027": {
                 "label": "License type",
                 "cardinality": "one to one",
                 "description": "What license has been used?",
@@ -655,6 +655,7 @@ resource_mappings = {
     },
     "Algorithm used": {
         "Not reported": "R1544560",
+        
     },
     "Running requirements": {
         "Not reported": "R1544524",
