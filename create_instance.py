@@ -624,7 +624,7 @@ class TemplateInstanceCreator:
             # Create statement: paper -> contribution -> template_instance
             # The property ID for "contribution" - you may need to adjust this based on your mappings
             contribution_property_id = (
-                "P181002"  # This should be the correct property ID for "contribution"
+                "P31"  # This should be the correct property ID for "contribution"
             )
 
             statement_response = self.orkg.statements.add(
@@ -660,7 +660,7 @@ class TemplateInstanceCreator:
         try:
             # Create the main instance with the target class
             instance_response = self.orkg.resources.add(
-                label=paper_title,
+                label="NLP4RE ID Card Automated Creation",
                 classes=[self.target_class_id],  # Use the target class directly
             )
             print(instance_response.content)
