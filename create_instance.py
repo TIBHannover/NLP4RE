@@ -14,7 +14,7 @@ import os
 from orkg import ORKG
 from typing import Dict, Any, List, Optional
 from scripts.config import ORKG_HOST, ORKG_USERNAME, ORKG_PASSWORD
-from mappings import (
+from scripts.mappings import (
     predicates_mapping,
     resource_mappings,
     class_mappings,
