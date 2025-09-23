@@ -344,7 +344,6 @@ class TemplateInstanceCreator:
         """Create literals or map to resources based on the answers"""
         result_ids = []
         # Do not allow creating new categorical resources when not explicitly mapped
-        allow_unmapped_resource_creation: set[str] = set()
         for answer_obj in answers:
             # answer_obj is dict with keys: label, description
             answer = answer_obj.get("label", "")
@@ -357,6 +356,12 @@ class TemplateInstanceCreator:
                 answer, resource_mapping_key, is_last_answer, prev_answer
             )
             if resource_id == "resource should not be created":
+                self.run_logger.log(
+                    "unmapped",
+                    "other_value_skipped_resource_should_not_be_created",
+                    key=resource_mapping_key,
+                    answer=answer,
+                )
                 continue
 
             if resource_id:
@@ -401,13 +406,30 @@ class TemplateInstanceCreator:
                     except Exception as e:
                         print(f"  ⚠️ Could not create literal for '{answer}': {e}")
                 else:
-                    # Otherwise skip to avoid introducing noise (only reuse predefined resources)
-                    self.run_logger.log(
-                        "unmapped",
-                        "categorical_skipped",
-                        key=resource_mapping_key,
-                        answer=answer,
+                    # create a new resource for the answer
+                    resource_id = self.create_new_resource_for_other(
+                        answer, resource_mapping_key
                     )
+                    if resource_id:
+                        result_ids.append(resource_id)
+                        print(
+                            f"  ✅ Created new resource for '{answer}': {resource_id}"
+                        )
+                        self.run_logger.log(
+                            "unmapped",
+                            "categorical_created",
+                            key=resource_mapping_key,
+                            answer=answer,
+                            id=resource_id,
+                        )
+                    else:
+                        print(f"  ⚠️ Could not create new resource for '{answer}'")
+                        self.run_logger.log(
+                            "unmapped",
+                            "categorical_skipped",
+                            key=resource_mapping_key,
+                            answer=answer,
+                        )
 
         return result_ids
 
@@ -981,8 +1003,8 @@ def main():
     creator = TemplateInstanceCreator()
 
     # Process the JSON file
-    json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example1-Yang-etal-2011.json"
-    # json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example2-Aydemir-etal-RE19.json"
+    # json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example1-Yang-etal-2011.json"
+    json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example2-Aydemir-etal-RE19.json"
 
     instance_id = creator.process_json_file(json_file)
 

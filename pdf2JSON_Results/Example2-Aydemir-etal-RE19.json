@@ -1790,7 +1790,7 @@
       "question_text": "VI.6. What type of dependencies does the tool have?",
       "type": "CheckBox",
       "selected_answers": [
-        "Open source libraries / software (e.g., python libraries,"
+        "Open source libraries/software (e.g., python libraries,"
       ],
       "all_options": [
         "None",

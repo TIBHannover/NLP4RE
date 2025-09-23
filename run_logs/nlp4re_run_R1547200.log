@@ -1,4 +1,4 @@
-[run] start run_id='9023657a'
+[run] start run_id='a9aea235'
 [connect] ok host='https://orkg.org'
 [json] loaded path='/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example2-Aydemir-etal-RE19.json'
 [sep] ──────────────────────────────────────────────────────────── PREDICATE P181002 ────────────────────────────────────────────────────────────
@@ -6,6 +6,8 @@
 [property] start predicate_id='' property_label='RE task' key='RE task' mapping='I.1'
 [property] answers property_label='RE task' key='RE task' answers=['Requirements Classification']
 [map] to_resource key='RE task' answer='Requirements Classification' object_id='R1544130'
+[property] values_resolved property_label='RE task' key='RE task' result_ids=['R1544130']
+[link] created s='R1547200' p='P181002' o='R1544130'
 [sep] ──────────────────────────────────────────────────────────── PREDICATE P181003 ────────────────────────────────────────────────────────────
 [section] predicate id='P181003' label='NLP task'
 [sep] ──────────────────────────────────────────────────────────── SUBTEMPLATE NLP task ────────────────────────────────────────────────────────────
@@ -13,18 +15,25 @@
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='NLP task type' key='NLP task type' mapping='II.1'
 [property] answers property_label='NLP task type' key='NLP task type' answers=['Classification (choose among classes)']
-[unmapped] categorical_skipped key='NLP task type' answer='Classification (choose among classes)'
+[resource] created label='Classification (choose among classes)' class_id='C121005' id='R1547202'
+[unmapped] categorical_created key='NLP task type' answer='Classification (choose among classes)' id='R1547202'
+[property] values_resolved property_label='NLP task type' key='NLP task type' result_ids=['R1547202']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='NLP task input' key='NLP task input' mapping='III.1'
 [property] answers property_label='NLP task input' key='NLP task input' answers=['Document']
 [map] to_resource key='NLP task input' answer='Document' object_id='R1544153'
+[property] values_resolved property_label='NLP task input' key='NLP task input' result_ids=['R1544153']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='NLP task output type' key='NLP task output type' mapping="['III.2', 'III.4', 'III.6', 'III.8', 'III.9']"
 [property] answers property_label='NLP task output type' key='NLP task output type' answers=['Multi class-Single label (e.g., predicting number']
-[unmapped] categorical_skipped key='NLP task output type' answer='Multi class-Single label (e.g., predicting number'
+[resource] created label='Multi class-Single label (e.g., predicting number' class_id='C121008' id='R1547203'
+[unmapped] categorical_created key='NLP task output type' answer='Multi class-Single label (e.g., predicting number' id='R1547203'
+[property] values_resolved property_label='NLP task output type' key='NLP task output type' result_ids=['R1547203']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='NLP task output classification label' key='NLP task output classification label' mapping='III.3'
 [property] answers property_label='NLP task output classification label' key='NLP task output classification label' answers=['Functional, Quality, OnlyQuality, OnlyFunctional']
+[literal] created key='NLP task output classification label' answer='Functional, Quality, OnlyQuality, OnlyFunctional' id='L3605808'
+[property] values_resolved property_label='NLP task output classification label' key='NLP task output classification label' result_ids=['L3605808']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='NLP task output extracted element' key='NLP task output extracted element' mapping='III.5'
 [property] no_answers property_label='NLP task output extracted element'
@@ -33,6 +42,7 @@
 [property] no_answers property_label='NLP task output translation mapping cardinality'
 [subtemplate] end label='NLP task' class_id='C121004' subtemplate_id='R1544138'
 [sep] ────────────────────────────────────────────────────────────
+[link] created s='R1547200' p='P181003' o='R1547201'
 [sep] ──────────────────────────────────────────────────────────── PREDICATE P181011 ────────────────────────────────────────────────────────────
 [section] predicate id='P181011' label='NLP dataset'
 [sep] ──────────────────────────────────────────────────────────── SUBTEMPLATE NLP dataset ────────────────────────────────────────────────────────────
@@ -51,10 +61,14 @@
 [property] answers property_label='NLP data source type' key='NLP data source type' answers=['Industrial Project, proprietary data', 'Industrial Project, publicly available data', 'Community-based']
 [map] to_resource key='NLP data source type' answer='Industrial Project, proprietary data' object_id='R1544228'
 [map] to_resource key='NLP data source type' answer='Industrial Project, publicly available data' object_id='R1544230'
-[unmapped] categorical_skipped key='NLP data source type' answer='Community-based'
+[resource] created label='Community-based' class_id='C121012' id='R1547206'
+[unmapped] categorical_created key='NLP data source type' answer='Community-based' id='R1547206'
+[property] values_resolved property_label='NLP data source type' key='NLP data source type' result_ids=['R1544228', 'R1544230', 'R1547206']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Number of data sources' key='Number of data sources' mapping='IV.9'
 [property] answers property_label='Number of data sources' key='Number of data sources' answers=['8']
+[literal] created key='Number of data sources' answer='8' id='L3605809'
+[property] values_resolved property_label='Number of data sources' key='Number of data sources' result_ids=['L3605809']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='NLP data source domain' key='NLP data source domain' mapping='IV.8'
 [property] no_answers property_label='NLP data source domain'
@@ -64,8 +78,11 @@
 [property] start predicate_id='' property_label='NLP data abstraction level' key='NLP data abstraction level' mapping='IV.4'
 [property] answers property_label='NLP data abstraction level' key='NLP data abstraction level' answers=['Normative-level', 'Business-level (e.g., "Provide customer with a pleasant', 'System-level (e.g., "When a GSI component constraint']
 [map] to_resource key='NLP data abstraction level' answer='Normative-level' object_id='R1544239'
-[unmapped] categorical_skipped key='NLP data abstraction level' answer='Business-level (e.g., "Provide customer with a pleasant'
-[unmapped] categorical_skipped key='NLP data abstraction level' answer='System-level (e.g., "When a GSI component constraint'
+[resource] created label='Business-level (e.g., "Provide customer with a pleasant' class_id='C121013' id='R1547207'
+[unmapped] categorical_created key='NLP data abstraction level' answer='Business-level (e.g., "Provide customer with a pleasant' id='R1547207'
+[resource] created label='System-level (e.g., "When a GSI component constraint' class_id='C121013' id='R1547208'
+[unmapped] categorical_created key='NLP data abstraction level' answer='System-level (e.g., "When a GSI component constraint' id='R1547208'
+[property] values_resolved property_label='NLP data abstraction level' key='NLP data abstraction level' result_ids=['R1544239', 'R1547207', 'R1547208']
 [sep] ────────────────────────────────────────────────────────────
 [sep] ──────────────────────────────────────────────────────────── SUBTEMPLATE NLP data type ────────────────────────────────────────────────────────────
 [subtemplate] start label='NLP data type' class_id='C121015' subtemplate_id='R1544245'
@@ -73,10 +90,12 @@
 [property] start predicate_id='' property_label='NLP data format' key='NLP data format' mapping='IV.5'
 [property] answers property_label='NLP data format' key='NLP data format' answers=['"Shall" requirements']
 [map] to_resource key='NLP data format' answer='"Shall" requirements' object_id='R1544249'
+[property] values_resolved property_label='NLP data format' key='NLP data format' result_ids=['R1544249']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Rigor of data format' key='Rigor of data format' mapping='IV.6'
 [property] answers property_label='Rigor of data format' key='Rigor of data format' answers=['Unconstrained natural language']
 [map] to_resource key='Rigor of data format' answer='Unconstrained natural language' object_id='R1544258'
+[property] values_resolved property_label='Rigor of data format' key='Rigor of data format' result_ids=['R1544258']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Natural language' key='Natural language' mapping='IV.7'
 [property] no_answers property_label='Natural language'
@@ -89,10 +108,12 @@
 [property] start predicate_id='' property_label='Public availability' key='Public availability' mapping='IV.10'
 [property] answers property_label='Public availability' key='Public availability' answers=['Partially']
 [map] to_resource key='Public availability' answer='Partially' object_id='R1544269'
+[property] values_resolved property_label='Public availability' key='Public availability' result_ids=['R1544269']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='License type' key='License type' mapping='IV.11'
 [property] answers property_label='License type' key='License type' answers=['No license']
 [map] to_resource key='License type' answer='No license' object_id='R1544274'
+[property] values_resolved property_label='License type' key='License type' result_ids=['R1544274']
 [subtemplate] end label='License' class_id='C121018' subtemplate_id='R1544265'
 [sep] ────────────────────────────────────────────────────────────
 [sep] ────────────────────────────────────────────────────────────
@@ -101,8 +122,11 @@
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Location type' key='Location type' mapping='IV.12'
 [property] answers property_label='Location type' key='Location type' answers=['On a private/corporate', 'In a repository (GitHub, GitLab)']
-[unmapped] categorical_skipped key='Location type' answer='On a private/corporate'
-[unmapped] categorical_skipped key='Location type' answer='In a repository (GitHub, GitLab)'
+[resource] created label='On a private/corporate' class_id='C121024' id='R1547212'
+[unmapped] categorical_created key='Location type' answer='On a private/corporate' id='R1547212'
+[resource] created label='In a repository (GitHub, GitLab)' class_id='C121024' id='R1547213'
+[unmapped] categorical_created key='Location type' answer='In a repository (GitHub, GitLab)' id='R1547213'
+[property] values_resolved property_label='Location type' key='Location type' result_ids=['R1547212', 'R1547213']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='URL' key='url' mapping='IV.13'
 [property] no_answers property_label='URL'
@@ -110,6 +134,7 @@
 [sep] ────────────────────────────────────────────────────────────
 [subtemplate] end label='NLP dataset' class_id='C121010' subtemplate_id='R1544216'
 [sep] ────────────────────────────────────────────────────────────
+[link] created s='R1547200' p='P181011' o='R1547204'
 [sep] ──────────────────────────────────────────────────────────── PREDICATE P181031 ────────────────────────────────────────────────────────────
 [section] predicate id='P181031' label='Annotation Process'
 [sep] ──────────────────────────────────────────────────────────── SUBTEMPLATE Annotation Process ────────────────────────────────────────────────────────────
@@ -124,16 +149,19 @@
 [property] start predicate_id='' property_label='Annotator assignment' key='Annotator assignment' mapping='V.2'
 [property] answers property_label='Annotator assignment' key='Annotator assignment' answers=['Multiple annotators per entry']
 [map] to_resource key='Annotator assignment' answer='Multiple annotators per entry' object_id='R1544293'
+[property] values_resolved property_label='Annotator assignment' key='Annotator assignment' result_ids=['R1544293']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Level of application domain experience' key='Level of application domain experience' mapping='V.3'
 [property] answers property_label='Level of application domain experience' key='Level of application domain experience' answers=['None or unknown', 'Informed outsider', 'Domain expert']
 [map] to_resource key='Level of application domain experience' answer='None or unknown' object_id='R1544298'
 [map] to_resource key='Level of application domain experience' answer='Informed outsider' object_id='R1544300'
 [map] to_resource key='Level of application domain experience' answer='Domain expert' object_id='R1544299'
+[property] values_resolved property_label='Level of application domain experience' key='Level of application domain experience' result_ids=['R1544298', 'R1544300', 'R1544299']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Annotator identity' key='Annotator identity' mapping='V.4'
 [property] answers property_label='Annotator identity' key='Annotator identity' answers=['The designers of the technique/tool']
 [map] to_resource key='Annotator identity' answer='The designers of the technique/tool' object_id='R1544302'
+[property] values_resolved property_label='Annotator identity' key='Annotator identity' result_ids=['R1544302']
 [subtemplate] end label='Annotator' class_id='C121026' subtemplate_id='R1544290'
 [sep] ────────────────────────────────────────────────────────────
 [sep] ────────────────────────────────────────────────────────────
@@ -143,22 +171,27 @@
 [property] start predicate_id='' property_label='Scheme establishment' key='Scheme establishement' mapping='V.5'
 [property] answers property_label='Scheme establishment' key='Scheme establishement' answers=['Only via class labels', 'Oral agreement among the taggers', 'Written guidelines with definitions and examples']
 [map] to_resource key='Scheme establishement' answer='Only via class labels' object_id='R1544309'
-[unmapped] categorical_skipped key='Scheme establishement' answer='Oral agreement among the taggers'
+[resource] created label='Oral agreement among the taggers' class_id='C121031' id='R1547217'
+[unmapped] categorical_created key='Scheme establishement' answer='Oral agreement among the taggers' id='R1547217'
 [map] to_resource key='Scheme establishement' answer='Written guidelines with definitions and examples' object_id='R1544310'
+[property] values_resolved property_label='Scheme establishment' key='Scheme establishement' result_ids=['R1544309', 'R1547217', 'R1544310']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Guideline availability' key='Guideline availability' mapping='V.6'
 [property] answers property_label='Guideline availability' key='Guideline availability' answers=['No']
 [map] to_resource key='Guideline availability' answer='No' object_id='R1544314'
+[property] values_resolved property_label='Guideline availability' key='Guideline availability' result_ids=['R1544314']
 [subtemplate] end label='Annotation scheme' class_id='C121030' subtemplate_id='R1544307'
 [sep] ────────────────────────────────────────────────────────────
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Shared material' key='Shared material' mapping='V.7'
 [property] answers property_label='Shared material' key='Shared material' answers=['No']
 [map] to_resource key='Shared material' answer='No' object_id='R1544319'
+[property] values_resolved property_label='Shared material' key='Shared material' result_ids=['R1544319']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Fatigue mitigation technique' key='Fatigue mitigation technique' mapping='V.8'
 [property] answers property_label='Fatigue mitigation technique' key='Fatigue mitigation technique' answers=['No']
 [map] to_resource key='Fatigue mitigation technique' answer='No' object_id='R1544324'
+[property] values_resolved property_label='Fatigue mitigation technique' key='Fatigue mitigation technique' result_ids=['R1544324']
 [sep] ────────────────────────────────────────────────────────────
 [sep] ──────────────────────────────────────────────────────────── SUBTEMPLATE Annotator agreement ────────────────────────────────────────────────────────────
 [subtemplate] start label='Annotator agreement' class_id='C121035' subtemplate_id='R1544326'
@@ -166,12 +199,15 @@
 [property] start predicate_id='' property_label='Intercoder reliability metric' key='Intercoder reliability metric' mapping='V.9'
 [property] answers property_label='Intercoder reliability metric' key='Intercoder reliability metric' answers=["Krippendorf's Alpha"]
 [map] to_resource key='Intercoder reliability metric' answer="Krippendorf's Alpha" object_id='R1544330'
+[property] values_resolved property_label='Intercoder reliability metric' key='Intercoder reliability metric' result_ids=['R1544330']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Conflict resolution' key='Conflict resolution' mapping='V.10'
 [property] answers property_label='Conflict resolution' key='Conflict resolution' answers=['Majority voting', 'Discussion among taggers', 'Resolution by authors']
 [map] to_resource key='Conflict resolution' answer='Majority voting' object_id='R1544336'
-[unmapped] categorical_skipped key='Conflict resolution' answer='Discussion among taggers'
+[resource] created label='Discussion among taggers' class_id='C121037' id='R1547219'
+[unmapped] categorical_created key='Conflict resolution' answer='Discussion among taggers' id='R1547219'
 [map] to_resource key='Conflict resolution' answer='Resolution by authors' object_id='R1544334'
+[property] values_resolved property_label='Conflict resolution' key='Conflict resolution' result_ids=['R1544336', 'R1547219', 'R1544334']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Measured agreement' key='Measured agreement' mapping='V.11'
 [property] no_answers property_label='Measured agreement'
@@ -179,6 +215,7 @@
 [sep] ────────────────────────────────────────────────────────────
 [subtemplate] end label='Annotation Process' class_id='C121025' subtemplate_id='R1544287'
 [sep] ────────────────────────────────────────────────────────────
+[link] created s='R1547200' p='P181031' o='R1547214'
 [sep] ──────────────────────────────────────────────────────────── PREDICATE P181046 ────────────────────────────────────────────────────────────
 [section] predicate id='P181046' label='Implemented approach'
 [sep] ──────────────────────────────────────────────────────────── SUBTEMPLATE Implemented approach ────────────────────────────────────────────────────────────
@@ -186,9 +223,14 @@
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Approach type' key='Approach type' mapping='VI.1'
 [property] answers property_label='Approach type' key='Approach type' answers=['Other/Comments', 'N/A', 'Interpretable ML']
-[unmapped] categorical_skipped key='Approach type' answer='Other/Comments'
-[unmapped] categorical_skipped key='Approach type' answer='N/A'
-[unmapped] categorical_skipped key='Approach type' answer='Interpretable ML'
+[unmapped] other_value_skipped key='Approach type' answer='Other/Comments'
+[unmapped] other_value_skipped_resource_should_not_be_created key='Approach type' answer='Other/Comments'
+[unmapped] other_context_skipped key='Approach type' answer='N/A'
+[resource] created label='N/A' class_id='C121039' id='R1547221'
+[map] to_resource key='Approach type' answer='N/A' object_id='R1547221'
+[resource] created label='Interpretable ML' class_id='C121039' id='R1547222'
+[unmapped] categorical_created key='Approach type' answer='Interpretable ML' id='R1547222'
+[property] values_resolved property_label='Approach type' key='Approach type' result_ids=['R1547221', 'R1547222']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Algorithm used' key='Algorithm used' mapping='VI.2'
 [property] no_answers property_label='Algorithm used'
@@ -196,18 +238,23 @@
 [property] start predicate_id='' property_label='Running requirements' key='Running requirements' mapping='VI.4'
 [property] answers property_label='Running requirements' key='Running requirements' answers=['No installation is needed']
 [map] to_resource key='Running requirements' answer='No installation is needed' object_id='R1544379'
+[property] values_resolved property_label='Running requirements' key='Running requirements' result_ids=['R1544379']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Documentation' key='Documentation' mapping='VI.5'
 [property] answers property_label='Documentation' key='Documentation' answers=['An academic paper']
 [map] to_resource key='Documentation' answer='An academic paper' object_id='R1544386'
+[property] values_resolved property_label='Documentation' key='Documentation' result_ids=['R1544386']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Dependency' key='Dependency' mapping='VI.6'
 [property] answers property_label='Dependency' key='Dependency' answers=['Open source libraries / software (e.g., python libraries']
-[unmapped] categorical_skipped key='Dependency' answer='Open source libraries / software (e.g., python libraries'
+[resource] created label='Open source libraries / software (e.g., python libraries' class_id='C121043' id='R1547223'
+[unmapped] categorical_created key='Dependency' answer='Open source libraries / software (e.g., python libraries' id='R1547223'
+[property] values_resolved property_label='Dependency' key='Dependency' result_ids=['R1547223']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='License type' key='license type' mapping='VI.8'
 [property] answers property_label='License type' key='license type' answers=['No license']
 [unmapped] categorical_skipped key='license type' answer='No license'
+[property] skipped property_label='License type' key='license type'
 [sep] ────────────────────────────────────────────────────────────
 [sep] ──────────────────────────────────────────────────────────── SUBTEMPLATE Release ────────────────────────────────────────────────────────────
 [subtemplate] start label='Release' class_id='C121044' subtemplate_id='R1544401'
@@ -215,10 +262,13 @@
 [property] start predicate_id='' property_label='Release format' key='Release format' mapping='VI.3'
 [property] answers property_label='Release format' key='Release format' answers=['Executable notebook']
 [map] to_resource key='Release format' answer='Executable notebook' object_id='R1544407'
+[property] values_resolved property_label='Release format' key='Release format' result_ids=['R1544407']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Location type' key='Location type' mapping='VI.7'
 [property] answers property_label='Location type' key='Location type' answers=['On a private/corporate']
-[unmapped] categorical_skipped key='Location type' answer='On a private/corporate'
+[resource] created label='On a private/corporate' class_id='C121024' id='R1547225'
+[unmapped] categorical_created key='Location type' answer='On a private/corporate' id='R1547225'
+[property] values_resolved property_label='Location type' key='Location type' result_ids=['R1547225']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='URL' key='url' mapping='VI.9'
 [property] no_answers property_label='URL'
@@ -226,6 +276,7 @@
 [sep] ────────────────────────────────────────────────────────────
 [subtemplate] end label='Implemented approach' class_id='C121038' subtemplate_id='R1544363'
 [sep] ────────────────────────────────────────────────────────────
+[link] created s='R1547200' p='P181046' o='R1547220'
 [sep] ──────────────────────────────────────────────────────────── PREDICATE HAS_EVALUATION ────────────────────────────────────────────────────────────
 [section] predicate id='HAS_EVALUATION' label='Evaluation'
 [sep] ──────────────────────────────────────────────────────────── SUBTEMPLATE Evaluation ────────────────────────────────────────────────────────────
@@ -236,12 +287,14 @@
 [map] to_resource key='Evaluation metric' answer='Precision/Recall' object_id='R1544436'
 [map] to_resource key='Evaluation metric' answer='F-Score' object_id='R1544442'
 [map] to_resource key='Evaluation metric' answer='AUC' object_id='R1544438'
+[property] values_resolved property_label='Evaluation metric' key='Evaluation metric' result_ids=['R1544436', 'R1544442', 'R1544438']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Validation procedure' key='Validation procedure' mapping='VII.2'
 [property] answers property_label='Validation procedure' key='Validation procedure' answers=['Train-test split', 'Cross-validation', 'Cross-project validation']
 [map] to_resource key='Validation procedure' answer='Train-test split' object_id='R1544445'
 [map] to_resource key='Validation procedure' answer='Cross-validation' object_id='R1544448'
 [map] to_resource key='Validation procedure' answer='Cross-project validation' object_id='R1544447'
+[property] values_resolved property_label='Validation procedure' key='Validation procedure' result_ids=['R1544445', 'R1544448', 'R1544447']
 [sep] ────────────────────────────────────────────────────────────
 [sep] ──────────────────────────────────────────────────────────── SUBTEMPLATE Baseline comparison ────────────────────────────────────────────────────────────
 [subtemplate] start label='Baseline comparison' class_id='C121050' subtemplate_id='R1544450'
@@ -249,7 +302,9 @@
 [property] start predicate_id='' property_label='Baseline comparison type' key='Baseline comparsion type' mapping='VII.3'
 [property] answers property_label='Baseline comparison type' key='Baseline comparsion type' answers=['Reconstructed tool from other research', 'Automated, but self-defined (e.g., using ML algorithm']
 [map] to_resource key='Baseline comparsion type' answer='Reconstructed tool from other research' object_id='R1544456'
-[unmapped] categorical_skipped key='Baseline comparsion type' answer='Automated, but self-defined (e.g., using ML algorithm'
+[resource] created label='Automated, but self-defined (e.g., using ML algorithm' class_id='C121051' id='R1547228'
+[unmapped] categorical_created key='Baseline comparsion type' answer='Automated, but self-defined (e.g., using ML algorithm' id='R1547228'
+[property] values_resolved property_label='Baseline comparison type' key='Baseline comparsion type' result_ids=['R1544456', 'R1547228']
 [sep] ────────────────────────────────────────────────────────────
 [property] start predicate_id='' property_label='Baseline comparison details' key='Baseline comparison details' mapping='VII.4'
 [property] no_answers property_label='Baseline comparison details'
@@ -257,3 +312,4 @@
 [sep] ────────────────────────────────────────────────────────────
 [subtemplate] end label='Evaluation' class_id='C121047' subtemplate_id='R1544421'
 [sep] ────────────────────────────────────────────────────────────
+[link] created s='R1547200' p='HAS_EVALUATION' o='R1547226'

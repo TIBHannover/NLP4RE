@@ -1985,7 +1985,7 @@
       "question_text": "VII.3. What baseline do you compare against?",
       "type": "CheckBox",
       "selected_answers": [
-        "Theoretical / conceptual (e.g., majority class)"
+        "Theoretical/conceptual (e.g., majority class)"
       ],
       "all_options": [
         "Existing tool or algorithm (e.g., from another paper",
