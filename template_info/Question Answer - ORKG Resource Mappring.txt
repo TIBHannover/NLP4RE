@@ -1,4 +1,5 @@
 RE task -> Question I.1
+	R1547296	Not reported
 	R1544135    Requirements retrieval
 	R1544133    Requirements tracing
 	R1544136    Information extraction from legal documents
@@ -12,9 +13,10 @@ RE task -> Question I.1
 
 	Other/Comments is always turned into a new resource as instance of the class C121003.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 NLP task type -> Question II.1
+	R1547297	Not reported
 	R1544150	Information extraction
 	R1544149	Information retrieval
 	R1544148	Classification
@@ -22,9 +24,10 @@ NLP task type -> Question II.1
 
 	Other/Comments is always turned into a new resource as instance of the class C121005.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 	
 NLP task input -> Question III.1
+	R1547298	Not reported
 	R1544156	Words
 	R1544155	Structured/tabular text
 	R1544154	Phrases
@@ -34,9 +37,10 @@ NLP task input -> Question III.1
 
 	Other/Comments is always turned into a new resource as instance of the class C121006.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 	
 NLP task output type -> Question III.2, III.4, III.6, III.8, III.9
+	R1547299	Not reported
 	R1544175	Text
 	R1544174	Binary-multi label
 	R1544171	Multi class-single label
@@ -54,7 +58,7 @@ NLP task output type -> Question III.2, III.4, III.6, III.8, III.9
 
 	All Other/Comments fromm all question are always turned into new resources as instances of the class C121008.
 
-	If for all questions no value is provided, the no value for is turned into the resource "Not reported", which must be created if not existing.
+	If for all questions no value is provided, the no value for is turned into the resource "Not reported".
 
 NLP task output classification label -> Question III.3
 	Value from the text field is turn into a textual literal.
@@ -67,7 +71,7 @@ NLP task output extracted element -> Question III.5
 	No value provided is turned into the textual literal "Not reported".
 	
 NLP task output translation mapping cardinality -> Question III.7
-	R1544465	No reported
+	R1544465	Not reported
 	R1544187	Many to Many
 	R1544186	Many to 1
 	R1544185	1 to many
@@ -75,7 +79,7 @@ NLP task output translation mapping cardinality -> Question III.7
 	
 	Other/Comments is always turned into a new resource as instance of the class C121009.
 
-	No value proivded is turned into the resource "Not reported", which already exists.
+	No value proivded is turned into the resource "Not reported".
 	
 NLP data item -> Question IV.1
 	Value from the text field is turn into a textual literal.
@@ -88,6 +92,7 @@ NLP data prodcution time -> Question IV.2
 	No value provided is turned into the textual literal "Not reported".
 
 NLP data source type -> Question IV.3
+	R1547302	Not reported
 	R1544232	Textbook examples or cases
 	R1544231	Student projects
 	R1544230	Industrial project, publicly available data
@@ -99,7 +104,7 @@ NLP data source type -> Question IV.3
 
 	Other/Comments is always turned into a new resource as instance of the class C121012.
 	
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 	
 Number of data sources -> Question IV.9
 	Value from the text field is turn into an integer literal.
@@ -111,9 +116,10 @@ NLP data source domain -> Question IV.8
 
 	Comma-separated list (or single value) must be turned into new resources as instance of the class C121053.
 	
-	No value provided is turned into the resource "Not reported", which already exists.
+	No value provided is turned into the resource "Not reported".
 
 NLP data abstraction level -> Question IV.4
+	R1547303	Not reported
 	R1544243	Module-level
 	R1544242	Code-level
 	R1544241	System-level
@@ -123,9 +129,10 @@ NLP data abstraction level -> Question IV.4
 
 	Other/Comments is always turned into a new resource as instance of the class C121013.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 NLP data format -> Question IV.5
+	R1547304	Not reported
 	R1544255	Legal text
 	R1544254	Messages in user forums
 	R1544256	Social media posts
@@ -139,9 +146,10 @@ NLP data format -> Question IV.5
 	
 	Other/Comments is always turned into a new resource as instance of the class C121016.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 Rigor of data format -> Question IV.6
+	R1547305	Not reported
 	R1544261	Semantically-augmented natural language
 	R1544260	Restricted grammar based controlled natural language
 	R1544259	Template-based controlled natural language
@@ -149,7 +157,7 @@ Rigor of data format -> Question IV.6
 
 	Other/Comments is always turned into a new resource as instance of the class C121017.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 	
 Natural language -> Question IV.7
 	Value from the text field is turn into a textual literal.
@@ -157,6 +165,7 @@ Natural language -> Question IV.7
 	No value provided is turned into the textual literal "Not reported".
 	
 Public availability -> Question IV.10
+	R1547306	Not reported
 	R1544270	Upon Request
 	R1544269	Partially
 	R1544268	No
@@ -164,7 +173,7 @@ Public availability -> Question IV.10
 
 	Other/Comments is always turned into a new resource as instance of the class C121019.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 License type -> Question IV.11
 	R1544495	Not reported
@@ -176,7 +185,7 @@ License type -> Question IV.11
 
 	Other/Comments is always turned into a new resource as instance of the class C121020.
 
-	No value provided is turned into the resource "Not reported", which already exists.
+	No value provided is turned into the resource "Not reported".
 
 Location type -> Question IV.12
 	R1544497	Not reported
@@ -186,7 +195,7 @@ Location type -> Question IV.12
 
 	Other/Comments is always turned into a new resource as instance of the class C121024.
 
-	No value provided is turned into the resource "Not reported", which already exists.
+	No value provided is turned into the resource "Not reported".
 
 url -> Question IV.13
 	Value from the text field is turn into an URI literal.
@@ -199,6 +208,7 @@ Number of annotators -> Question V.1
 	No value provided leads to an empty property as we lack any option to enter.
 
 Annotator assignment -> Question V.2
+	R1547307	Not reported
 	R1544296	One annotator per entry (quality control, possibly on a sample)
 	R1544295	One annotator per entry (no quality control)
 	R1544294	Partly multiple annotators per entry, partly one annotator per entry
@@ -206,35 +216,38 @@ Annotator assignment -> Question V.2
 
 	Other/Comments is always turned into a new resource as instance of the class C121027.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 Level of application domain experience -> Question V.3
+	R1547308	Not reported
 	R1544298	None or unknown
 	R1544299	Domain expert
 	R1544300	Informed outsider
 	
 	Other/Comments is always turned into a new resource as instance of the class C121028.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 Annotator identity -> Question V.4
+	R1547309	Not reported
 	R1544302	The designers of the technique/tool
 	R1544304	People who have direct contact with the designers
 	R1544303	Independent annotators
 	
 	Other/Comments is always turned into a new resource as instance of the class C121029.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 Scheme establishement -> Question V.5
+	R1547310	Not reported
 	R1544312	Written guidelines with label definitions
-	R1544311	Oral agreement among the annotators
+	R1544311	Oral agreement among the taggers
 	R1544309	Only via class labels
 	R1544310	Written guidelines with definitions and examples
 
 	Other/Comments is always turned into a new resource as instance of the class C121031.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 Guideline availability -> Question V.6
 	R1544508	Not reported
@@ -245,24 +258,26 @@ Guideline availability -> Question V.6
 
 	Other/Comments is always turned into a new resource as instance of the class C121032.
 
-	No value provided is turned into the resource "Not reported", which already exists.
+	No value provided is turned into the resource "Not reported".
 
 Shared material -> Question V.7
+	R1547311	Not reported
 	R1544321	Entire document
 	R1544320	Surrounding context
 	R1544319	No
 
 	Other/Comments is always turned into a new resource as instance of the class C121033.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 	
 Fatigue mitigation technique -> Question V.8
+	R1547312	Not reported
 	R1544324	No
 	R1544323	Yes
 
 	Other/Comments is always turned into a new resource as instance of the class C121034.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 Intercoder reliability metric -> Question V.9
 	R1544513	Not reported
@@ -272,9 +287,10 @@ Intercoder reliability metric -> Question V.9
 
 	Other/Comments is always turned into a new resource as instance of the class C121036.
 
-	No value provided is turned into the resource "Not reported", which already exists.
+	No value provided is turned into the resource "Not reported".
 
 Conflict resolution -> Question V.10
+	R1547313	Not reported
 	R1544338	Disagreements were disregarded
 	R1544335	Not resolved
 	R1544336	Majority voting
@@ -284,7 +300,7 @@ Conflict resolution -> Question V.10
 
 	Other/Comments is always turned into a new resource as instance of the class C121037.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 Measured agreement -> Question V.11
 	Value from the text field is turn into a textual literal.
@@ -292,6 +308,7 @@ Measured agreement -> Question V.11
 	No value provided is turned into the textual literal "Not reported".
 	
 Approach type -> Question VI.1
+	R1547314	Not reported
 	R1544369	Unsupervised DL
 	R1544368	Supervised ML
 	R1544366	Rule-based
@@ -300,14 +317,14 @@ Approach type -> Question VI.1
 
 	Other/Comments is always turned into a new resource as instance of the class C121039.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 Algorithm used -> Question VI.2
 	R1544560 Not reported
 	
 	Comma-separated list (or single value) must be turned into new resources as instance of the class C121040.
 	
-	No value provided is turned into the resource "Not reported", which already exists.
+	No value provided is turned into the resource "Not reported".
 
 Running requirements -> Question VI.4
 	R1544524	Not reported
@@ -319,7 +336,7 @@ Running requirements -> Question VI.4
 
 	Other/Comments is always turned into a new resource as instance of the class C121041.
 
-	No value provided is turned into the resource "Not reported", which already exists.
+	No value provided is turned into the resource "Not reported".
 
 Documentation -> Question VI.5
 	R1544527	Not reported
@@ -333,7 +350,7 @@ Documentation -> Question VI.5
 
 	Other/Comments is always turned into a new resource as instance of the class C121042.
 
-	No value provided is turned into the resource "Not reported", which already exists.
+	No value provided is turned into the resource "Not reported".
 
 Dependency -> Question VI.6
 	R1544528	Not reported
@@ -346,7 +363,7 @@ Dependency -> Question VI.6
 
 	Other/Comments is always turned into a new resource as instance of the class C121043.
 
-	No value provided is turned into the resource "Not reported", which already exists.
+	No value provided is turned into the resource "Not reported".
 
 license type -> Question VI.8
 	R1544495	Not reported
@@ -358,9 +375,10 @@ license type -> Question VI.8
 
 	Other/Comments is always turned into a new resource as instance of the class C121020.
 
-	No value provided is turned into the resource "Not reported", which already exists.
+	No value provided is turned into the resource "Not reported".
 
 Release format -> Question VI.3
+	R1547315	Not reported
 	R1544411	Library/API
 	R1544409	Pre-trained model
 	R1544410	Source code
@@ -371,7 +389,7 @@ Release format -> Question VI.3
 
 	Other/Comments is always turned into a new resource as instance of the class C121046.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 Location type -> Question VI.7
 	R1544530	Not reported
@@ -381,7 +399,7 @@ Location type -> Question VI.7
 
 	Other/Comments is always turned into a new resource as instance of the class C121023.
 
-	No value provided is turned into the resource "Not reported", which already exists.
+	No value provided is turned into the resource "Not reported".
 
 url -> Question VI.9
 	Value from the text field is turn into an URI literal.
@@ -389,6 +407,7 @@ url -> Question VI.9
 	No value provided leads to an empty property as we lack any option to enter.
 
 Evaluation metric -> Question VII.1
+	R1547316	Not reported
 	R1544443	MAP
 	R1544442	F-Score
 	R1544441	NIST-METEOR-ROUGE - BLEU
@@ -400,9 +419,10 @@ Evaluation metric -> Question VII.1
 
 	Other/Comments is always turned into a new resource as instance of the class C121048.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 Validation procedure -> Question VII.2
+	R1547317	Not reported
 	R1544447	Cross-project validation
 	R1544448	Cross-validation
 	R1544445	Train-test split
@@ -410,9 +430,10 @@ Validation procedure -> Question VII.2
 	
 	Other/Comments is always turned into a new resource as instance of the class C121049.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 Baseline comparsion type -> Question VII.3
+	R1547318	Not reported
 	R1544457	Theoretical/conceptual
 	R1544454	None
 	R1544455	Existing tool or algorithm
@@ -422,7 +443,7 @@ Baseline comparsion type -> Question VII.3
 
 	Other/Comments is always turned into a new resource as instance of the class C121051.
 
-	No value provided is turned into the resource "Not reported", which must be created if not existing.
+	No value provided is turned into the resource "Not reported".
 
 Baseline comparison details -> Question VII.4
 	Value from the text field is turn into a textual literal.

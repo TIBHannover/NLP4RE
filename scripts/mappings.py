@@ -725,7 +725,7 @@ resource_mappings = {
         "Entire dataset": "R1544446",
     },
     "Baseline comparsion type": {
-        "Theoretical/conceptual": "R1544457",
+        "Theoretical / conceptual": "R1544457",
         "None": "R1544454",
         "Existing tool or algorithm": "R1544455",
         "Reconstructed tool from other research": "R1544456",

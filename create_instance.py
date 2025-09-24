@@ -212,9 +212,10 @@ class TemplateInstanceCreator:
         # Remove everything after we see (e.g.... not even care about the closing bracket only "(", "e", ".", "g"
         # Example: "Open source libraries/software (e.g., python libraries, ..." => "Open source libraries/software"
         cleaned = re.sub(r"\(e\.g\.,.*", "", text, flags=re.IGNORECASE).strip()
+        cleaned = re.sub(r"\(i\.g\.,.*", "", text, flags=re.IGNORECASE).strip()
 
-        # delete the space between "ex1 / ex2" => "ex1/ex2"
-        cleaned = re.sub(r"\s*/\s*", "/", cleaned)
+        # # delete the space between "ex1 / ex2" => "ex1/ex2"
+        # cleaned = re.sub(r"\s*/\s*", "/", cleaned)
 
         # Also remove stray multiple spaces and trailing commas
         cleaned = re.sub(r"\s+", " ", cleaned).strip().strip(",")
@@ -268,6 +269,7 @@ class TemplateInstanceCreator:
             "other /comments",
             "other / comments",
             "other (e.g., models, trace links, diagrams, code comments)/comments",
+            "Other artefacts (e.g., slides)/Comments"
         ]:
             # Skip creating resources for contextual 'Other/Comments'
             try:
@@ -1093,11 +1095,9 @@ def main():
     """Main function"""
     creator = TemplateInstanceCreator()
 
-    # Process the JSON file
-    # json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example1-Yang-etal-2011.json"
-    json_file = "/Users/amirrezaalasti/Desktop/TIB/nlp4re/pdf2JSON_Results/Example2-Aydemir-etal-RE19.json"
+    input_json_file = input("Please enter the path to the JSON file: ")
 
-    instance_id = creator.process_json_file(json_file)
+    instance_id = creator.process_json_file(input_json_file)
 
     if instance_id:
         print(f"\n🎉 SUCCESS! Instance ID: {instance_id}")
