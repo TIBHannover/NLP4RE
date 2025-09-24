@@ -110,7 +110,7 @@ class PDFFormExtractor:
             text_input_value = None
             for field in fields:
                 if field["type"] == "Text":
-                    if field["label"] == "N/A":
+                    if field["label"] is None:
                         if not field["value"]:
                             continue
                         text_input_value = field["value"]
@@ -236,7 +236,7 @@ class PDFFormExtractor:
             "type": widget.field_type_string,
             "value": widget.field_value,
             # "rect": [round(c, 2) for c in widget_rect],
-            "label": "N/A",  # Default label
+            "label": None,  # Default label
         }
         # Capture the form-defined field label if available (often holds the question text)
         try:
@@ -267,7 +267,7 @@ class PDFFormExtractor:
             words: A list of words on the page from page.get_text("words").
 
         Returns:
-            The found text label as a string, or "N/A" if no label is found.
+            The found text label as a string, or None if no label is found.
         """
         # Define tolerances for alignment and proximity
         VERTICAL_TOLERANCE = 3  # pixels for vertical alignment
@@ -293,7 +293,7 @@ class PDFFormExtractor:
                 candidate_words.append((x0, word_text))
 
         if not candidate_words:
-            return "N/A"
+            return None
 
         # Sort by horizontal position
         candidate_words.sort(key=lambda x: x[0])

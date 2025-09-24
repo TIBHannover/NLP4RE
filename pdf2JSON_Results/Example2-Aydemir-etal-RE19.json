@@ -3,7 +3,7 @@
   "total_questions": 68,
   "extraction_summary": {
     "total_fields_found": 307,
-    "questions_with_selections": 44
+    "questions_with_selections": 34
   },
   "questions": [
     {
@@ -118,8 +118,7 @@
         "Translation (models, tests, etc.)",
         "Information Extraction (glossary, terms)",
         "Information Retrieval (search / rank)",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -151,15 +150,9 @@
           "field_name": "II_1_ What types of NLP task i_4_YCF4GnUS1J4kE1jmO8w5Yw",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "II_1_ What types of NLP task i_edit;_YCF4GnUS1J4kE1jmO8w5Yw",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 6
+      "total_options": 5
     },
     {
       "question_text": "III.1. What is the input of your NLP task?",
@@ -174,8 +167,7 @@
         "Phrases",
         "Words",
         "Structured/tabular",
-        "Other (e.g., models, trace links, diagrams, code comments)/Comments",
-        "N/A"
+        "Other (e.g., models, trace links, diagrams, code comments)/Comments"
       ],
       "options_details": [
         {
@@ -219,15 +211,9 @@
           "field_name": "III_1_ What is the input of yo_6_m6SmbbtoOqfdxQ3MQ8LspQ",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "III_1_ What is the input of yo_edit;_m6SmbbtoOqfdxQ3MQ8LspQ",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 8
+      "total_options": 7
     },
     {
       "question_text": "III.2. What type of classification is the study about?",
@@ -240,8 +226,7 @@
         "Binary-Multi label (e.g., functional vs non-functional)",
         "Multi class-Single label (e.g., predicting number",
         "Multi class- Multi label (e.g., type of quality in non-functional",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -273,15 +258,9 @@
           "field_name": "III_2_ What type of classifica_4_iVw4yoypoH7TeDHZUsNPCg",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "III_2_ What type of classifica_edit;_iVw4yoypoH7TeDHZUsNPCg",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 6
+      "total_options": 5
     },
     {
       "question_text": "III.3. What are the labels that can be assigned?  Please provide the labels, or point to the specific part of the original paper where the labels are specified",
@@ -299,8 +278,7 @@
         "Sentences",
         "Phrases",
         "Words",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -326,15 +304,9 @@
           "field_name": "III_4_ What is the level of gr_3_6pUZVhD8N92K7zN6nbLLhQ",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "III_4_ What is the level of gr_edit;_6pUZVhD8N92K7zN6nbLLhQ",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 5
+      "total_options": 4
     },
     {
       "question_text": "III.5. What is the type of the extracted elements?",
@@ -354,8 +326,7 @@
         "Graphical diagram (e.g., generate UML diagram",
         "Executable model (e.g., from requirements to Simulink",
         "Test Cases",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -393,15 +364,9 @@
           "field_name": "III_6_ What is the type of out_5_WlmEOgrpw-LgKHUmmwIp*g",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "III_6_ What is the type of out_edit;_WlmEOgrpw-LgKHUmmwIp*g",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 7
+      "total_options": 6
     },
     {
       "question_text": "III.7. What is the translation mapping cardinality between initial input and final output?",
@@ -414,8 +379,7 @@
         "1 to many (e.g., 1 use case description to 3 diagrams)",
         "Many to 1 (e.g., many requirements translated into",
         "Many to many (e.g., from many use case descriptions",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -447,15 +411,9 @@
           "field_name": "III_7_ What is the translation_4_CmhWXKHPJ5dTDFOLvQNoKw",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "III_7_ What is the translation_edit;_CmhWXKHPJ5dTDFOLvQNoKw",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 6
+      "total_options": 5
     },
     {
       "question_text": "III.8. What are the types of elements retrieved with the query?",
@@ -470,8 +428,7 @@
         "Phrases",
         "Words",
         "Structured/tabular",
-        "Other (e.g., models, trace links, diagrams, code comments)/Comments",
-        "N/A"
+        "Other (e.g., models, trace links, diagrams, code comments)/Comments"
       ],
       "options_details": [
         {
@@ -515,15 +472,9 @@
           "field_name": "III_8_ What are the types of e_6_NqzSoz8ZU9jlan47aFjctw",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "III_8_ What are the types of e_edit;_NqzSoz8ZU9jlan47aFjctw",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 8
+      "total_options": 7
     },
     {
       "question_text": "III.9. What is the type of output?",
@@ -560,8 +511,7 @@
         "Toy Requirements (e.g., used for courses, developed",
         "Legal/regulatory",
         "User generated content (e.g., app stores, user forums,",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -617,15 +567,9 @@
           "field_name": "IV_3_ What is the source of th_8_NE019aUyUl6-PJ8ABBC84w",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "IV_3_ What is the source of th_edit;_NE019aUyUl6-PJ8ABBC84w",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 10
+      "total_options": 9
     },
     {
       "question_text": "IV.4. What is the level of abstraction of the data (not limited to requirements)?",
@@ -642,8 +586,7 @@
         "System-level (e.g., \"When a GSI component constraint",
         "Module-level (e.g., module design description, sub-system",
         "Code-level (e.g., code or comments)",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -687,15 +630,9 @@
           "field_name": "IV_4_ What is the level of abs_6_9Rgge2tYJc7IIZ0pqo77jg",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "IV_4_ What is the level of abs_edit;_9Rgge2tYJc7IIZ0pqo77jg",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 8
+      "total_options": 7
     },
     {
       "question_text": "IV.5. What is the format of the data?  Please consider all the data that are used in the paper",
@@ -714,8 +651,7 @@
         "Graphical Diagrams",
         "Scenarios (other than use cases)",
         "Legal text",
-        "Other artefacts (e.g., slides)/Comments",
-        "N/A"
+        "Other artefacts (e.g., slides)/Comments"
       ],
       "options_details": [
         {
@@ -783,15 +719,9 @@
           "field_name": "IV_5_ What is the format of th_10_wESQvi2*4VcpWC86JA6BXg",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "IV_5_ What is the format of th_edit;_wESQvi2*4VcpWC86JA6BXg",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 12
+      "total_options": 11
     },
     {
       "question_text": "IV.6. How rigorous is the format of the data?",
@@ -804,8 +734,7 @@
         "Template-based",
         "Restricted grammar based controlled natural",
         "Semantically-augmented",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -837,15 +766,9 @@
           "field_name": "IV_6_ How rigorous is the form_4_0jYzl49zZ8gdxRMFQw7B4g",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "IV_6_ How rigorous is the form_edit;_0jYzl49zZ8gdxRMFQw7B4g",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 6
+      "total_options": 5
     },
     {
       "question_text": "IV.7. What is the natural language of the data (if applicable) ?",
@@ -989,8 +912,7 @@
         "On a private/corporate",
         "In a repository (GitHub, GitLab)",
         "In a persistent platform with DOI",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -1016,15 +938,9 @@
           "field_name": "IV_12_ Where is the dataset st_3_HOCnlmYxVimtfMjDF-2WkA",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "IV_12_ Where is the dataset st_edit;_HOCnlmYxVimtfMjDF-2WkA",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 5
+      "total_options": 4
     },
     {
       "question_text": "IV.13. Provide a URL to the dataset, if available, or to the original paper that proposed the dataset.",
@@ -1049,8 +965,7 @@
         "One annotator per entry (no quality control)",
         "One annotator per entry (quality control, possibly",
         "Partly multiple annotators per entry, partly one",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -1082,15 +997,9 @@
           "field_name": "V_2_ How are the entries annot_4_A6O1PBPu--9nfqOu5q4LZA",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "V_2_ How are the entries annot_edit;_A6O1PBPu--9nfqOu5q4LZA",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 6
+      "total_options": 5
     },
     {
       "question_text": "V.3. What is the average level of application domain experience of the annotators?",
@@ -1104,8 +1013,7 @@
         "None or unknown",
         "Informed outsider",
         "Domain expert",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -1131,15 +1039,9 @@
           "field_name": "V_3_ What is the average level_3_5hnGHOxlv3txSGx7*KTOgA",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "V_3_ What is the average level_edit;_5hnGHOxlv3txSGx7*KTOgA",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 5
+      "total_options": 4
     },
     {
       "question_text": "V.4. Who are the annotators?",
@@ -1151,8 +1053,7 @@
         "The designers of the technique/tool",
         "People who have direct contact with the designers",
         "Independent annotators (e.g., crowd workers, pre-annotated",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -1178,15 +1079,9 @@
           "field_name": "V_4_ Who are the annotators?_3_xinyiLuyUF-dWuxR07MuxA",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "V_4_ Who are the annotators?_edit;_xinyiLuyUF-dWuxR07MuxA",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 5
+      "total_options": 4
     },
     {
       "question_text": "V.5. How was the annotation scheme established among the annotators?",
@@ -1255,8 +1150,7 @@
         "No, but are made available upon request",
         "Yes, via a non-persistent URL",
         "Yes, via a persistent URL",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -1288,15 +1182,9 @@
           "field_name": "V_6_ Did you make the written _4_L4ChScc51n61wg7fDIpTUg",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "V_6_ Did you make the written _edit;_L4ChScc51n61wg7fDIpTUg",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 6
+      "total_options": 5
     },
     {
       "question_text": "V.7. Did you share other information that could support the annotators other than the elements to annotate?",
@@ -1308,8 +1196,7 @@
         "No",
         "Surrounding context (e.g., the entire paragraph",
         "Entire document",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -1335,15 +1222,9 @@
           "field_name": "V_7_ Did you share other infor_3_ZVCqAIdkmy-s-3cyVOPY3Q",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "V_7_ Did you share other infor_edit;_ZVCqAIdkmy-s-3cyVOPY3Q",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 5
+      "total_options": 4
     },
     {
       "question_text": "V.8. Did you employ techniques to mitigate fatigue effects during the annotation sessions?",
@@ -1446,8 +1327,7 @@
         "Resolution by independent",
         "Disagreements were disregarded",
         "Not resolved",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -1491,15 +1371,9 @@
           "field_name": "V_10_ How were conflicts resol_6_cYaP5TXE8Bvp9FLRssQN0w",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "V_10_ How were conflicts resol_edit;_cYaP5TXE8Bvp9FLRssQN0w",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 8
+      "total_options": 7
     },
     {
       "question_text": "V.11. What is the measured agreement?",
@@ -1512,7 +1386,7 @@
       "type": "CheckBox",
       "selected_answers": [
         "Other/Comments",
-        "N/A"
+        "Interpretable ML"
       ],
       "all_options": [
         "Supervised ML",
@@ -1521,7 +1395,7 @@
         "Unsupervised DL",
         "Rule-based",
         "Other/Comments",
-        "N/A"
+        "Interpretable ML"
       ],
       "options_details": [
         {
@@ -1561,7 +1435,7 @@
           "is_selected": true
         },
         {
-          "label": "N/A",
+          "label": "Interpretable ML",
           "field_name": "VI_1_ What is the type of prop_edit;_0XfRsJz-2ul2dRCQ-nNbug",
           "field_value": "Interpretable ML",
           "is_selected": true
@@ -1589,8 +1463,7 @@
         "Executable notebook (e.g., Jupyter)",
         "Pre-trained model (ML-based trained model)",
         "No tool has been released",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -1640,21 +1513,15 @@
           "field_name": "VI_3_ What has been released? _7_51QlRxyEUiyeeB1hTyghEQ",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "VI_3_ What has been released? _edit;_51QlRxyEUiyeeB1hTyghEQ",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 9
+      "total_options": 8
     },
     {
       "question_text": "VI.4. What needs to be done for running the tool?",
       "type": "CheckBox",
       "selected_answers": [
-        "No installation is needed (e.g., standalone tool)"
+        "No installation is needed"
       ],
       "all_options": [
         "No installation is needed (e.g., standalone tool)",
@@ -1725,8 +1592,7 @@
         "Ready-to-use examples",
         "An academic paper",
         "No documentation",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -1776,21 +1642,15 @@
           "field_name": "VI_5_ What type of documentati_7_HRdOm0Y8uAP9trckdKh1VA",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "VI_5_ What type of documentati_edit;_HRdOm0Y8uAP9trckdKh1VA",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 9
+      "total_options": 8
     },
     {
       "question_text": "VI.6. What type of dependencies does the tool have?",
       "type": "CheckBox",
       "selected_answers": [
-        "Open source libraries/software (e.g., python libraries,"
+        "Open source libraries/software"
       ],
       "all_options": [
         "None",
@@ -1799,8 +1659,7 @@
         "Specific OS",
         "Specific hardware (e.g., hardware GPU acceleration",
         "External knowledge bases (e.g., Wikipedia)",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -1844,15 +1703,9 @@
           "field_name": "VI_6_ What type of dependencie_6_B*JQyz9AE0UX*Qs0hz*3UA",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "VI_6_ What type of dependencie_edit;_B*JQyz9AE0UX*Qs0hz*3UA",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 8
+      "total_options": 7
     },
     {
       "question_text": "VI.7. How is the tool released?",
@@ -1984,8 +1837,7 @@
         "LAG",
         "WER (word error rate)",
         "NIST - METEOR - ROUGE - BLEU",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -2041,15 +1893,9 @@
           "field_name": "VII_1_ What metrics are used t_8_OEIb9reeKlW*mCXCQC-q0g",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "VII_1_ What metrics are used t_edit;_OEIb9reeKlW*mCXCQC-q0g",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 10
+      "total_options": 9
     },
     {
       "question_text": "VII.2. What is the validation procedure?",
@@ -2064,8 +1910,7 @@
         "Cross-validation",
         "Cross-project validation",
         "Entire dataset (e.g., no training)",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -2097,22 +1942,16 @@
           "field_name": "VII_2_ What is the validation _4_bB6qJRRmmNOPaUct61W3zQ",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "VII_2_ What is the validation _edit;_bB6qJRRmmNOPaUct61W3zQ",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 6
+      "total_options": 5
     },
     {
       "question_text": "VII.3. What baseline do you compare against?",
       "type": "CheckBox",
       "selected_answers": [
         "Reconstructed tool from other research",
-        "Automated, but self-defined (e.g., using ML algorithm"
+        "Automated, but self-defined"
       ],
       "all_options": [
         "Existing tool or algorithm (e.g., from another paper",
@@ -2121,8 +1960,7 @@
         "Theoretical / conceptual (e.g., majority class)",
         "Human baseline (i.e., comparison against human",
         "None",
-        "Other/Comments",
-        "N/A"
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -2166,15 +2004,9 @@
           "field_name": "VII_3_ What baseline do you co_6_V*qU1CI*IzDHW9*VTgpl0w",
           "field_value": "",
           "is_selected": false
-        },
-        {
-          "label": "N/A",
-          "field_name": "VII_3_ What baseline do you co_edit;_V*qU1CI*IzDHW9*VTgpl0w",
-          "field_value": "",
-          "is_selected": false
         }
       ],
-      "total_options": 8
+      "total_options": 7
     },
     {
       "question_text": "VII.4. Please provide more details about the baseline you compare against, if any.",
@@ -2192,42 +2024,42 @@
       "question_text": "Ease of Use",
       "type": "RadioButton",
       "selected_answers": [
-        "N/A"
+        null
       ],
       "all_options": [
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A"
+        null,
+        null,
+        null,
+        null,
+        null
       ],
       "options_details": [
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "How easy is it to fill out the_ayYacxvOAiATIetsHoJKyA",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "How easy is it to fill out the_ayYacxvOAiATIetsHoJKyA",
           "field_value": "1",
           "is_selected": true
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "How easy is it to fill out the_ayYacxvOAiATIetsHoJKyA",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "How easy is it to fill out the_ayYacxvOAiATIetsHoJKyA",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "How easy is it to fill out the_ayYacxvOAiATIetsHoJKyA",
           "field_value": "Off",
           "is_selected": false
@@ -2239,42 +2071,42 @@
       "question_text": "Appropriateness Indicate how appropriate the NLP4RE ID Card is for each of the intended use.",
       "type": "RadioButton",
       "selected_answers": [
-        "N/A"
+        null
       ],
       "all_options": [
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A"
+        null,
+        null,
+        null,
+        null,
+        null
       ],
       "options_details": [
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _2c80BXnUw-YHY-qaNRMH5Q",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _2c80BXnUw-YHY-qaNRMH5Q",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _2c80BXnUw-YHY-qaNRMH5Q",
           "field_value": "2",
           "is_selected": true
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _2c80BXnUw-YHY-qaNRMH5Q",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _2c80BXnUw-YHY-qaNRMH5Q",
           "field_value": "Off",
           "is_selected": false
@@ -2286,42 +2118,42 @@
       "question_text": "Appropriateness Indicate how appropriate the NLP4RE ID Card is for each of the intended use.",
       "type": "RadioButton",
       "selected_answers": [
-        "N/A"
+        null
       ],
       "all_options": [
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A"
+        null,
+        null,
+        null,
+        null,
+        null
       ],
       "options_details": [
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_n6qhGKwsjDImSukXgTRjnA",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_n6qhGKwsjDImSukXgTRjnA",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_n6qhGKwsjDImSukXgTRjnA",
           "field_value": "2",
           "is_selected": true
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_n6qhGKwsjDImSukXgTRjnA",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_n6qhGKwsjDImSukXgTRjnA",
           "field_value": "Off",
           "is_selected": false
@@ -2333,42 +2165,42 @@
       "question_text": "Appropriateness Indicate how appropriate the NLP4RE ID Card is for each of the intended use.",
       "type": "RadioButton",
       "selected_answers": [
-        "N/A"
+        null
       ],
       "all_options": [
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A"
+        null,
+        null,
+        null,
+        null,
+        null
       ],
       "options_details": [
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_aaqsfTvVszaFZTSoAK2Rwg",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_aaqsfTvVszaFZTSoAK2Rwg",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_aaqsfTvVszaFZTSoAK2Rwg",
           "field_value": "2",
           "is_selected": true
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_aaqsfTvVszaFZTSoAK2Rwg",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_aaqsfTvVszaFZTSoAK2Rwg",
           "field_value": "Off",
           "is_selected": false
@@ -2380,42 +2212,42 @@
       "question_text": "Level of detail Indicate the level of detail of the information captured by the NLP4RE ID Card for each of the intended use.",
       "type": "RadioButton",
       "selected_answers": [
-        "N/A"
+        null
       ],
       "all_options": [
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A"
+        null,
+        null,
+        null,
+        null,
+        null
       ],
       "options_details": [
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _NltvPxL2pszE-x8dMlzAWg",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _NltvPxL2pszE-x8dMlzAWg",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _NltvPxL2pszE-x8dMlzAWg",
           "field_value": "2",
           "is_selected": true
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _NltvPxL2pszE-x8dMlzAWg",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _NltvPxL2pszE-x8dMlzAWg",
           "field_value": "Off",
           "is_selected": false
@@ -2427,42 +2259,42 @@
       "question_text": "Level of detail Indicate the level of detail of the information captured by the NLP4RE ID Card for each of the intended use.",
       "type": "RadioButton",
       "selected_answers": [
-        "N/A"
+        null
       ],
       "all_options": [
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A"
+        null,
+        null,
+        null,
+        null,
+        null
       ],
       "options_details": [
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_hapozyZT*Vw8cGUM2w8b4A",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_hapozyZT*Vw8cGUM2w8b4A",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_hapozyZT*Vw8cGUM2w8b4A",
           "field_value": "2",
           "is_selected": true
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_hapozyZT*Vw8cGUM2w8b4A",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_hapozyZT*Vw8cGUM2w8b4A",
           "field_value": "Off",
           "is_selected": false
@@ -2474,42 +2306,42 @@
       "question_text": "Level of detail Indicate the level of detail of the information captured by the NLP4RE ID Card for each of the intended use.",
       "type": "RadioButton",
       "selected_answers": [
-        "N/A"
+        null
       ],
       "all_options": [
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A"
+        null,
+        null,
+        null,
+        null,
+        null
       ],
       "options_details": [
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_sBPhR28ejJSQXD8z0Hb0vQ",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_sBPhR28ejJSQXD8z0Hb0vQ",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_sBPhR28ejJSQXD8z0Hb0vQ",
           "field_value": "2",
           "is_selected": true
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_sBPhR28ejJSQXD8z0Hb0vQ",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_sBPhR28ejJSQXD8z0Hb0vQ",
           "field_value": "Off",
           "is_selected": false
@@ -2521,42 +2353,42 @@
       "question_text": "Intention to use Indicate how likely is it that you or your team will use the NLP4RE ID Card for each of the intended use.",
       "type": "RadioButton",
       "selected_answers": [
-        "N/A"
+        null
       ],
       "all_options": [
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A"
+        null,
+        null,
+        null,
+        null,
+        null
       ],
       "options_details": [
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _hTzWQ7uBoWFlAZbEi7gtCA",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _hTzWQ7uBoWFlAZbEi7gtCA",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _hTzWQ7uBoWFlAZbEi7gtCA",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _hTzWQ7uBoWFlAZbEi7gtCA",
           "field_value": "3",
           "is_selected": true
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate data collection _hTzWQ7uBoWFlAZbEi7gtCA",
           "field_value": "Off",
           "is_selected": false
@@ -2568,42 +2400,42 @@
       "question_text": "Intention to use Indicate how likely is it that you or your team will use the NLP4RE ID Card for each of the intended use.",
       "type": "RadioButton",
       "selected_answers": [
-        "N/A"
+        null
       ],
       "all_options": [
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A"
+        null,
+        null,
+        null,
+        null,
+        null
       ],
       "options_details": [
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_LKxp8mGpY9ozxMsScd1zwQ",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_LKxp8mGpY9ozxMsScd1zwQ",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_LKxp8mGpY9ozxMsScd1zwQ",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_LKxp8mGpY9ozxMsScd1zwQ",
           "field_value": "3",
           "is_selected": true
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "An educational tool on reporti_LKxp8mGpY9ozxMsScd1zwQ",
           "field_value": "Off",
           "is_selected": false
@@ -2615,42 +2447,42 @@
       "question_text": "Intention to use Indicate how likely is it that you or your team will use the NLP4RE ID Card for each of the intended use.",
       "type": "RadioButton",
       "selected_answers": [
-        "N/A"
+        null
       ],
       "all_options": [
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A",
-        "N/A"
+        null,
+        null,
+        null,
+        null,
+        null
       ],
       "options_details": [
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_Wypw1QcCB6v4nvJWoC3JUw",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_Wypw1QcCB6v4nvJWoC3JUw",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_Wypw1QcCB6v4nvJWoC3JUw",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_Wypw1QcCB6v4nvJWoC3JUw",
           "field_value": "3",
           "is_selected": true
         },
         {
-          "label": "N/A",
+          "label": null,
           "field_name": "To facilitate reuse and replic_Wypw1QcCB6v4nvJWoC3JUw",
           "field_value": "Off",
           "is_selected": false

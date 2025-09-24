@@ -208,6 +208,14 @@ class TemplateInstanceCreator:
         cleaned = text
         # Remove any parenthetical that starts with e.g. (handles (e.g ...), (e.g., ...))
         cleaned = re.sub(r"\(\s*e\.g\.,?[^)]*\)", "", cleaned, flags=re.IGNORECASE)
+
+        # Remove everything after we see (e.g.... not even care about the closing bracket only "(", "e", ".", "g"
+        # Example: "Open source libraries/software (e.g., python libraries, ..." => "Open source libraries/software"
+        cleaned = re.sub(r"\(e\.g\.,.*", "", text, flags=re.IGNORECASE).strip()
+
+        # delete the space between "ex1 / ex2" => "ex1/ex2"
+        cleaned = re.sub(r"\s*/\s*", "/", cleaned)
+
         # Also remove stray multiple spaces and trailing commas
         cleaned = re.sub(r"\s+", " ", cleaned).strip().strip(",")
         return cleaned
@@ -406,12 +414,25 @@ class TemplateInstanceCreator:
                             if match:
                                 int_value = match.group(0)
                                 literal_response = self.orkg.literals.add(
-                                    label=str(int_value), datatype="xsd:integer"
+                                    label=int_value, datatype="xsd:integer"
+                                )
+                                self.run_logger.log(
+                                    "Integer literal",
+                                    "created",
+                                    key=resource_mapping_key,
+                                    answer=answer,
+                                    id=literal_response.content["id"],
                                 )
                             else:
+                                self.run_logger.log(
+                                    "Integer literal",
+                                    "fallback_to_text",
+                                    key=resource_mapping_key,
+                                    answer=answer,
+                                )
                                 # Fallback to text literal if no integer could be parsed
                                 literal_response = self.orkg.literals.add(
-                                    label=str(answer)
+                                    label=int(answer), datatype="xsd:integer"
                                 )
                         else:
                             literal_response = self.orkg.literals.add(label=answer)
@@ -688,6 +709,13 @@ class TemplateInstanceCreator:
                                 )
                             print(
                                 f"    ✅ Added property {prop_id} with {len(result_ids)} value(s)"
+                            )
+                            self.run_logger.log(
+                                "property",
+                                "10-values_resolved",
+                                property_label=prop_info.get("label", ""),
+                                key=prop_info.get("resource_mapping_key", ""),
+                                result_ids=result_ids,
                             )
                         else:
                             # if prop_id exists in resource_mappings and the value is "Not reported", then use the mapped resource ID
