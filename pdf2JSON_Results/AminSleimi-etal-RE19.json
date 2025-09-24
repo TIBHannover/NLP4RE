@@ -162,7 +162,7 @@
         "Sentences",
         "Phrases",
         "Words",
-        "Structured/tabular",
+        "Structured/tabular text",
         "Other (e.g., models, trace links, diagrams, code comments)/Comments"
       ],
       "options_details": [
@@ -197,7 +197,7 @@
           "is_selected": false
         },
         {
-          "label": "Structured/tabular",
+          "label": "Structured/tabular text",
           "field_name": "III_1_ What is the input of yo_5_m6SmbbtoOqfdxQ3MQ8LspQ",
           "field_value": "",
           "is_selected": false
@@ -430,7 +430,7 @@
         "Sentences",
         "Phrases",
         "Words",
-        "Structured/tabular",
+        "Structured/tabular text",
         "Other (e.g., models, trace links, diagrams, code comments)/Comments",
         "articles"
       ],
@@ -466,7 +466,7 @@
           "is_selected": true
         },
         {
-          "label": "Structured/tabular",
+          "label": "Structured/tabular text",
           "field_name": "III_8_ What are the types of e_5_NqzSoz8ZU9jlan47aFjctw",
           "field_value": "",
           "is_selected": false
@@ -508,17 +508,17 @@
       "question_text": "IV.3. What is the source of the data?",
       "type": "CheckBox",
       "selected_answers": [
-        "Community-based",
-        "Legal/regulatory"
+        "Community-based open source projects",
+        "Legal/regulatory documents"
       ],
       "all_options": [
         "Industrial Project, proprietary data",
         "Industrial Project, publicly available data",
-        "Community-based",
+        "Community-based open source projects",
         "Textbook examples or cases",
         "Student Projects (i.e., requirements developed by",
         "Toy Requirements (e.g., used for courses, developed",
-        "Legal/regulatory",
+        "Legal/regulatory documents",
         "User generated content (e.g., app stores, user forums,",
         "Other/Comments"
       ],
@@ -536,7 +536,7 @@
           "is_selected": false
         },
         {
-          "label": "Community-based",
+          "label": "Community-based open source projects",
           "field_name": "IV_3_ What is the source of th_2_NE019aUyUl6-PJ8ABBC84w",
           "field_value": "Yes",
           "is_selected": true
@@ -560,7 +560,7 @@
           "is_selected": false
         },
         {
-          "label": "Legal/regulatory",
+          "label": "Legal/regulatory documents",
           "field_name": "IV_3_ What is the source of th_6_NE019aUyUl6-PJ8ABBC84w",
           "field_value": "Yes",
           "is_selected": true
@@ -735,13 +735,13 @@
       "type": "CheckBox",
       "selected_answers": [
         "Unconstrained natural language",
-        "Semantically-augmented"
+        "Semantically-augmented natural language"
       ],
       "all_options": [
         "Unconstrained natural language",
-        "Template-based",
-        "Restricted grammar based controlled natural",
-        "Semantically-augmented",
+        "Template-based controlled natural language",
+        "Restricted grammar based controlled natural language",
+        "Semantically-augmented natural language",
         "Other/Comments"
       ],
       "options_details": [
@@ -752,19 +752,19 @@
           "is_selected": true
         },
         {
-          "label": "Template-based",
+          "label": "Template-based controlled natural language",
           "field_name": "IV_6_ How rigorous is the form_1_0jYzl49zZ8gdxRMFQw7B4g",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Restricted grammar based controlled natural",
+          "label": "Restricted grammar based controlled natural language",
           "field_name": "IV_6_ How rigorous is the form_2_0jYzl49zZ8gdxRMFQw7B4g",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Semantically-augmented",
+          "label": "Semantically-augmented natural language",
           "field_name": "IV_6_ How rigorous is the form_3_0jYzl49zZ8gdxRMFQw7B4g",
           "field_value": "Yes",
           "is_selected": true
@@ -904,14 +904,14 @@
         "None"
       ],
       "all_options": [
-        "On a private/corporate",
+        "On a private/corporate website",
         "In a repository (GitHub, GitLab)",
         "In a persistent platform with DOI",
         "Other/Comments"
       ],
       "options_details": [
         {
-          "label": "On a private/corporate",
+          "label": "On a private/corporate website",
           "field_name": "IV_12_ Where is the dataset st_0_HOCnlmYxVimtfMjDF-2WkA",
           "field_value": "",
           "is_selected": false
@@ -958,8 +958,8 @@
       "all_options": [
         "Multiple annotators per entry",
         "One annotator per entry (no quality control)",
-        "One annotator per entry (quality control, possibly",
-        "Partly multiple annotators per entry, partly one",
+        "One annotator per entry (quality control, possibly on a sample)",
+        "Partly multiple annotators per entry, partly one annotator per entry",
         "Other/Comments"
       ],
       "options_details": [
@@ -976,13 +976,13 @@
           "is_selected": false
         },
         {
-          "label": "One annotator per entry (quality control, possibly",
+          "label": "One annotator per entry (quality control, possibly on a sample)",
           "field_name": "V_2_ How are the entries annot_2_A6O1PBPu--9nfqOu5q4LZA",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Partly multiple annotators per entry, partly one",
+          "label": "Partly multiple annotators per entry, partly one annotator per entry",
           "field_name": "V_2_ How are the entries annot_3_A6O1PBPu--9nfqOu5q4LZA",
           "field_value": "",
           "is_selected": false
@@ -1264,7 +1264,7 @@
         "Krippendorf's Alpha",
         "Fleiss' K",
         "Other/Comments",
-        "Resolution by independent"
+        "Resolution by independent expert (not an annotator)"
       ],
       "options_details": [
         {
@@ -1292,7 +1292,7 @@
           "is_selected": false
         },
         {
-          "label": "Resolution by independent",
+          "label": "Resolution by independent expert (not an annotator)",
           "field_name": "V_9_ What are the metrics  use_edit;_JUDzahlA-1Azp9FxbmPQNg",
           "field_value": "",
           "is_selected": false
@@ -1312,7 +1312,7 @@
         "Majority voting",
         "Discussion among taggers",
         "Resolution by authors",
-        "Resolution by independent",
+        "Resolution by independent expert (not an annotator)",
         "Disagreements were disregarded",
         "Not resolved",
         "Other/Comments",
@@ -1338,7 +1338,7 @@
           "is_selected": false
         },
         {
-          "label": "Resolution by independent",
+          "label": "Resolution by independent expert (not an annotator)",
           "field_name": "V_10_ How were conflicts resol_3_cYaP5TXE8Bvp9FLRssQN0w",
           "field_value": "",
           "is_selected": false
@@ -1640,7 +1640,7 @@
         "Open source libraries / software (e.g., python libraries,"
       ],
       "all_options": [
-        "None",
+        "None or unknown",
         "Open source libraries / software (e.g., python libraries,",
         "Proprietary libraries / software (e.g., Google Cloud",
         "Specific OS",
@@ -1650,7 +1650,7 @@
       ],
       "options_details": [
         {
-          "label": "None",
+          "label": "None or unknown",
           "field_name": "VI_6_ What type of dependencie_0_B*JQyz9AE0UX*Qs0hz*3UA",
           "field_value": "",
           "is_selected": false
@@ -1701,15 +1701,15 @@
         "None"
       ],
       "all_options": [
-        "On a private/corporate",
+        "On a private/corporate website",
         "In a repository (GitHub, GitLab)",
-        "In a persistent platform with",
+        "In a persistent platform with DOI",
         "Other/Comments",
         "License: modification only for"
       ],
       "options_details": [
         {
-          "label": "On a private/corporate",
+          "label": "On a private/corporate website",
           "field_name": "VI_7_ How is the tool released_0_P0mu-jL8bQmM86Yf6HAWNg",
           "field_value": "",
           "is_selected": false
@@ -1721,7 +1721,7 @@
           "is_selected": false
         },
         {
-          "label": "In a persistent platform with",
+          "label": "In a persistent platform with DOI",
           "field_name": "VI_7_ How is the tool released_2_P0mu-jL8bQmM86Yf6HAWNg",
           "field_value": "",
           "is_selected": false
@@ -1935,7 +1935,7 @@
         "Automated, but self-defined (e.g., using ML algorithm",
         "Theoretical / conceptual (e.g., majority class)",
         "Human baseline (i.e., comparison against human",
-        "None",
+        "None or unknown",
         "Other/Comments"
       ],
       "options_details": [
@@ -1970,7 +1970,7 @@
           "is_selected": true
         },
         {
-          "label": "None",
+          "label": "None or unknown",
           "field_name": "VII_3_ What baseline do you co_5_V*qU1CI*IzDHW9*VTgpl0w",
           "field_value": "",
           "is_selected": false

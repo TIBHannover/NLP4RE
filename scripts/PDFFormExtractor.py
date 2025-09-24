@@ -1,7 +1,11 @@
 import re
 import fitz
 import json
+import logging
 from pathlib import Path
+
+# Import mappings for better field label extraction
+from .mappings import resource_mappings, predicates_mapping, class_mappings
 
 
 class PDFFormExtractor:
@@ -9,24 +13,44 @@ class PDFFormExtractor:
     Extracts data from PDF forms, including finding text labels for interactive widgets.
     """
 
-    def __init__(self, pdf_path: str):
+    def __init__(self, pdf_path: str, debug: bool = False):
         if not Path(pdf_path).is_file():
             raise FileNotFoundError(f"No file found at {pdf_path}")
         self.pdf_path = Path(pdf_path)
         self.doc = fitz.open(self.pdf_path)
         self.results = {}
-        print(f"Successfully opened '{self.pdf_path.name}'")
+
+        # Initialize mappings for better field extraction
+        self.resource_mappings = resource_mappings
+        self.predicates_mapping = predicates_mapping
+        self.class_mappings = class_mappings
+
+        # logging setup
+        self.debug = debug
+        self.logger = logging.getLogger(__name__ + ".PDFFormExtractor")
+        if not self.logger.handlers:
+            handler = logging.StreamHandler()
+            formatter = logging.Formatter(
+                fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+                datefmt="%H:%M:%S",
+            )
+            handler.setFormatter(formatter)
+            self.logger.addHandler(handler)
+        self.logger.setLevel(logging.DEBUG if self.debug else logging.INFO)
+        self.logger.info(
+            f"Opened PDF '{self.pdf_path.name}' with {len(self.doc)} pages"
+        )
 
     def extract_with_labels(self) -> dict:
         """
         Primary extraction method that prioritizes finding labels for interactive fields.
         """
-        print("--- Starting extraction of interactive form fields with labels ---")
+        self.logger.info("Starting extraction of interactive form fields with labels")
 
         has_interactive_fields = any(page.widgets() for page in self.doc)
 
         if not has_interactive_fields:
-            print("No interactive form fields found in this PDF.")
+            self.logger.warning("No interactive form fields found in this PDF")
             return {}
 
         # First, collect all raw field data
@@ -38,8 +62,19 @@ class PDFFormExtractor:
         # Post-process to merge duplicate questions with same question_text
         structured_data = self._merge_duplicate_questions(structured_data)
 
+        # Validate extracted data against mappings
+        if self.resource_mappings:
+            structured_data = self._validate_against_mappings(structured_data)
+
         self.results = structured_data
-        print("--- Extraction Complete ---")
+        self.logger.info(
+            "Extraction complete: %d fields -> %d questions (%d with answers)",
+            structured_data.get("extraction_summary", {}).get("total_fields_found", 0),
+            structured_data.get("total_questions", 0),
+            structured_data.get("extraction_summary", {}).get(
+                "questions_with_selections", 0
+            ),
+        )
         return self.results
 
     def _collect_raw_field_data(self) -> list:
@@ -55,6 +90,16 @@ class PDFFormExtractor:
                 widget_info = self._get_widget_info(widget, words_on_page)
                 widget_info["page"] = page.number + 1
                 all_fields.append(widget_info)
+                if self.debug:
+                    self.logger.debug(
+                        "Collected widget | page=%s name=%s type=%s value=%s label=%s field_label=%s",
+                        widget_info.get("page"),
+                        widget_info.get("name"),
+                        widget_info.get("type"),
+                        widget_info.get("value"),
+                        widget_info.get("label"),
+                        widget_info.get("field_label"),
+                    )
 
         return all_fields
 
@@ -94,6 +139,13 @@ class PDFFormExtractor:
 
             # Branch schema by field type
             group_types = {f.get("type") for f in fields}
+            if self.debug:
+                self.logger.debug(
+                    "Group base=%s types=%s derived_question_text='%s'",
+                    base_question,
+                    ",".join(sorted([t or "" for t in group_types])),
+                    question_text,
+                )
             # If it's a single Text field, treat as free-text answer
             if len(fields) == 1 and next(iter(group_types)) == "Text":
                 text_field = fields[0]
@@ -105,29 +157,66 @@ class PDFFormExtractor:
                     "field_name": text_field.get("name"),
                 }
                 structured_questions.append(question_data)
+                if self.debug:
+                    self.logger.debug(
+                        "Text question formed | base=%s field=%s answer='%s'",
+                        base_question,
+                        text_field.get("name"),
+                        question_data.get("answer"),
+                    )
                 continue
-
             # Otherwise, assume choice-type (Radio / Checkbox) with options
             selected_options = []
             all_options = []
             text_input_value = None
+
+            # Get expected options from mappings to ensure completeness
+            expected_options = self._get_expected_options_for_question(question_text)
+            found_option_labels = set()
+
             for field in fields:
                 if field["type"] == "Text":
                     if field["label"] is None:
                         if not field["value"]:
                             continue
                         text_input_value = field["value"]
+
+                # Enhance the field label using mappings
+                enhanced_label = self._enhance_label_with_mappings(field["label"])
+
                 option_info = {
-                    "label": text_input_value or field["label"],
+                    "label": text_input_value or enhanced_label,
                     "field_name": field["name"],
                     "field_value": field["value"],
                     "is_selected": self._is_field_selected(field),
                 }
 
                 all_options.append(option_info)
+                found_option_labels.add(option_info["label"])
 
                 if option_info["is_selected"]:
                     selected_options.append(option_info["label"])
+                if self.debug:
+                    self.logger.debug(
+                        "Option | base=%s name=%s type=%s value=%s label=%s enhanced=%s selected=%s",
+                        base_question,
+                        field.get("name"),
+                        field.get("type"),
+                        field.get("value"),
+                        field.get("label"),
+                        enhanced_label,
+                        option_info.get("is_selected"),
+                    )
+
+            # Add missing expected options if mappings suggest they should be present
+            if expected_options and self.debug:
+                missing_options = set(expected_options) - found_option_labels
+                if missing_options:
+                    self.logger.debug(
+                        "Question '%s' may be missing expected options: %s",
+                        question_text,
+                        list(missing_options)[:5],  # Show first 5
+                    )
 
             # Create the structured question
             # Determine choice group type label
@@ -151,6 +240,14 @@ class PDFFormExtractor:
             }
 
             structured_questions.append(question_data)
+            if self.debug:
+                self.logger.debug(
+                    "Choice question formed | base=%s type=%s selected=%s total_options=%d",
+                    base_question,
+                    group_type_label,
+                    ", ".join(selected_options) if selected_options else "None",
+                    len(all_options),
+                )
 
         # Derive summary counts with schema-aware logic
         def question_has_answer(q: dict) -> bool:
@@ -171,7 +268,7 @@ class PDFFormExtractor:
             1 for q in structured_questions if question_has_answer(q)
         )
 
-        return {
+        result = {
             "pdf_name": self.pdf_path.name,
             "total_questions": len(structured_questions),
             "extraction_summary": {
@@ -180,6 +277,14 @@ class PDFFormExtractor:
             },
             "questions": structured_questions,
         }
+        if self.debug:
+            self.logger.debug(
+                "Structured %d questions (%d with answers) from %d fields",
+                result["total_questions"],
+                result["extraction_summary"]["questions_with_selections"],
+                result["extraction_summary"]["total_fields_found"],
+            )
+        return result
 
     def _extract_question_text(self, base_question: str) -> str:
         """
@@ -219,13 +324,37 @@ class PDFFormExtractor:
 
         if field_type == "RadioButton":
             # For radio buttons, check if value is not 'Off'
-            return field_value not in ("Off", None, "")
+            selected = field_value not in ("Off", None, "")
+            if self.debug:
+                self.logger.debug(
+                    "Selection check | type=RadioButton name=%s value=%s -> %s",
+                    field.get("name"),
+                    field_value,
+                    selected,
+                )
+            return selected
         elif field_type == "CheckBox":
             # For checkboxes, check if value is not 'Off' or None
-            return field_value not in ("Off", None, "")
+            selected = field_value not in ("Off", None, "")
+            if self.debug:
+                self.logger.debug(
+                    "Selection check | type=CheckBox name=%s value=%s -> %s",
+                    field.get("name"),
+                    field_value,
+                    selected,
+                )
+            return selected
         elif field_type == "Text":
             # For text fields, check if there's content
-            return bool(field_value and field_value.strip())
+            selected = bool(field_value and field_value.strip())
+            if self.debug:
+                self.logger.debug(
+                    "Selection check | type=Text name=%s value=%s -> %s",
+                    field.get("name"),
+                    field_value,
+                    selected,
+                )
+            return selected
 
         return False
 
@@ -257,6 +386,19 @@ class PDFFormExtractor:
 
         # Find the label for the widget using spatial analysis
         field_info["label"] = self._find_label_for_widget(widget_rect, words)
+        if self.debug:
+            self.logger.debug(
+                "Widget info | name=%s type=%s value=%s field_label=%s label=%s rect=(%.1f,%.1f,%.1f,%.1f)",
+                field_info.get("name"),
+                field_info.get("type"),
+                field_info.get("value"),
+                field_info.get("field_label"),
+                field_info.get("label"),
+                widget_rect.x0,
+                widget_rect.y0,
+                widget_rect.x1,
+                widget_rect.y1,
+            )
 
         return field_info
 
@@ -295,6 +437,14 @@ class PDFFormExtractor:
             if vertically_aligned and horizontally_close:
                 candidate_words.append((x0, word_text))
 
+        if self.debug:
+            self.logger.debug(
+                "Label candidates | count=%d (vertical_tol=%d, max_dx=%d)",
+                len(candidate_words),
+                VERTICAL_TOLERANCE,
+                MAX_HORIZONTAL_DISTANCE,
+            )
+
         if not candidate_words:
             return None
 
@@ -317,7 +467,176 @@ class PDFFormExtractor:
                     break
                 label_words.append(word_text)
 
-        return " ".join(label_words)
+        label = " ".join(label_words)
+
+        # Enhance label using mappings if available
+        enhanced_label = self._enhance_label_with_mappings(label)
+
+        if self.debug:
+            self.logger.debug(
+                "Resolved label='%s' -> enhanced='%s'", label, enhanced_label
+            )
+        return enhanced_label or label
+
+    def _enhance_label_with_mappings(self, label: str) -> str:
+        """
+        Enhances extracted labels using predefined mappings to fix incomplete or truncated text.
+
+        Args:
+            label: The raw extracted label text
+
+        Returns:
+            Enhanced label text if mapping found, otherwise original label
+        """
+        if not label or not self.resource_mappings:
+            return label
+
+        # Clean the label for comparison
+        clean_label = label.strip()
+
+        # Try to find a matching mapping key for this label
+        for mapping_category, mappings in self.resource_mappings.items():
+            # Direct match
+            if clean_label in mappings:
+                if self.debug:
+                    self.logger.debug(
+                        "Found direct mapping for '%s' in category '%s'",
+                        clean_label,
+                        mapping_category,
+                    )
+                return clean_label
+
+            # Partial match - look for labels that start with our extracted text
+            for mapped_label in mappings.keys():
+                if mapped_label.startswith(clean_label) and len(clean_label) > 3:
+                    if self.debug:
+                        self.logger.debug(
+                            "Found partial mapping '%s' -> '%s' in category '%s'",
+                            clean_label,
+                            mapped_label,
+                            mapping_category,
+                        )
+                    return mapped_label
+
+            # Fuzzy match for common truncation patterns
+            for mapped_label in mappings.keys():
+                # Check if our label is a truncated version of a mapped label
+                if (
+                    clean_label in mapped_label
+                    and len(clean_label) > 5
+                    and abs(len(mapped_label) - len(clean_label)) < 20
+                ):
+                    if self.debug:
+                        self.logger.debug(
+                            "Found fuzzy mapping '%s' -> '%s' in category '%s'",
+                            clean_label,
+                            mapped_label,
+                            mapping_category,
+                        )
+                    return mapped_label
+
+        return label
+
+    def _get_expected_options_for_question(self, question_text: str) -> list:
+        """
+        Gets expected options for a question based on mappings.
+
+        Args:
+            question_text: The question text to find mappings for
+
+        Returns:
+            List of expected option labels
+        """
+        if not question_text or not self.predicates_mapping:
+            return []
+
+        # Try to match question text to predicate mappings
+        for predicate_id, predicate_info in self.predicates_mapping.items():
+            if predicate_info.get("description", "").lower() in question_text.lower():
+                resource_key = predicate_info.get("resource_mapping_key")
+                if resource_key and resource_key in self.resource_mappings:
+                    options = list(self.resource_mappings[resource_key].keys())
+                    if self.debug:
+                        self.logger.debug(
+                            "Found %d expected options for question '%s'",
+                            len(options),
+                            question_text,
+                        )
+                    return options
+
+        return []
+
+    def _validate_against_mappings(self, structured_data: dict) -> dict:
+        """
+        Validates extracted data against mappings and logs potential issues.
+
+        Args:
+            structured_data: The structured form data
+
+        Returns:
+            The validated structured data (with potential enhancements)
+        """
+        if not structured_data.get("questions"):
+            return structured_data
+
+        validation_summary = {
+            "mapping_enhancements": 0,
+            "potential_issues": [],
+            "missing_options": 0,
+        }
+
+        for question in structured_data["questions"]:
+            question_text = question.get("question_text", "")
+            question_type = question.get("type", "")
+
+            # Skip validation for text questions
+            if question_type == "Text":
+                continue
+
+            # Check if we have expected options for this question
+            expected_options = self._get_expected_options_for_question(question_text)
+            if expected_options:
+                found_options = set(question.get("all_options", []))
+                missing_options = set(expected_options) - found_options
+
+                if missing_options:
+                    validation_summary["missing_options"] += len(missing_options)
+                    if self.debug:
+                        self.logger.debug(
+                            "Question '%s' missing %d expected options: %s",
+                            question_text[:50],
+                            len(missing_options),
+                            list(missing_options)[:3],  # Show first 3
+                        )
+
+                # Check for potential label enhancements
+                for option in question.get("options_details", []):
+                    original_label = option.get("label", "")
+                    if original_label:
+                        enhanced = self._enhance_label_with_mappings(original_label)
+                        if enhanced != original_label:
+                            validation_summary["mapping_enhancements"] += 1
+                            if self.debug:
+                                self.logger.debug(
+                                    "Enhanced option label: '%s' -> '%s'",
+                                    original_label,
+                                    enhanced,
+                                )
+
+        # Add validation summary to results
+        if (
+            validation_summary["mapping_enhancements"] > 0
+            or validation_summary["missing_options"] > 0
+        ):
+            structured_data["validation_summary"] = validation_summary
+            if self.debug:
+                self.logger.info(
+                    "Validation complete: %d enhancements, %d missing options",
+                    validation_summary["mapping_enhancements"],
+                    validation_summary["missing_options"],
+                )
+
+        return structured_data
 
     def _merge_duplicate_questions(self, structured_data: dict) -> dict:
         """
@@ -345,6 +664,12 @@ class PDFFormExtractor:
                 merged_questions.append(question_list[0])
             else:
                 # Found duplicates, merge them
+                if self.debug:
+                    self.logger.debug(
+                        "Merging duplicate questions | text='%s' count=%d",
+                        question_text,
+                        len(question_list),
+                    )
                 merged_question = self._merge_question_group(question_list)
                 merged_questions.append(merged_question)
 
@@ -407,6 +732,13 @@ class PDFFormExtractor:
                     # If no other selections, just use the text answer
                     selected_answers = [text_answer]
                 choice_question["selected_answers"] = selected_answers
+                if self.debug:
+                    self.logger.debug(
+                        "Merged text answer into choices | text='%s' -> selected=%s",
+                        text_answer,
+                        ", ".join(choice_question.get("selected_answers", []))
+                        or "None",
+                    )
 
             return choice_question
         else:
