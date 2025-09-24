@@ -189,7 +189,7 @@ class TemplateInstanceCreator:
                     answers.append({"label": label, "description": desc})
 
         # Extract from options details
-        if question_data.get("options_details"):
+        elif question_data.get("options_details"):
             for option in question_data["options_details"]:
                 if option.get("is_selected"):
                     # Add label if it exists and is not empty
@@ -210,13 +210,6 @@ class TemplateInstanceCreator:
                     ):
                         label, desc = self._split_label_and_example(field_value.strip())
                         answers.append({"label": label, "description": desc})
-
-        # Extract text input value for "Other/Comments" fields
-        if question_data.get("text_input_value"):
-            text_input = question_data["text_input_value"].strip()
-            if text_input and text_input not in ["", "None"]:
-                label, desc = self._split_label_and_example(text_input)
-                answers.append({"label": label, "description": desc})
 
         # Clean answers: remove any parenthetical (e.g., ...) fragments and normalize whitespace
         cleaned_answers: List[Dict[str, str]] = []

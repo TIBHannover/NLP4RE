@@ -35,6 +35,9 @@ class PDFFormExtractor:
         # Then, structure it into questions with options and answers
         structured_data = self._structure_form_data(raw_fields)
 
+        # Post-process to merge duplicate questions with same question_text
+        structured_data = self._merge_duplicate_questions(structured_data)
+
         self.results = structured_data
         print("--- Extraction Complete ---")
         return self.results
@@ -114,23 +117,8 @@ class PDFFormExtractor:
                         if not field["value"]:
                             continue
                         text_input_value = field["value"]
-
-                # Normalize labels by removing parenthetical segments containing 'e.g.'
-                def _normalize_option_label(label: str | None) -> str | None:
-                    if label is None:
-                        return None
-                    # remove any parenthetical that contains e.g. (case-insensitive)
-                    cleaned = re.sub(
-                        r"\s*\([^)]*e\.g[^)]*\)", "", label, flags=re.IGNORECASE
-                    )
-                    # collapse excess whitespace
-                    cleaned = re.sub(r"\s+", " ", cleaned).strip()
-                    return cleaned
-
                 option_info = {
-                    "label": _normalize_option_label(
-                        text_input_value or field["label"]
-                    ),
+                    "label": text_input_value or field["label"],
                     "field_name": field["name"],
                     "field_value": field["value"],
                     "is_selected": self._is_field_selected(field),
@@ -140,20 +128,6 @@ class PDFFormExtractor:
 
                 if option_info["is_selected"]:
                     selected_options.append(option_info["label"])
-                    # If "Other/Comments" is selected and a text value exists, include it as well
-                    if (
-                        option_info["label"] == "Other/Comments"
-                        and text_input_value is not None
-                        and str(text_input_value).strip() != ""
-                    ):
-                        selected_options.append(str(text_input_value).strip())
-
-            # If a companion text field exists and is filled, include it in selected answers
-            # even if "Other/Comments" wasn't explicitly selected, to avoid losing the input.
-            if text_input_value is not None and str(text_input_value).strip() != "":
-                text_val = str(text_input_value).strip()
-                if text_val not in selected_options:
-                    selected_options.append(text_val)
 
             # Create the structured question
             # Determine choice group type label
@@ -273,6 +247,14 @@ class PDFFormExtractor:
         except Exception:
             field_info["field_label"] = None
 
+        # if widget.field_type == fitz.PDF_WIDGET_TYPE_CHECKBOX:
+        #     field_info["is_checked"] = widget.is_checked
+        # elif widget.field_type == fitz.PDF_WIDGET_TYPE_RADIOBUTTON:
+        # # For radio buttons, is_checked tells if THIS specific button is selected
+        # field_info["is_selected"] = widget.is_checked
+        # # The group value shows which option was selected for the whole group
+        # field_info["group_value"] = widget.field_value
+
         # Find the label for the widget using spatial analysis
         field_info["label"] = self._find_label_for_widget(widget_rect, words)
 
@@ -280,10 +262,8 @@ class PDFFormExtractor:
 
     def _find_label_for_widget(self, widget_rect: fitz.Rect, words: list) -> str:
         """
-        Searches for text labels to the right of a given widget by selecting
-        words from the same text line as the widget (using block/line indices
-        when available), then concatenating words to the right of the widget.
-        Falls back to a y-clustering heuristic if line indices are unavailable.
+        Searches for text labels to the right of a given widget's rectangle.
+        Uses both vertical alignment and horizontal proximity to avoid picking up distant text.
 
         Args:
             widget_rect: The fitz.Rect object for the form widget.
@@ -292,124 +272,146 @@ class PDFFormExtractor:
         Returns:
             The found text label as a string, or None if no label is found.
         """
+        # Define tolerances for alignment and proximity
+        VERTICAL_TOLERANCE = 3  # pixels for vertical alignment
+        MAX_HORIZONTAL_DISTANCE = 150  # maximum pixels to look to the right (balanced to capture full options but avoid cross-column contamination)
+
         widget_mid_y = (widget_rect.y0 + widget_rect.y1) / 2
-        PROXIMITY_X = (
-            80.0  # require first right word to be within this px of the widget
-        )
 
-        # Normalize words into a common structure
-        normalized_words = []
-        for w in words:
-            # PyMuPDF typically returns (x0, y0, x1, y1, text, block_no, line_no, word_no)
-            x0, y0, x1, y1 = w[0], w[1], w[2], w[3]
-            text = w[4]
-            block_no = w[5] if len(w) > 5 else None
-            line_no = w[6] if len(w) > 6 else None
-            word_no = w[7] if len(w) > 7 else None
-            normalized_words.append(
-                {
-                    "x0": x0,
-                    "y0": y0,
-                    "x1": x1,
-                    "y1": y1,
-                    "mid_y": (y0 + y1) / 2,
-                    "text": text,
-                    "block": block_no,
-                    "line": line_no,
-                    "word": word_no,
-                }
+        # Find all words that are vertically aligned and close horizontally
+        candidate_words = []
+        for word_rect in words:
+            x0, y0, x1, y1, word_text = word_rect[:5]
+            word_mid_y = (y0 + y1) / 2
+
+            # Check for vertical alignment
+            vertically_aligned = abs(word_mid_y - widget_mid_y) <= VERTICAL_TOLERANCE
+
+            # Check if word is to the right but not too far
+            horizontally_close = (x0 > widget_rect.x1) and (
+                x0 - widget_rect.x1 <= MAX_HORIZONTAL_DISTANCE
             )
 
-        # Strategy A: Use exact (block, line) if present. Choose the line whose
-        # y-mid is closest to the widget's y-mid within a reasonable threshold.
-        words_with_line = [
-            w
-            for w in normalized_words
-            if w["block"] is not None and w["line"] is not None
-        ]
-        # Restrict to candidate words near the widget on X to avoid cross-column capture
-        near_right_words = [
-            w
-            for w in words_with_line
-            if (w["x0"] >= widget_rect.x1 - 1)
-            and ((w["x0"] - widget_rect.x1) <= PROXIMITY_X)
-        ]
-        target_line_key = None
-        if near_right_words:
-            # Find the word whose mid_y is closest to widget_mid_y
-            nearest = min(
-                near_right_words, key=lambda w: abs(w["mid_y"] - widget_mid_y)
-            )
-            target_line_key = (nearest["block"], nearest["line"])
-            line_words = [
-                w for w in words_with_line if (w["block"], w["line"]) == target_line_key
-            ]
-            # From this line, take words strictly to the right of the widget
-            right_words = [w for w in line_words if w["x0"] >= widget_rect.x1 - 1]
-            right_words.sort(key=lambda w: w["x0"])
-            if right_words:
-                # Ensure proximity for the first token; otherwise treat as none
-                if (right_words[0]["x0"] - widget_rect.x1) > PROXIMITY_X:
-                    return None
-                return " ".join(w["text"] for w in right_words).strip() or None
+            if vertically_aligned and horizontally_close:
+                candidate_words.append((x0, word_text))
 
-        # Strategy B (fallback): cluster by y using dynamic tolerance based on word heights
-        # Filter words roughly on the same horizontal band as the widget
-        # Use median word height around widget to set tolerance
-        nearby_words = sorted(
-            normalized_words, key=lambda w: abs(w["mid_y"] - widget_mid_y)
-        )[:50]
-        if nearby_words:
-            avg_height = sum((w["y1"] - w["y0"]) for w in nearby_words) / len(
-                nearby_words
-            )
-            vertical_tol = max(3.0, avg_height * 0.6)
-        else:
-            vertical_tol = 5.0
+        if not candidate_words:
+            return None
 
-        same_line_candidates = [
-            w
-            for w in normalized_words
-            if abs(w["mid_y"] - widget_mid_y) <= vertical_tol
-        ]
-        right_words = [w for w in same_line_candidates if w["x0"] >= widget_rect.x1 - 1]
-        right_words.sort(key=lambda w: w["x0"])
-        if right_words:
-            # Require proximity for the first right word to avoid cross-column capture
-            if (right_words[0]["x0"] - widget_rect.x1) > PROXIMITY_X:
-                return None
-            # Optionally, stop if a very large horizontal jump suggests another column
-            label_tokens = []
-            if len(right_words) >= 2:
-                # Estimate typical gap using the 75th percentile of observed gaps
-                gaps = [
-                    right_words[i + 1]["x0"] - right_words[i]["x0"]
-                    for i in range(len(right_words) - 1)
-                ]
-                if gaps:
-                    sorted_gaps = sorted(gaps)
-                    idx = int(
-                        min(
-                            len(sorted_gaps) - 1,
-                            max(0, round(0.75 * (len(sorted_gaps) - 1))),
-                        )
-                    )
-                    typical_gap = max(8.0, sorted_gaps[idx])
-                else:
-                    typical_gap = 12.0
+        # Sort by horizontal position
+        candidate_words.sort(key=lambda x: x[0])
+
+        # Stop collecting words if there's a large gap (indicating next column)
+        label_words = []
+        MAX_WORD_GAP = 50  # maximum gap between consecutive words in same label (increased to capture multi-word options)
+
+        for i, (x_pos, word_text) in enumerate(candidate_words):
+            if i == 0:
+                label_words.append(word_text)
             else:
-                typical_gap = 12.0
+                prev_x = candidate_words[i - 1][0]
+                gap = x_pos - prev_x
 
-            prev_x = None
-            for w in right_words:
-                if prev_x is not None and (w["x0"] - prev_x) > (typical_gap * 2.5):
+                # If gap is too large, we've likely moved to next column
+                if gap > MAX_WORD_GAP:
                     break
-                label_tokens.append(w["text"])
-                prev_x = w["x0"]
-            if label_tokens:
-                return " ".join(label_tokens).strip() or None
+                label_words.append(word_text)
 
-        return None
+        return " ".join(label_words)
+
+    def _merge_duplicate_questions(self, structured_data: dict) -> dict:
+        """
+        Post-processes the structured data to merge duplicate questions with the same question_text.
+        When a question appears as both a choice-type (RadioButton/CheckBox) and a text field,
+        appends the text field answer to the selected_answers of the choice-type question.
+        """
+        questions = structured_data.get("questions", [])
+        if not questions:
+            return structured_data
+
+        # Group questions by question_text
+        question_groups = {}
+        for question in questions:
+            question_text = question.get("question_text", "")
+            if question_text not in question_groups:
+                question_groups[question_text] = []
+            question_groups[question_text].append(question)
+
+        # Process groups with multiple questions (duplicates)
+        merged_questions = []
+        for question_text, question_list in question_groups.items():
+            if len(question_list) == 1:
+                # No duplicates, keep as is
+                merged_questions.append(question_list[0])
+            else:
+                # Found duplicates, merge them
+                merged_question = self._merge_question_group(question_list)
+                merged_questions.append(merged_question)
+
+        # Update the structured data with merged questions
+        structured_data["questions"] = merged_questions
+        structured_data["total_questions"] = len(merged_questions)
+
+        # Recalculate questions_with_selections
+        def question_has_answer(q: dict) -> bool:
+            qtype = q.get("type")
+            if qtype == "Text":
+                return bool(q.get("answer"))
+            # Choice types
+            selected = q.get("selected_answers")
+            if selected is not None:
+                return any(ans and ans != "None" for ans in selected)
+            # Fallback using options_details
+            for opt in q.get("options_details", []) or []:
+                if opt.get("is_selected"):
+                    return True
+            return False
+
+        questions_with_selections = sum(
+            1 for q in merged_questions if question_has_answer(q)
+        )
+        structured_data["extraction_summary"][
+            "questions_with_selections"
+        ] = questions_with_selections
+
+        return structured_data
+
+    def _merge_question_group(self, question_list: list) -> dict:
+        """
+        Merges a group of questions with the same question_text.
+        Prioritizes choice-type questions (RadioButton/CheckBox) and appends text field answers.
+        """
+        # Find the choice-type question (RadioButton/CheckBox) and text field question
+        choice_question = None
+        text_question = None
+
+        for question in question_list:
+            question_type = question.get("type", "")
+            if question_type in ["RadioButton", "CheckBox"]:
+                choice_question = question
+            elif question_type == "Text":
+                text_question = question
+
+        # If we have both choice and text questions, merge them
+        if choice_question and text_question:
+            # Get the text answer
+            text_answer = text_question.get("answer", "").strip()
+
+            # Append text answer to selected_answers if it's not empty
+            if text_answer:
+                selected_answers = choice_question.get("selected_answers", [])
+                if selected_answers and selected_answers != ["None"]:
+                    # Append the text answer to existing selected answers
+                    selected_answers.append(text_answer)
+                else:
+                    # If no other selections, just use the text answer
+                    selected_answers = [text_answer]
+                choice_question["selected_answers"] = selected_answers
+
+            return choice_question
+        else:
+            # If only one type exists, return the first one
+            return question_list[0]
 
     def to_json(self, indent: int = 2) -> str:
         """
