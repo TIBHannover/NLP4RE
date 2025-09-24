@@ -28,7 +28,7 @@
         "Information extraction from legal documents",
         "App review analysis",
         "Dependency and relation extraction",
-        "Information extraction (e.g., features, terms) from",
+        "Information extraction from requirements",
         "Other/Comments"
       ],
       "options_details": [
@@ -87,7 +87,7 @@
           "is_selected": false
         },
         {
-          "label": "Information extraction (e.g., features, terms) from",
+          "label": "Information extraction from requirements",
           "field_name": "I_1_ What RE Task is your stud_3onV9GF51v2qn4B5z306pQ",
           "field_value": "Off",
           "is_selected": false
@@ -168,8 +168,8 @@
         "Sentences",
         "Phrases",
         "Words",
-        "Structured/tabular",
-        "Other (e.g., models, trace links, diagrams, code comments)/Comments"
+        "Structured/tabular text: e.g., use case specification, feature table",
+        "Other/Comments"
       ],
       "options_details": [
         {
@@ -203,13 +203,13 @@
           "is_selected": false
         },
         {
-          "label": "Structured/tabular",
+          "label": "Structured/tabular text: e.g., use case specification, feature table",
           "field_name": "III_1_ What is the input of yo_5_m6SmbbtoOqfdxQ3MQ8LspQ",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Other (e.g., models, trace links, diagrams, code comments)/Comments",
+          "label": "Other/Comments",
           "field_name": "III_1_ What is the input of yo_6_m6SmbbtoOqfdxQ3MQ8LspQ",
           "field_value": "",
           "is_selected": false
@@ -221,36 +221,36 @@
       "question_text": "III.2. What type of classification is the study about?",
       "type": "CheckBox",
       "selected_answers": [
-        "Multi class- Multi label (e.g., type of quality in non-functional"
+        "Multi class- Multi label"
       ],
       "all_options": [
-        "Binary-Single label (e.g., ambiguous vs. unambiguous)",
-        "Binary-Multi label (e.g., functional vs non-functional)",
-        "Multi class-Single label (e.g., predicting number",
-        "Multi class- Multi label (e.g., type of quality in non-functional",
+        "Binary-Single label",
+        "Binary-Multi label",
+        "Multi class-Single label",
+        "Multi class- Multi label",
         "Other/Comments"
       ],
       "options_details": [
         {
-          "label": "Binary-Single label (e.g., ambiguous vs. unambiguous)",
+          "label": "Binary-Single label",
           "field_name": "III_2_ What type of classifica_0_iVw4yoypoH7TeDHZUsNPCg",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Binary-Multi label (e.g., functional vs non-functional)",
+          "label": "Binary-Multi label",
           "field_name": "III_2_ What type of classifica_1_iVw4yoypoH7TeDHZUsNPCg",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Multi class-Single label (e.g., predicting number",
+          "label": "Multi class-Single label",
           "field_name": "III_2_ What type of classifica_2_iVw4yoypoH7TeDHZUsNPCg",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Multi class- Multi label (e.g., type of quality in non-functional",
+          "label": "Multi class- Multi label",
           "field_name": "III_2_ What type of classifica_3_iVw4yoypoH7TeDHZUsNPCg",
           "field_value": "Yes",
           "is_selected": true
@@ -325,34 +325,34 @@
         "None"
       ],
       "all_options": [
-        "Text (e.g., from a diagram generate description)",
-        "Table (e.g, from requirements generate a table of",
-        "Graphical diagram (e.g., generate UML diagram",
-        "Executable model (e.g., from requirements to Simulink",
+        "Text",
+        "Table",
+        "Graphical diagram",
+        "Executable model",
         "Test Cases",
         "Other/Comments"
       ],
       "options_details": [
         {
-          "label": "Text (e.g., from a diagram generate description)",
+          "label": "Text",
           "field_name": "III_6_ What is the type of out_0_WlmEOgrpw-LgKHUmmwIp*g",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Table (e.g, from requirements generate a table of",
+          "label": "Table",
           "field_name": "III_6_ What is the type of out_1_WlmEOgrpw-LgKHUmmwIp*g",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Graphical diagram (e.g., generate UML diagram",
+          "label": "Graphical diagram",
           "field_name": "III_6_ What is the type of out_2_WlmEOgrpw-LgKHUmmwIp*g",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Executable model (e.g., from requirements to Simulink",
+          "label": "Executable model",
           "field_name": "III_6_ What is the type of out_3_WlmEOgrpw-LgKHUmmwIp*g",
           "field_value": "",
           "is_selected": false
@@ -380,9 +380,9 @@
       ],
       "all_options": [
         "1 to 1",
-        "1 to many (e.g., 1 use case description to 3 diagrams)",
-        "Many to 1 (e.g., many requirements translated into",
-        "Many to many (e.g., from many use case descriptions",
+        "1 to many",
+        "Many to 1",
+        "Many to many",
         "Other/Comments"
       ],
       "options_details": [
@@ -393,19 +393,19 @@
           "is_selected": false
         },
         {
-          "label": "1 to many (e.g., 1 use case description to 3 diagrams)",
+          "label": "1 to many",
           "field_name": "III_7_ What is the translation_1_CmhWXKHPJ5dTDFOLvQNoKw",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Many to 1 (e.g., many requirements translated into",
+          "label": "Many to 1",
           "field_name": "III_7_ What is the translation_2_CmhWXKHPJ5dTDFOLvQNoKw",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Many to many (e.g., from many use case descriptions",
+          "label": "Many to many",
           "field_name": "III_7_ What is the translation_3_CmhWXKHPJ5dTDFOLvQNoKw",
           "field_value": "",
           "is_selected": false
@@ -427,7 +427,7 @@
         "Sentences",
         "Phrases",
         "Words",
-        "Other (e.g., models, trace links, diagrams, code comments)/Comments",
+        "articles",
         "articles"
       ],
       "all_options": [
@@ -436,8 +436,8 @@
         "Sentences",
         "Phrases",
         "Words",
-        "Structured/tabular",
-        "Other (e.g., models, trace links, diagrams, code comments)/Comments",
+        "Structured/tabular text: e.g., use case specification, feature table",
+        "articles",
         "articles"
       ],
       "options_details": [
@@ -472,13 +472,13 @@
           "is_selected": true
         },
         {
-          "label": "Structured/tabular",
+          "label": "Structured/tabular text: e.g., use case specification, feature table",
           "field_name": "III_8_ What are the types of e_5_NqzSoz8ZU9jlan47aFjctw",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Other (e.g., models, trace links, diagrams, code comments)/Comments",
+          "label": "articles",
           "field_name": "III_8_ What are the types of e_6_NqzSoz8ZU9jlan47aFjctw",
           "field_value": "Yes",
           "is_selected": true
@@ -514,18 +514,18 @@
       "question_text": "IV.3. What is the source of the data?",
       "type": "CheckBox",
       "selected_answers": [
-        "Community-based",
-        "Legal/regulatory"
+        "Community-based Open Source Projects (i.e., the community",
+        "Legal/regulatory documents"
       ],
       "all_options": [
         "Industrial Project, proprietary data",
         "Industrial Project, publicly available data",
-        "Community-based",
+        "Community-based Open Source Projects (i.e., the community",
         "Textbook examples or cases",
-        "Student Projects (i.e., requirements developed by",
-        "Toy Requirements (e.g., used for courses, developed",
-        "Legal/regulatory",
-        "User generated content (e.g., app stores, user forums,",
+        "Student Projects (i.e., requirements developed by students in a",
+        "Toy Requirements (e.g., used for courses, developed by",
+        "Legal/regulatory documents",
+        "User generated content",
         "Other/Comments"
       ],
       "options_details": [
@@ -542,7 +542,7 @@
           "is_selected": false
         },
         {
-          "label": "Community-based",
+          "label": "Community-based Open Source Projects (i.e., the community",
           "field_name": "IV_3_ What is the source of th_2_NE019aUyUl6-PJ8ABBC84w",
           "field_value": "Yes",
           "is_selected": true
@@ -554,25 +554,25 @@
           "is_selected": false
         },
         {
-          "label": "Student Projects (i.e., requirements developed by",
+          "label": "Student Projects (i.e., requirements developed by students in a",
           "field_name": "IV_3_ What is the source of th_4_NE019aUyUl6-PJ8ABBC84w",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Toy Requirements (e.g., used for courses, developed",
+          "label": "Toy Requirements (e.g., used for courses, developed by",
           "field_name": "IV_3_ What is the source of th_5_NE019aUyUl6-PJ8ABBC84w",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Legal/regulatory",
+          "label": "Legal/regulatory documents",
           "field_name": "IV_3_ What is the source of th_6_NE019aUyUl6-PJ8ABBC84w",
           "field_value": "Yes",
           "is_selected": true
         },
         {
-          "label": "User generated content (e.g., app stores, user forums,",
+          "label": "User generated content",
           "field_name": "IV_3_ What is the source of th_7_NE019aUyUl6-PJ8ABBC84w",
           "field_value": "",
           "is_selected": false
@@ -590,50 +590,50 @@
       "question_text": "IV.4. What is the level of abstraction of the data (not limited to requirements)?",
       "type": "CheckBox",
       "selected_answers": [
-        "Normative-level"
+        "Normative-level (e.g., \"The processor shall not engage another processor without"
       ],
       "all_options": [
-        "User-level (e.g., \"Uploading pictures with the app",
-        "Normative-level",
-        "Business-level (e.g., \"Provide customer with a pleasant",
-        "System-level (e.g., \"When a GSI component constraint",
-        "Module-level (e.g., module design description, sub-system",
-        "Code-level (e.g., code or comments)",
+        "User-level",
+        "Normative-level (e.g., \"The processor shall not engage another processor without",
+        "Business-level (e.g., \"Provide customer with a pleasant online shopping",
+        "System-level (e.g., \"When a GSI component constraint is violated, STS shall deliver",
+        "Module-level",
+        "Code-level",
         "Other/Comments"
       ],
       "options_details": [
         {
-          "label": "User-level (e.g., \"Uploading pictures with the app",
+          "label": "User-level",
           "field_name": "IV_4_ What is the level of abs_0_9Rgge2tYJc7IIZ0pqo77jg",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Normative-level",
+          "label": "Normative-level (e.g., \"The processor shall not engage another processor without",
           "field_name": "IV_4_ What is the level of abs_1_9Rgge2tYJc7IIZ0pqo77jg",
           "field_value": "Yes",
           "is_selected": true
         },
         {
-          "label": "Business-level (e.g., \"Provide customer with a pleasant",
+          "label": "Business-level (e.g., \"Provide customer with a pleasant online shopping",
           "field_name": "IV_4_ What is the level of abs_2_9Rgge2tYJc7IIZ0pqo77jg",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "System-level (e.g., \"When a GSI component constraint",
+          "label": "System-level (e.g., \"When a GSI component constraint is violated, STS shall deliver",
           "field_name": "IV_4_ What is the level of abs_3_9Rgge2tYJc7IIZ0pqo77jg",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Module-level (e.g., module design description, sub-system",
+          "label": "Module-level",
           "field_name": "IV_4_ What is the level of abs_4_9Rgge2tYJc7IIZ0pqo77jg",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Code-level (e.g., code or comments)",
+          "label": "Code-level",
           "field_name": "IV_4_ What is the level of abs_5_9Rgge2tYJc7IIZ0pqo77jg",
           "field_value": "",
           "is_selected": false
@@ -658,13 +658,13 @@
         "User stories",
         "Use cases",
         "User reviews",
-        "Social media posts (e.g., Tweets)",
+        "Social media posts",
         "Bug/defect reports",
-        "Messages in User forums",
+        "tags identifying semantic functions of part of",
         "Graphical Diagrams",
         "Scenarios (other than use cases)",
         "Legal text",
-        "Other artefacts (e.g., slides)/Comments"
+        "Other artefacts/Comments"
       ],
       "options_details": [
         {
@@ -692,7 +692,7 @@
           "is_selected": false
         },
         {
-          "label": "Social media posts (e.g., Tweets)",
+          "label": "Social media posts",
           "field_name": "IV_5_ What is the format of th_4_wESQvi2*4VcpWC86JA6BXg",
           "field_value": "",
           "is_selected": false
@@ -704,7 +704,7 @@
           "is_selected": false
         },
         {
-          "label": "Messages in User forums",
+          "label": "tags identifying semantic functions of part of",
           "field_name": "IV_5_ What is the format of th_6_wESQvi2*4VcpWC86JA6BXg",
           "field_value": "",
           "is_selected": false
@@ -728,7 +728,7 @@
           "is_selected": true
         },
         {
-          "label": "Other artefacts (e.g., slides)/Comments",
+          "label": "Other artefacts/Comments",
           "field_name": "IV_5_ What is the format of th_10_wESQvi2*4VcpWC86JA6BXg",
           "field_value": "Off",
           "is_selected": false
@@ -740,25 +740,25 @@
       "question_text": "IV.6. How rigorous is the format of the data?",
       "type": "CheckBox",
       "selected_answers": [
-        "Unconstrained natural language",
-        "Semantically-augmented"
+        "Unconstrained natural language French",
+        "Semantically-augmented natural language (i.e.,"
       ],
       "all_options": [
-        "Unconstrained natural language",
-        "Template-based",
+        "Unconstrained natural language French",
+        "Template-based controlled natural language",
         "Restricted grammar based controlled natural",
-        "Semantically-augmented",
+        "Semantically-augmented natural language (i.e.,",
         "Other/Comments"
       ],
       "options_details": [
         {
-          "label": "Unconstrained natural language",
+          "label": "Unconstrained natural language French",
           "field_name": "IV_6_ How rigorous is the form_0_0jYzl49zZ8gdxRMFQw7B4g",
           "field_value": "Yes",
           "is_selected": true
         },
         {
-          "label": "Template-based",
+          "label": "Template-based controlled natural language",
           "field_name": "IV_6_ How rigorous is the form_1_0jYzl49zZ8gdxRMFQw7B4g",
           "field_value": "",
           "is_selected": false
@@ -770,7 +770,7 @@
           "is_selected": false
         },
         {
-          "label": "Semantically-augmented",
+          "label": "Semantically-augmented natural language (i.e.,",
           "field_name": "IV_6_ How rigorous is the form_3_0jYzl49zZ8gdxRMFQw7B4g",
           "field_value": "Yes",
           "is_selected": true
@@ -810,10 +810,10 @@
       ],
       "all_options": [
         "Fully",
-        "Partially",
-        "Upon Request",
+        "In a repository (GitHub, GitLab)",
+        "In a persistent platform with DOI",
         "No",
-        "Other/Comments"
+        "License: modification only for"
       ],
       "options_details": [
         {
@@ -823,13 +823,13 @@
           "is_selected": false
         },
         {
-          "label": "Partially",
+          "label": "In a repository (GitHub, GitLab)",
           "field_name": "IV_10_ Is the dataset publicly_dS1IkC6SsVPnIBmTuSR6vg",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "Upon Request",
+          "label": "In a persistent platform with DOI",
           "field_name": "IV_10_ Is the dataset publicly_dS1IkC6SsVPnIBmTuSR6vg",
           "field_value": "Off",
           "is_selected": false
@@ -841,7 +841,7 @@
           "is_selected": true
         },
         {
-          "label": "Other/Comments",
+          "label": "License: modification only for",
           "field_name": "IV_10_ Is the dataset publicly_dS1IkC6SsVPnIBmTuSR6vg",
           "field_value": "Off",
           "is_selected": false
@@ -863,8 +863,8 @@
       ],
       "all_options": [
         "No license",
-        "License: reuse only for non-",
-        "License: reuse for any",
+        "In a repository (GitHub, GitLab)",
+        "(Zenodo, FigShare)",
         "License: modification only for",
         "License: modification for any",
         "Other/Comments"
@@ -877,13 +877,13 @@
           "is_selected": true
         },
         {
-          "label": "License: reuse only for non-",
+          "label": "In a repository (GitHub, GitLab)",
           "field_name": "IV_11_ What license has been u_stve8SlZBadb2wLUvNWaNw",
           "field_value": "Off",
           "is_selected": false
         },
         {
-          "label": "License: reuse for any",
+          "label": "(Zenodo, FigShare)",
           "field_name": "IV_11_ What license has been u_stve8SlZBadb2wLUvNWaNw",
           "field_value": "Off",
           "is_selected": false
@@ -922,14 +922,14 @@
         "None"
       ],
       "all_options": [
-        "On a private/corporate",
+        "On a private/corporate website",
         "In a repository (GitHub, GitLab)",
         "In a persistent platform with DOI",
         "Other/Comments"
       ],
       "options_details": [
         {
-          "label": "On a private/corporate",
+          "label": "On a private/corporate website",
           "field_name": "IV_12_ Where is the dataset st_0_HOCnlmYxVimtfMjDF-2WkA",
           "field_value": "",
           "is_selected": false
@@ -976,8 +976,8 @@
       "all_options": [
         "Multiple annotators per entry",
         "One annotator per entry (no quality control)",
-        "One annotator per entry (quality control, possibly",
-        "Partly multiple annotators per entry, partly one",
+        "One annotator per entry (quality control, possibly on a sample, by a supervisor)",
+        "Partly multiple annotators per entry, partly one annotator per entry",
         "Other/Comments"
       ],
       "options_details": [
@@ -994,13 +994,13 @@
           "is_selected": false
         },
         {
-          "label": "One annotator per entry (quality control, possibly",
+          "label": "One annotator per entry (quality control, possibly on a sample, by a supervisor)",
           "field_name": "V_2_ How are the entries annot_2_A6O1PBPu--9nfqOu5q4LZA",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Partly multiple annotators per entry, partly one",
+          "label": "Partly multiple annotators per entry, partly one annotator per entry",
           "field_name": "V_2_ How are the entries annot_3_A6O1PBPu--9nfqOu5q4LZA",
           "field_value": "",
           "is_selected": false
@@ -1065,7 +1065,7 @@
       "all_options": [
         "The designers of the technique/tool",
         "People who have direct contact with the designers",
-        "Independent annotators (e.g., crowd workers, pre-annotated",
+        "Independent annotators",
         "Other/Comments"
       ],
       "options_details": [
@@ -1082,7 +1082,7 @@
           "is_selected": true
         },
         {
-          "label": "Independent annotators (e.g., crowd workers, pre-annotated",
+          "label": "Independent annotators",
           "field_name": "V_4_ Who are the annotators?_2_xinyiLuyUF-dWuxR07MuxA",
           "field_value": "",
           "is_selected": false
@@ -1159,7 +1159,7 @@
       "all_options": [
         "No",
         "No, but are made available upon request",
-        "Yes, via a non-persistent URL",
+        "Yes, via a non-persistent",
         "Yes, via a persistent URL",
         "Other/Comments"
       ],
@@ -1177,7 +1177,7 @@
           "is_selected": false
         },
         {
-          "label": "Yes, via a non-persistent URL",
+          "label": "Yes, via a non-persistent",
           "field_name": "V_6_ Did you make the written _2_L4ChScc51n61wg7fDIpTUg",
           "field_value": "",
           "is_selected": false
@@ -1204,20 +1204,20 @@
         "Entire document"
       ],
       "all_options": [
+        "Yes",
         "No",
-        "Surrounding context (e.g., the entire paragraph",
         "Entire document",
         "Other/Comments"
       ],
       "options_details": [
         {
-          "label": "No",
+          "label": "Yes",
           "field_name": "V_7_ Did you share other infor_0_ZVCqAIdkmy-s-3cyVOPY3Q",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Surrounding context (e.g., the entire paragraph",
+          "label": "No",
           "field_name": "V_7_ Did you share other infor_1_ZVCqAIdkmy-s-3cyVOPY3Q",
           "field_value": "",
           "is_selected": false
@@ -1241,12 +1241,12 @@
       "question_text": "V.8. Did you employ techniques to mitigate fatigue effects during the annotation sessions?",
       "type": "RadioButton",
       "selected_answers": [
-        "Other/Comments"
+        "regular checkpoints and discussions over the annotatio"
       ],
       "all_options": [
         "Yes",
         "No",
-        "Other/Comments"
+        "regular checkpoints and discussions over the annotatio"
       ],
       "options_details": [
         {
@@ -1262,7 +1262,7 @@
           "is_selected": false
         },
         {
-          "label": "Other/Comments",
+          "label": "regular checkpoints and discussions over the annotatio",
           "field_name": "V_8_ Did you employ techniques_zcNXXhjgWsR-vuEBdlkeBg",
           "field_value": "2",
           "is_selected": true
@@ -1328,8 +1328,8 @@
       "type": "CheckBox",
       "selected_answers": [
         "Discussion among taggers",
-        "Other/Comments",
-        "a super-annotator made the final decision if disagreement persisted "
+        "a super-annotato",
+        "a super-annotator made the final decision if disagreement persisted"
       ],
       "all_options": [
         "Majority voting",
@@ -1338,8 +1338,8 @@
         "Resolution by independent",
         "Disagreements were disregarded",
         "Not resolved",
-        "Other/Comments",
-        "a super-annotator made the final decision if disagreement persisted "
+        "a super-annotato",
+        "a super-annotator made the final decision if disagreement persisted"
       ],
       "options_details": [
         {
@@ -1379,13 +1379,13 @@
           "is_selected": false
         },
         {
-          "label": "Other/Comments",
+          "label": "a super-annotato",
           "field_name": "V_10_ How were conflicts resol_6_cYaP5TXE8Bvp9FLRssQN0w",
           "field_value": "Yes",
           "is_selected": true
         },
         {
-          "label": "a super-annotator made the final decision if disagreement persisted ",
+          "label": "a super-annotator made the final decision if disagreement persisted",
           "field_name": "V_10_ How were conflicts resol_edit;_cYaP5TXE8Bvp9FLRssQN0w",
           "field_value": "a super-annotator made the final decision if disagreement persisted ",
           "is_selected": true
@@ -1463,27 +1463,27 @@
       "question_text": "VI.3. What has been released?",
       "type": "CheckBox",
       "selected_answers": [
-        "Service on the web (e.g., REST)"
+        "Service on the web"
       ],
       "all_options": [
-        "Tool (e.g., a binary file) -- standalone",
-        "Service on the web (e.g., REST)",
+        "Tool -- standalone",
+        "Service on the web",
         "Library / API",
         "Source code",
-        "Executable notebook (e.g., Jupyter)",
+        "Executable notebook",
         "Pre-trained model (ML-based trained model)",
         "No tool has been released",
         "Other/Comments"
       ],
       "options_details": [
         {
-          "label": "Tool (e.g., a binary file) -- standalone",
+          "label": "Tool -- standalone",
           "field_name": "VI_3_ What has been released? _0_51QlRxyEUiyeeB1hTyghEQ",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Service on the web (e.g., REST)",
+          "label": "Service on the web",
           "field_name": "VI_3_ What has been released? _1_51QlRxyEUiyeeB1hTyghEQ",
           "field_value": "Yes",
           "is_selected": true
@@ -1501,7 +1501,7 @@
           "is_selected": false
         },
         {
-          "label": "Executable notebook (e.g., Jupyter)",
+          "label": "Executable notebook",
           "field_name": "VI_3_ What has been released? _4_51QlRxyEUiyeeB1hTyghEQ",
           "field_value": "",
           "is_selected": false
@@ -1534,8 +1534,8 @@
         "Reproduce the tool from the explanation in the paper"
       ],
       "all_options": [
-        "No installation is needed (e.g., standalone tool)",
-        "Import and integrate into your own code (e.g., via",
+        "No installation is needed",
+        "Import and integrate into your own code",
         "Compile and run",
         "Virtual machine / Docker containers",
         "Reproduce the tool from the explanation in the paper",
@@ -1544,13 +1544,13 @@
       ],
       "options_details": [
         {
-          "label": "No installation is needed (e.g., standalone tool)",
+          "label": "No installation is needed",
           "field_name": "VI_4_ What needs to be done fo_0_*kObKz4zYt9a6BkulsBJww",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Import and integrate into your own code (e.g., via",
+          "label": "Import and integrate into your own code",
           "field_name": "VI_4_ What needs to be done fo_1_*kObKz4zYt9a6BkulsBJww",
           "field_value": "",
           "is_selected": false
@@ -1665,10 +1665,11 @@
       "all_options": [
         "None",
         "Open source libraries / software (e.g., python libraries,",
-        "Proprietary libraries / software (e.g., Google Cloud",
+        "DOI (Zenodo, FigShare)",
         "Specific OS",
-        "Specific hardware (e.g., hardware GPU acceleration",
-        "External knowledge bases (e.g., Wikipedia)",
+        "Specific hardware",
+        "External knowledge bases",
+        "Other/Comments",
         "Other/Comments"
       ],
       "options_details": [
@@ -1685,7 +1686,7 @@
           "is_selected": true
         },
         {
-          "label": "Proprietary libraries / software (e.g., Google Cloud",
+          "label": "DOI (Zenodo, FigShare)",
           "field_name": "VI_6_ What type of dependencie_2_B*JQyz9AE0UX*Qs0hz*3UA",
           "field_value": "",
           "is_selected": false
@@ -1697,13 +1698,13 @@
           "is_selected": false
         },
         {
-          "label": "Specific hardware (e.g., hardware GPU acceleration",
+          "label": "Specific hardware",
           "field_name": "VI_6_ What type of dependencie_4_B*JQyz9AE0UX*Qs0hz*3UA",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "External knowledge bases (e.g., Wikipedia)",
+          "label": "External knowledge bases",
           "field_name": "VI_6_ What type of dependencie_5_B*JQyz9AE0UX*Qs0hz*3UA",
           "field_value": "",
           "is_selected": false
@@ -1713,9 +1714,15 @@
           "field_name": "VI_6_ What type of dependencie_6_B*JQyz9AE0UX*Qs0hz*3UA",
           "field_value": "",
           "is_selected": false
+        },
+        {
+          "label": "Other/Comments",
+          "field_name": "VI_6_ What type of dependencie_edit;_B*JQyz9AE0UX*Qs0hz*3UA",
+          "field_value": "",
+          "is_selected": false
         }
       ],
-      "total_options": 7
+      "total_options": 8
     },
     {
       "question_text": "VI.7. How is the tool released?",
@@ -1724,7 +1731,7 @@
         "None"
       ],
       "all_options": [
-        "On a private/corporate",
+        "On a private/corporate website No license",
         "In a repository (GitHub, GitLab)",
         "In a persistent platform with",
         "Other/Comments",
@@ -1732,7 +1739,7 @@
       ],
       "options_details": [
         {
-          "label": "On a private/corporate",
+          "label": "On a private/corporate website No license",
           "field_name": "VI_7_ How is the tool released_0_P0mu-jL8bQmM86Yf6HAWNg",
           "field_value": "",
           "is_selected": false
@@ -1909,13 +1916,13 @@
       "question_text": "VII.2. What is the validation procedure?",
       "type": "CheckBox",
       "selected_answers": [
-        "Entire dataset (e.g., no training)"
+        "Entire dataset"
       ],
       "all_options": [
         "Train-test split",
         "Cross-validation",
         "Cross-project validation",
-        "Entire dataset (e.g., no training)",
+        "Entire dataset",
         "Other/Comments"
       ],
       "options_details": [
@@ -1938,7 +1945,7 @@
           "is_selected": false
         },
         {
-          "label": "Entire dataset (e.g., no training)",
+          "label": "Entire dataset",
           "field_name": "VII_2_ What is the validation _3_bB6qJRRmmNOPaUct61W3zQ",
           "field_value": "Yes",
           "is_selected": true
@@ -1956,20 +1963,20 @@
       "question_text": "VII.3. What baseline do you compare against?",
       "type": "CheckBox",
       "selected_answers": [
-        "Human baseline (i.e., comparison against human"
+        "Human baseline (i.e., comparison against human performance)"
       ],
       "all_options": [
-        "Existing tool or algorithm (e.g., from another paper",
+        "Existing tool or algorithm",
         "Reconstructed tool from other research",
-        "Automated, but self-defined (e.g., using ML algorithm",
-        "Theoretical / conceptual (e.g., majority class)",
-        "Human baseline (i.e., comparison against human",
+        "Automated, but self-defined",
+        "Theoretical / conceptual",
+        "Human baseline (i.e., comparison against human performance)",
         "None",
         "Other/Comments"
       ],
       "options_details": [
         {
-          "label": "Existing tool or algorithm (e.g., from another paper",
+          "label": "Existing tool or algorithm",
           "field_name": "VII_3_ What baseline do you co_0_V*qU1CI*IzDHW9*VTgpl0w",
           "field_value": "",
           "is_selected": false
@@ -1981,19 +1988,19 @@
           "is_selected": false
         },
         {
-          "label": "Automated, but self-defined (e.g., using ML algorithm",
+          "label": "Automated, but self-defined",
           "field_name": "VII_3_ What baseline do you co_2_V*qU1CI*IzDHW9*VTgpl0w",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Theoretical / conceptual (e.g., majority class)",
+          "label": "Theoretical / conceptual",
           "field_name": "VII_3_ What baseline do you co_3_V*qU1CI*IzDHW9*VTgpl0w",
           "field_value": "",
           "is_selected": false
         },
         {
-          "label": "Human baseline (i.e., comparison against human",
+          "label": "Human baseline (i.e., comparison against human performance)",
           "field_name": "VII_3_ What baseline do you co_4_V*qU1CI*IzDHW9*VTgpl0w",
           "field_value": "Yes",
           "is_selected": true

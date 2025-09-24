@@ -114,8 +114,23 @@ class PDFFormExtractor:
                         if not field["value"]:
                             continue
                         text_input_value = field["value"]
+
+                # Normalize labels by removing parenthetical segments containing 'e.g.'
+                def _normalize_option_label(label: str | None) -> str | None:
+                    if label is None:
+                        return None
+                    # remove any parenthetical that contains e.g. (case-insensitive)
+                    cleaned = re.sub(
+                        r"\s*\([^)]*e\.g[^)]*\)", "", label, flags=re.IGNORECASE
+                    )
+                    # collapse excess whitespace
+                    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+                    return cleaned
+
                 option_info = {
-                    "label": text_input_value or field["label"],
+                    "label": _normalize_option_label(
+                        text_input_value or field["label"]
+                    ),
                     "field_name": field["name"],
                     "field_value": field["value"],
                     "is_selected": self._is_field_selected(field),
@@ -125,6 +140,20 @@ class PDFFormExtractor:
 
                 if option_info["is_selected"]:
                     selected_options.append(option_info["label"])
+                    # If "Other/Comments" is selected and a text value exists, include it as well
+                    if (
+                        option_info["label"] == "Other/Comments"
+                        and text_input_value is not None
+                        and str(text_input_value).strip() != ""
+                    ):
+                        selected_options.append(str(text_input_value).strip())
+
+            # If a companion text field exists and is filled, include it in selected answers
+            # even if "Other/Comments" wasn't explicitly selected, to avoid losing the input.
+            if text_input_value is not None and str(text_input_value).strip() != "":
+                text_val = str(text_input_value).strip()
+                if text_val not in selected_options:
+                    selected_options.append(text_val)
 
             # Create the structured question
             # Determine choice group type label
@@ -244,14 +273,6 @@ class PDFFormExtractor:
         except Exception:
             field_info["field_label"] = None
 
-        # if widget.field_type == fitz.PDF_WIDGET_TYPE_CHECKBOX:
-        #     field_info["is_checked"] = widget.is_checked
-        # elif widget.field_type == fitz.PDF_WIDGET_TYPE_RADIOBUTTON:
-        # # For radio buttons, is_checked tells if THIS specific button is selected
-        # field_info["is_selected"] = widget.is_checked
-        # # The group value shows which option was selected for the whole group
-        # field_info["group_value"] = widget.field_value
-
         # Find the label for the widget using spatial analysis
         field_info["label"] = self._find_label_for_widget(widget_rect, words)
 
@@ -259,8 +280,10 @@ class PDFFormExtractor:
 
     def _find_label_for_widget(self, widget_rect: fitz.Rect, words: list) -> str:
         """
-        Searches for text labels to the right of a given widget's rectangle.
-        Uses both vertical alignment and horizontal proximity to avoid picking up distant text.
+        Searches for text labels to the right of a given widget by selecting
+        words from the same text line as the widget (using block/line indices
+        when available), then concatenating words to the right of the widget.
+        Falls back to a y-clustering heuristic if line indices are unavailable.
 
         Args:
             widget_rect: The fitz.Rect object for the form widget.
@@ -269,52 +292,124 @@ class PDFFormExtractor:
         Returns:
             The found text label as a string, or None if no label is found.
         """
-        # Define tolerances for alignment and proximity
-        VERTICAL_TOLERANCE = 3  # pixels for vertical alignment
-        MAX_HORIZONTAL_DISTANCE = 150  # maximum pixels to look to the right (balanced to capture full options but avoid cross-column contamination)
-
         widget_mid_y = (widget_rect.y0 + widget_rect.y1) / 2
+        PROXIMITY_X = (
+            80.0  # require first right word to be within this px of the widget
+        )
 
-        # Find all words that are vertically aligned and close horizontally
-        candidate_words = []
-        for word_rect in words:
-            x0, y0, x1, y1, word_text = word_rect[:5]
-            word_mid_y = (y0 + y1) / 2
-
-            # Check for vertical alignment
-            vertically_aligned = abs(word_mid_y - widget_mid_y) <= VERTICAL_TOLERANCE
-
-            # Check if word is to the right but not too far
-            horizontally_close = (x0 > widget_rect.x1) and (
-                x0 - widget_rect.x1 <= MAX_HORIZONTAL_DISTANCE
+        # Normalize words into a common structure
+        normalized_words = []
+        for w in words:
+            # PyMuPDF typically returns (x0, y0, x1, y1, text, block_no, line_no, word_no)
+            x0, y0, x1, y1 = w[0], w[1], w[2], w[3]
+            text = w[4]
+            block_no = w[5] if len(w) > 5 else None
+            line_no = w[6] if len(w) > 6 else None
+            word_no = w[7] if len(w) > 7 else None
+            normalized_words.append(
+                {
+                    "x0": x0,
+                    "y0": y0,
+                    "x1": x1,
+                    "y1": y1,
+                    "mid_y": (y0 + y1) / 2,
+                    "text": text,
+                    "block": block_no,
+                    "line": line_no,
+                    "word": word_no,
+                }
             )
 
-            if vertically_aligned and horizontally_close:
-                candidate_words.append((x0, word_text))
+        # Strategy A: Use exact (block, line) if present. Choose the line whose
+        # y-mid is closest to the widget's y-mid within a reasonable threshold.
+        words_with_line = [
+            w
+            for w in normalized_words
+            if w["block"] is not None and w["line"] is not None
+        ]
+        # Restrict to candidate words near the widget on X to avoid cross-column capture
+        near_right_words = [
+            w
+            for w in words_with_line
+            if (w["x0"] >= widget_rect.x1 - 1)
+            and ((w["x0"] - widget_rect.x1) <= PROXIMITY_X)
+        ]
+        target_line_key = None
+        if near_right_words:
+            # Find the word whose mid_y is closest to widget_mid_y
+            nearest = min(
+                near_right_words, key=lambda w: abs(w["mid_y"] - widget_mid_y)
+            )
+            target_line_key = (nearest["block"], nearest["line"])
+            line_words = [
+                w for w in words_with_line if (w["block"], w["line"]) == target_line_key
+            ]
+            # From this line, take words strictly to the right of the widget
+            right_words = [w for w in line_words if w["x0"] >= widget_rect.x1 - 1]
+            right_words.sort(key=lambda w: w["x0"])
+            if right_words:
+                # Ensure proximity for the first token; otherwise treat as none
+                if (right_words[0]["x0"] - widget_rect.x1) > PROXIMITY_X:
+                    return None
+                return " ".join(w["text"] for w in right_words).strip() or None
 
-        if not candidate_words:
-            return None
+        # Strategy B (fallback): cluster by y using dynamic tolerance based on word heights
+        # Filter words roughly on the same horizontal band as the widget
+        # Use median word height around widget to set tolerance
+        nearby_words = sorted(
+            normalized_words, key=lambda w: abs(w["mid_y"] - widget_mid_y)
+        )[:50]
+        if nearby_words:
+            avg_height = sum((w["y1"] - w["y0"]) for w in nearby_words) / len(
+                nearby_words
+            )
+            vertical_tol = max(3.0, avg_height * 0.6)
+        else:
+            vertical_tol = 5.0
 
-        # Sort by horizontal position
-        candidate_words.sort(key=lambda x: x[0])
-
-        # Stop collecting words if there's a large gap (indicating next column)
-        label_words = []
-        MAX_WORD_GAP = 50  # maximum gap between consecutive words in same label (increased to capture multi-word options)
-
-        for i, (x_pos, word_text) in enumerate(candidate_words):
-            if i == 0:
-                label_words.append(word_text)
+        same_line_candidates = [
+            w
+            for w in normalized_words
+            if abs(w["mid_y"] - widget_mid_y) <= vertical_tol
+        ]
+        right_words = [w for w in same_line_candidates if w["x0"] >= widget_rect.x1 - 1]
+        right_words.sort(key=lambda w: w["x0"])
+        if right_words:
+            # Require proximity for the first right word to avoid cross-column capture
+            if (right_words[0]["x0"] - widget_rect.x1) > PROXIMITY_X:
+                return None
+            # Optionally, stop if a very large horizontal jump suggests another column
+            label_tokens = []
+            if len(right_words) >= 2:
+                # Estimate typical gap using the 75th percentile of observed gaps
+                gaps = [
+                    right_words[i + 1]["x0"] - right_words[i]["x0"]
+                    for i in range(len(right_words) - 1)
+                ]
+                if gaps:
+                    sorted_gaps = sorted(gaps)
+                    idx = int(
+                        min(
+                            len(sorted_gaps) - 1,
+                            max(0, round(0.75 * (len(sorted_gaps) - 1))),
+                        )
+                    )
+                    typical_gap = max(8.0, sorted_gaps[idx])
+                else:
+                    typical_gap = 12.0
             else:
-                prev_x = candidate_words[i - 1][0]
-                gap = x_pos - prev_x
+                typical_gap = 12.0
 
-                # If gap is too large, we've likely moved to next column
-                if gap > MAX_WORD_GAP:
+            prev_x = None
+            for w in right_words:
+                if prev_x is not None and (w["x0"] - prev_x) > (typical_gap * 2.5):
                     break
-                label_words.append(word_text)
+                label_tokens.append(w["text"])
+                prev_x = w["x0"]
+            if label_tokens:
+                return " ".join(label_tokens).strip() or None
 
-        return " ".join(label_words)
+        return None
 
     def to_json(self, indent: int = 2) -> str:
         """

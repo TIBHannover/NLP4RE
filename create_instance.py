@@ -448,11 +448,11 @@ class TemplateInstanceCreator:
                                     label=int(answer), datatype="xsd:integer"
                                 )
                         elif resource_mapping_key in url_literal_keys:
-                                literal_response = self.orkg.literals.add(
-                                    label=answer, datatype="xsd:uri"
-                                )
+                            literal_response = self.orkg.literals.add(
+                                label=answer, datatype="xsd:uri"
+                            )
                         else:
-                            
+
                             literal_response = self.orkg.literals.add(label=answer)
                         if literal_response.succeeded:
                             literal_id = literal_response.content["id"]
