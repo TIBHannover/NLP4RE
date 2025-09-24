@@ -19,6 +19,9 @@ from scripts.mappings import (
     resource_mappings,
     class_mappings,
     integer_literal_keys,
+    list_of_other_comments,
+    literal_based_resource_mappings,
+    url_literal_keys,
 )
 
 
@@ -242,6 +245,7 @@ class TemplateInstanceCreator:
         # Remove any parenthetical that starts with e.g. (handles (e.g ...), (e.g., ...))
         cleaned = re.sub(r"\(\s*e\.g\.,?[^)]*\)", "", cleaned, flags=re.IGNORECASE)
         cleaned = re.sub(r"\(\s*i\.g\.,?[^)]*\)", "", cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r"\(\s*i\.e\.,?.*", "", cleaned, flags=re.IGNORECASE)
 
         # Remove everything after we see (e.g.... not even care about the closing bracket only "(", "e", ".", "g"
         # Example: "Open source libraries/software (e.g., python libraries, ..." => "Open source libraries/software"
@@ -298,16 +302,7 @@ class TemplateInstanceCreator:
         if answer in resource_map:
             return resource_map[answer]
 
-        if prev_answer.strip().lower() in [
-            "other",
-            "comments",
-            "other/comments",
-            "other /comments",
-            "other / comments",
-            "other (e.g., models, trace links, diagrams, code comments)/comments",
-            "Other artefacts (e.g., slides)/Comments",
-            "Other artefacts /Comments",
-        ]:
+        if prev_answer.strip().lower() in list_of_other_comments:
             # Skip creating resources for contextual 'Other/Comments'
             try:
                 self.run_logger.log(
@@ -331,14 +326,7 @@ class TemplateInstanceCreator:
         answer_lower = answer.lower()
         if "other" in answer_lower or "comment" in answer_lower:
             # Check if this is just "Other/Comments" or has additional text
-            if answer.strip().lower() in [
-                "other",
-                "comments",
-                "other/comments",
-                "other /comments",
-                "other / comments",
-                "other (e.g., models, trace links, diagrams, code comments)/comments",
-            ]:
+            if answer.strip().lower() in list_of_other_comments:
                 try:
                     self.run_logger.log(
                         "unmapped",
@@ -428,25 +416,11 @@ class TemplateInstanceCreator:
                 )
             else:
                 # Create literal for text-based answers or unmapped answers
-                if resource_mapping_key in [
-                    "NLP data item",
-                    "NLP data prodcution time",
-                    "Natural language",
-                    "Number of data sources",
-                    "url",
-                    "Number of annotators",
-                    "Measured agreement",
-                    "NLP task output classification label",
-                    "NLP task output extracted element",
-                    "Baseline comparison details",
-                ]:
+                if resource_mapping_key in literal_based_resource_mappings:
                     # These should be literals
                     try:
                         # Integer literal handling for specific keys
-                        if resource_mapping_key in {
-                            "Number of data sources",
-                            "Number of annotators",
-                        }:
+                        if resource_mapping_key in integer_literal_keys:
                             import re as _re
 
                             match = _re.search(r"[-+]?\\d+", str(answer))
@@ -473,7 +447,12 @@ class TemplateInstanceCreator:
                                 literal_response = self.orkg.literals.add(
                                     label=int(answer), datatype="xsd:integer"
                                 )
+                        elif resource_mapping_key in url_literal_keys:
+                                literal_response = self.orkg.literals.add(
+                                    label=answer, datatype="xsd:uri"
+                                )
                         else:
+                            
                             literal_response = self.orkg.literals.add(label=answer)
                         if literal_response.succeeded:
                             literal_id = literal_response.content["id"]
@@ -571,11 +550,22 @@ class TemplateInstanceCreator:
         else:
             question = self.find_question_by_pattern(questions, question_mapping)
             if not question:
+                # Respect empty_if_missing: do not create default value
+                if property_info.get("empty_if_missing"):
+                    self.run_logger.log(
+                        "property",
+                        "empty_missing",
+                        property_label=property_label,
+                    )
+                    return None
                 return None
             all_answers = self.extract_answer_from_question(question)
 
         if not all_answers:
             self.run_logger.log("property", "no_answers", property_label=property_label)
+            # Respect empty_if_missing: do not create default value
+            if property_info.get("empty_if_missing"):
+                return None
             return None
         # Handle comma separation only when explicitly specified
         if property_info.get("comma_separated", True):
@@ -757,8 +747,14 @@ class TemplateInstanceCreator:
                                 result_ids=result_ids,
                             )
                         else:
-                            # if prop_id exists in resource_mappings and the value is "Not reported", then use the mapped resource ID
+                            # empty_if_missing means leave property empty (no Not reported fallback)
                             mapping_key = prop_info.get("resource_mapping_key")
+                            if mapping_key and prop_info.get("empty_if_missing"):
+                                print(
+                                    f"    ℹ️ {prop_info.get('label', '')}: missing and configured as empty_if_missing; leaving empty"
+                                )
+                                continue
+                            # if prop_id exists in resource_mappings and the value is "Not reported", then use the mapped resource ID
                             if (
                                 mapping_key in self.resource_mappings
                                 and "Not reported"
@@ -1016,7 +1012,6 @@ class TemplateInstanceCreator:
                             print(f"  ⚠️ Failed to link subtemplate to instance")
                     else:
                         print(f"  ⚠️ Failed to create subtemplate - skipping field")
-
                 else:
                     # Handle simple fields (without subtemplates)
                     result_ids = self.process_property(
@@ -1064,8 +1059,14 @@ class TemplateInstanceCreator:
                                     f"  ℹ️ Predicate {predicate_id} should already exist in ORKG"
                                 )
                     else:
-                        # if the field has Not reported in resource mappings
+                        # empty_if_missing means leave property empty (no Not reported fallback)
                         mapping_key = predicate_info.get("resource_mapping_key")
+                        if mapping_key and predicate_info.get("empty_if_missing"):
+                            print(
+                                f"  ℹ️ {predicate_info.get('label', '')}: missing and configured as empty_if_missing; leaving empty"
+                            )
+                            continue
+                        # if the field has Not reported in resource mappings
                         if (
                             mapping_key in self.resource_mappings
                             and "Not reported" in self.resource_mappings[mapping_key]

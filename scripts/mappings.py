@@ -124,6 +124,7 @@ predicates_mapping = {
                         "description": "From how many different sources your data comes from?",
                         "question_mapping": "IV.9",
                         "resource_mapping_key": "Number of data sources",
+                        "empty_if_missing": True,
                         "comma_separated": False,
                     },
                     "P181020": {
@@ -223,6 +224,7 @@ predicates_mapping = {
                         "description": "Provide a URL to the dataset",
                         "question_mapping": "IV.13",
                         "resource_mapping_key": "url",
+                        "empty_if_missing": True,
                         "comma_separated": False,
                     },
                 },
@@ -230,7 +232,7 @@ predicates_mapping = {
         },
     },
     "P181031": {
-        "label": "Annotation Process",
+        "label": "Annotation process",
         "cardinality": "one to one",
         "description": "What annotation process did you use for your dataset?",
         "subtemplate_id": "R1544287",
@@ -249,6 +251,7 @@ predicates_mapping = {
                         "description": "How many annotators have been involved?",
                         "question_mapping": "V.1",
                         "resource_mapping_key": "Number of annotators",
+                        "empty_if_missing": True,
                         "comma_separated": False,
                     },
                     "P181033": {
@@ -437,6 +440,7 @@ predicates_mapping = {
                         "description": "Where is the tool released?",
                         "question_mapping": "VI.9",
                         "resource_mapping_key": "url",
+                        "empty_if_missing": True,
                         "comma_separated": False,
                     },
                 },
@@ -529,8 +533,8 @@ resource_mappings = {
         "Not reported": "R1547299",
         "Text": "R1544175",
         "Binary-multi label": "R1544174",
-        "Multi class-single label": "R1544171",
-        "Multi class-multi label": "R1544169",
+        "Multi class-Single label": "R1544171",
+        "Multi class- Multi label": "R1544169",
         "Phrases": "R1544167",
         "Sentences": "R1544173",
         "Words": "R1544170",
@@ -792,3 +796,30 @@ class_mappings = {
 }
 
 integer_literal_keys = {"Number of data sources", "Number of annotators"}
+
+list_of_other_comments = [
+    "other",
+    "comments",
+    "other/comments",
+    "other /comments",
+    "other / comments",
+    "other (e.g., models, trace links, diagrams, code comments)/comments",
+    "Other artefacts /Comments",
+    "Other artefacts (e.g., slides)/Comments",
+    "Other/Comments",
+]
+
+literal_based_resource_mappings = [
+    "NLP data item",
+    "NLP data prodcution time",
+    "Natural language",
+    "Number of data sources",
+    "url",
+    "Number of annotators",
+    "Measured agreement",
+    "NLP task output classification label",
+    "NLP task output extracted element",
+    "Baseline comparison details",
+]
+
+url_literal_keys = ["url"]
