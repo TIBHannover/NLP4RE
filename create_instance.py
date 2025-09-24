@@ -63,6 +63,39 @@ class NLPRunLogger:
         except Exception:
             pass
 
+    def set_instance_id(self, instance_id: str):
+        """Rename the log file to include the created instance ID and continue logging."""
+        try:
+            # Close current file handle before renaming
+            try:
+                self._fh.flush()
+                self._fh.close()
+            except Exception:
+                pass
+
+            new_log_path = os.path.join(
+                self.logs_dir, f"nlp4re_run_{self.run_id}_{instance_id}.log"
+            )
+            try:
+                if os.path.exists(self.log_path):
+                    os.rename(self.log_path, new_log_path)
+            except Exception:
+                # If rename fails for any reason, fallback to new path without renaming
+                new_log_path = os.path.join(
+                    self.logs_dir, f"nlp4re_run_{self.run_id}_{instance_id}.log"
+                )
+
+            self.log_path = new_log_path
+            self._fh = open(self.log_path, "a", encoding="utf-8")
+            self.log("run", "instance", run_id=self.run_id, instance_id=instance_id)
+        except Exception:
+            # As a last resort, try to reopen original path to not break logging
+            try:
+                if self._fh.closed:
+                    self._fh = open(self.log_path, "a", encoding="utf-8")
+            except Exception:
+                pass
+
 
 class TemplateInstanceCreator:
     """Creates template instances from JSON survey data"""
@@ -208,11 +241,14 @@ class TemplateInstanceCreator:
         cleaned = text
         # Remove any parenthetical that starts with e.g. (handles (e.g ...), (e.g., ...))
         cleaned = re.sub(r"\(\s*e\.g\.,?[^)]*\)", "", cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r"\(\s*i\.g\.,?[^)]*\)", "", cleaned, flags=re.IGNORECASE)
 
         # Remove everything after we see (e.g.... not even care about the closing bracket only "(", "e", ".", "g"
         # Example: "Open source libraries/software (e.g., python libraries, ..." => "Open source libraries/software"
-        cleaned = re.sub(r"\(e\.g\.,.*", "", text, flags=re.IGNORECASE).strip()
-        cleaned = re.sub(r"\(i\.g\.,.*", "", text, flags=re.IGNORECASE).strip()
+        cleaned = re.sub(r"\(e\.g\.,.*", "", cleaned, flags=re.IGNORECASE).strip()
+        cleaned = re.sub(r"\(i\.g\.,.*", "", cleaned, flags=re.IGNORECASE).strip()
+        # Delete every text in parenthesis
+        cleaned = re.sub(r"\(.*?\)", "", cleaned, flags=re.IGNORECASE).strip()
 
         # # delete the space between "ex1 / ex2" => "ex1/ex2"
         # cleaned = re.sub(r"\s*/\s*", "/", cleaned)
@@ -269,7 +305,8 @@ class TemplateInstanceCreator:
             "other /comments",
             "other / comments",
             "other (e.g., models, trace links, diagrams, code comments)/comments",
-            "Other artefacts (e.g., slides)/Comments"
+            "Other artefacts (e.g., slides)/Comments",
+            "Other artefacts /Comments",
         ]:
             # Skip creating resources for contextual 'Other/Comments'
             try:
@@ -907,6 +944,11 @@ class TemplateInstanceCreator:
 
             instance_id = instance_response.content["id"]
             print(f"✅ Created instance: {instance_id}")
+            # Update logger file name to include instance ID
+            try:
+                self.run_logger.set_instance_id(instance_id)
+            except Exception:
+                pass
 
             # Instance should be automatically linked to template through the class
             print(

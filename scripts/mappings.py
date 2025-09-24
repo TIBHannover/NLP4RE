@@ -497,6 +497,7 @@ predicates_mapping = {
 
 resource_mappings = {
     "RE task": {
+        "Not reported": "R1547296",
         "Requirements retrieval": "R1544135",
         "Requirements tracing": "R1544133",
         "Information extraction from legal documents": "R1544136",
@@ -509,12 +510,14 @@ resource_mappings = {
         "Information extraction from requirements": "R1544127",
     },
     "NLP task type": {
+        "Not reported": "R1547297",
         "Information extraction": "R1544150",
         "Information retrieval": "R1544149",
         "Classification": "R1544148",
         "Translation": "R1544147",
     },
     "NLP task input": {
+        "Not reported": "R1547298",
         "Words": "R1544156",
         "Structured/tabular text": "R1544155",
         "Phrases": "R1544154",
@@ -523,6 +526,7 @@ resource_mappings = {
         "Sentences": "R1544152",
     },
     "NLP task output type": {
+        "Not reported": "R1547299",
         "Text": "R1544175",
         "Binary-multi label": "R1544174",
         "Multi class-single label": "R1544171",
@@ -546,6 +550,7 @@ resource_mappings = {
         "1 to 1": "R1544184",
     },
     "NLP data source type": {
+        "Not reported": "R1547302",
         "Textbook examples or cases": "R1544232",
         "Student projects": "R1544231",
         "Industrial project, publicly available data": "R1544230",
@@ -559,6 +564,7 @@ resource_mappings = {
         "Not reported": "R1544550",
     },
     "NLP data abstraction level": {
+        "Not reported": "R1547303",
         "Module-level": "R1544243",
         "Code-level": "R1544242",
         "System-level": "R1544241",
@@ -567,6 +573,7 @@ resource_mappings = {
         "User-level": "R1544238",
     },
     "NLP data format": {
+        "Not reported": "R1547304",
         "Legal text": "R1544255",
         "Messages in user forums": "R1544254",
         "Social media posts": "R1544256",
@@ -579,12 +586,14 @@ resource_mappings = {
         '"Shall" requirements': "R1544249",
     },
     "Rigor of data format": {
+        "Not reported": "R1547305",
         "Semantically-augmented natural language": "R1544261",
         "Restricted grammar based controlled natural language": "R1544260",
         "Template-based controlled natural language": "R1544259",
         "Unconstrained natural language": "R1544258",
     },
     "Public availability": {
+        "Not reported": "R1547306",
         "Upon Request": "R1544270",
         "Partially": "R1544269",
         "No": "R1544268",
@@ -611,24 +620,28 @@ resource_mappings = {
         "On a private/corporate website": "R1544413",
     },
     "Annotator assignment": {
+        "Not reported": "R1547307",
         "One annotator per entry (quality control, possibly on a sample)": "R1544296",
         "One annotator per entry (no quality control)": "R1544295",
         "Partly multiple annotators per entry, partly one annotator per entry": "R1544294",
         "Multiple annotators per entry": "R1544293",
     },
     "Level of application domain experience": {
+        "Not reported": "R1547308",
         "None or unknown": "R1544298",
         "Domain expert": "R1544299",
         "Informed outsider": "R1544300",
     },
     "Annotator identity": {
+        "Not reported": "R1547309",
         "The designers of the technique/tool": "R1544302",
         "People who have direct contact with the designers": "R1544304",
         "Independent annotators": "R1544303",
     },
     "Scheme establishement": {
+        "Not reported": "R1547310",
         "Written guidelines with label definitions": "R1544312",
-        "Oral agreement among the annotators": "R1544311",
+        "Oral agreement among the taggers": "R1544311",
         "Only via class labels": "R1544309",
         "Written guidelines with definitions and examples": "R1544310",
     },
@@ -640,11 +653,13 @@ resource_mappings = {
         "No": "R1544314",
     },
     "Shared material": {
+        "Not reported": "R1547311",
         "Entire document": "R1544321",
         "Surrounding context": "R1544320",
         "No": "R1544319",
     },
     "Fatigue mitigation technique": {
+        "Not reported": "R1547312",
         "No": "R1544324",
         "Yes": "R1544323",
     },
@@ -655,6 +670,7 @@ resource_mappings = {
         "Cohen's K": "R1544328",
     },
     "Conflict resolution": {
+        "Not reported": "R1547313",
         "Disagreements were disregarded": "R1544338",
         "Not resolved": "R1544335",
         "Majority voting": "R1544336",
@@ -663,6 +679,7 @@ resource_mappings = {
         "Discussion among annotators": "R1544333",
     },
     "Approach type": {
+        "Not reported": "R1547314",
         "Unsupervised DL": "R1544369",
         "Supervised ML": "R1544368",
         "Rule-based": "R1544366",
@@ -700,6 +717,7 @@ resource_mappings = {
         "None": "R1544393",
     },
     "Release format": {
+        "Not reported": "R1547315",
         "Library/API": "R1544411",
         "Pre-trained model": "R1544409",
         "Source code": "R1544410",
@@ -709,6 +727,7 @@ resource_mappings = {
         "No tool has been released": "R1544406",
     },
     "Evaluation metric": {
+        "Not reported": "R1547316",
         "MAP": "R1544443",
         "F-Score": "R1544442",
         "NIST-METEOR-ROUGE - BLEU": "R1544441",
@@ -719,12 +738,14 @@ resource_mappings = {
         "Precision/Recall": "R1544436",
     },
     "Validation procedure": {
+        "Not reported": "R1547317",
         "Cross-project validation": "R1544447",
         "Cross-validation": "R1544448",
         "Train-test split": "R1544445",
         "Entire dataset": "R1544446",
     },
     "Baseline comparsion type": {
+        "Not reported": "R1547318",
         "Theoretical / conceptual": "R1544457",
         "None": "R1544454",
         "Existing tool or algorithm": "R1544455",
