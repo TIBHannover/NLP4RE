@@ -215,7 +215,8 @@
           "label": "Detection focuses on words (pronouns), resolution looks for phrases",
           "field_name": "III_1_ What is the input of yo_edit;_m6SmbbtoOqfdxQ3MQ8LspQ",
           "field_value": "Detection focuses on words (pronouns), resolution looks for phrases",
-          "is_selected": true
+          "is_selected": true,
+          "source_type": "Text"
         }
       ],
       "total_options": 8
@@ -578,7 +579,8 @@
           "label": "The dataset was publicly available but not anymore",
           "field_name": "IV_3_ What is the source of th_edit;_NE019aUyUl6-PJ8ABBC84w",
           "field_value": "The dataset was publicly available but not anymore",
-          "is_selected": true
+          "is_selected": true,
+          "source_type": "Text"
         }
       ],
       "total_options": 10
@@ -1002,7 +1004,8 @@
           "label": "No reconciliation: the different opinions indicate nocuous ambiguity!",
           "field_name": "V_2_ How are the entries annot_edit;_A6O1PBPu--9nfqOu5q4LZA",
           "field_value": "No reconciliation: the different opinions indicate nocuous ambiguity!",
-          "is_selected": true
+          "is_selected": true,
+          "source_type": "Text"
         }
       ],
       "total_options": 6
@@ -1224,7 +1227,8 @@
           "label": "Unknown",
           "field_name": "V_7_ Did you share other infor_edit;_ZVCqAIdkmy-s-3cyVOPY3Q",
           "field_value": "Unknown",
-          "is_selected": true
+          "is_selected": true,
+          "source_type": "Text"
         }
       ],
       "total_options": 5
@@ -1304,7 +1308,8 @@
           "label": "Resolution by independent expert (not an annotator)",
           "field_name": "V_9_ What are the metrics  use_edit;_JUDzahlA-1Azp9FxbmPQNg",
           "field_value": "",
-          "is_selected": false
+          "is_selected": false,
+          "source_type": "Text"
         }
       ],
       "total_options": 5
@@ -1374,7 +1379,8 @@
           "label": "conflicts indicate nocuous ambiguity",
           "field_name": "V_10_ How were conflicts resol_edit;_cYaP5TXE8Bvp9FLRssQN0w",
           "field_value": "conflicts indicate nocuous ambiguity",
-          "is_selected": true
+          "is_selected": true,
+          "source_type": "Text"
         }
       ],
       "total_options": 8
@@ -1569,7 +1575,8 @@
           "label": "An academic paper",
           "field_name": "VI_4_ What needs to be done fo_edit;_*kObKz4zYt9a6BkulsBJww",
           "field_value": "",
-          "is_selected": false
+          "is_selected": false,
+          "source_type": "Text"
         }
       ],
       "total_options": 7
@@ -1745,7 +1752,8 @@
           "label": "License: modification only for",
           "field_name": "VI_7_ How is the tool released_edit;_P0mu-jL8bQmM86Yf6HAWNg",
           "field_value": "",
-          "is_selected": false
+          "is_selected": false,
+          "source_type": "Text"
         }
       ],
       "total_options": 5

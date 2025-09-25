@@ -191,6 +191,9 @@ class PDFFormExtractor:
                     "field_value": field["value"],
                     "is_selected": self._is_field_selected(field),
                 }
+                # Preserve provenance when an option originates from a Text field
+                if field.get("type") == "Text":
+                    option_info["source_type"] = "Text"
 
                 option_label = option_info["label"]
 
@@ -677,6 +680,8 @@ class PDFFormExtractor:
         Post-processes the structured data to merge duplicate questions with the same question_text.
         When a question appears as both a choice-type (RadioButton/CheckBox) and a text field,
         appends the text field answer to the selected_answers of the choice-type question.
+        Also injects a synthetic option into options_details with source_type="Text" so the
+        origin of the merged answer is preserved.
         """
         questions = structured_data.get("questions", [])
         if not questions:
@@ -739,6 +744,8 @@ class PDFFormExtractor:
         """
         Merges a group of questions with the same question_text.
         Prioritizes choice-type questions (RadioButton/CheckBox) and appends text field answers.
+        When merging a text field answer, additionally adds it as an option with
+        source_type="Text" to options_details (and to all_options) and marks it selected.
         """
         # Find the choice-type question (RadioButton/CheckBox) and text field question
         choice_question = None
@@ -766,9 +773,46 @@ class PDFFormExtractor:
                     # If no other selections, just use the text answer
                     selected_answers = [text_answer]
                 choice_question["selected_answers"] = selected_answers
+
+                # Ensure the merged text also appears as an option with provenance
+                # 1) Add to all_options if not already present
+                all_options = choice_question.get("all_options") or []
+                if text_answer not in all_options:
+                    all_options.append(text_answer)
+                    choice_question["all_options"] = all_options
+
+                # 2) Add to options_details with source_type indicating it came from Text
+                options_details = choice_question.get("options_details") or []
+                # Check if an option with the same label already exists
+                existing_opt = next(
+                    (o for o in options_details if o.get("label") == text_answer), None
+                )
+                if existing_opt:
+                    # Mark as selected and keep any existing fields; annotate source_type if missing
+                    existing_opt["is_selected"] = True
+                    if not existing_opt.get("source_type"):
+                        existing_opt["source_type"] = "Text"
+                    if not existing_opt.get("field_value"):
+                        existing_opt["field_value"] = text_answer
+                else:
+                    options_details.append(
+                        {
+                            "label": text_answer,
+                            "field_name": text_question.get("field_name"),
+                            "field_value": text_answer,
+                            "is_selected": True,
+                            "source_type": "Text",
+                        }
+                    )
+                choice_question["options_details"] = options_details
+
+                # 3) Update total_options to reflect any addition
+                choice_question["total_options"] = len(
+                    choice_question.get("options_details") or []
+                )
                 if self.debug:
                     self.logger.debug(
-                        "Merged text answer into choices | text='%s' -> selected=%s",
+                        "Merged text answer into choices | text='%s' -> selected=%s (as option with source_type=Text)",
                         text_answer,
                         ", ".join(choice_question.get("selected_answers", []))
                         or "None",

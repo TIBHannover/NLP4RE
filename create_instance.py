@@ -164,7 +164,9 @@ class TemplateInstanceCreator:
             self.run_logger.log("json", "error", path=json_file_path, error=str(e))
             return {}
 
-    def extract_answer_from_question(self, question_data: Dict) -> List[Dict[str, str]]:
+    def extract_answer_from_question(
+        self, question_data: Dict, resource_mapping_key: str
+    ) -> List[Dict[str, str]]:
         """Extract the answer from a question data structure"""
         answers: List[Dict[str, str]] = []
 
@@ -181,9 +183,16 @@ class TemplateInstanceCreator:
                 answers.append({"label": label, "description": desc})
 
         # Extract selected answers from multiple choice
-        if question_data.get("selected_answers"):
+        elif question_data.get("selected_answers"):
             for answer in question_data["selected_answers"]:
-                if answer and answer.strip() and answer.strip() not in ["None"]:
+                if (
+                    answer
+                    and answer.strip()
+                    and (
+                        answer.strip() in ["None"]
+                        and "None" in resource_mappings[resource_mapping_key]
+                    )
+                ):
                     # Do NOT split here. Splitting (comma_separated) is handled later per property.
                     label, desc = self._split_label_and_example(answer.strip())
                     answers.append({"label": label, "description": desc})
@@ -195,7 +204,10 @@ class TemplateInstanceCreator:
                     # Add label if it exists and is not empty
                     if option.get("label") and option["label"].strip():
                         answer_to_add = option["label"].strip()
-                        if answer_to_add and answer_to_add not in ["None"]:
+                        if answer_to_add and (
+                            answer_to_add in ["None"]
+                            and "None" in resource_mappings[resource_mapping_key]
+                        ):
                             label, desc = self._split_label_and_example(answer_to_add)
                             answers.append({"label": label, "description": desc})
 
@@ -527,7 +539,9 @@ class TemplateInstanceCreator:
                     for keyword in description.split()
                     if len(keyword) > 3
                 ):
-                    all_answers = self.extract_answer_from_question(question)
+                    all_answers = self.extract_answer_from_question(
+                        question, property_info.get("resource_mapping_key")
+                    )
                     if all_answers:
                         result_ids = self.create_literal_or_resource(
                             all_answers, resource_mapping_key
@@ -541,7 +555,9 @@ class TemplateInstanceCreator:
             for q_id in question_mapping:
                 question = self.find_question_by_pattern(questions, q_id)
                 if question:
-                    answers = self.extract_answer_from_question(question)
+                    answers = self.extract_answer_from_question(
+                        question, property_info.get("resource_mapping_key")
+                    )
                     all_answers.extend(answers)
         else:
             question = self.find_question_by_pattern(questions, question_mapping)
@@ -555,7 +571,9 @@ class TemplateInstanceCreator:
                     )
                     return None
                 return None
-            all_answers = self.extract_answer_from_question(question)
+            all_answers = self.extract_answer_from_question(
+                question, property_info.get("resource_mapping_key")
+            )
 
         if not all_answers:
             self.run_logger.log("property", "no_answers", property_label=property_label)
