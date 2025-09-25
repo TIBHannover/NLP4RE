@@ -807,7 +807,7 @@ list_of_other_comments = [
     "Other artefacts /Comments",
     "Other artefacts (e.g., slides)/Comments",
     "Other/Comments",
-    "Other artefacts/Comments"
+    "Other artefacts/Comments",
 ]
 
 literal_based_resource_mappings = [

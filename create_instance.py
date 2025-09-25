@@ -23,6 +23,7 @@ from scripts.mappings import (
     literal_based_resource_mappings,
     url_literal_keys,
 )
+from scripts.NLPRunLogger import NLPRunLogger
 
 
 class NLPRunLogger:
@@ -164,6 +165,15 @@ class TemplateInstanceCreator:
             self.run_logger.log("json", "error", path=json_file_path, error=str(e))
             return {}
 
+    def _get_answer_label_type_in_options_details(
+        self, answer: str, options_details: List[Dict]
+    ) -> str:
+        """Get the type of the answer label in the options details"""
+        for option in options_details:
+            if option.get("label") == answer:
+                return option.get("source_type", "No type")
+        return "No type"
+
     def extract_answer_from_question(
         self, question_data: Dict, resource_mapping_key: str
     ) -> List[Dict[str, str]]:
@@ -246,7 +256,21 @@ class TemplateInstanceCreator:
             if not raw:
                 continue
             # raw is dict
-            cleaned_label = self._clean_answer_text(raw.get("label", ""))
+            answer_label_type_in_options_details = (
+                self._get_answer_label_type_in_options_details(
+                    raw.get("label", ""), question_data.get("options_details", [])
+                )
+            )
+            self.run_logger.log(
+                "options_details",
+                "answer",
+                answer=raw.get("label", ""),
+                resource_mapping_key=resource_mapping_key,
+                answer_label_type_in_options_details=answer_label_type_in_options_details,
+            )
+            cleaned_label = self._clean_answer_text(
+                raw.get("label", ""), answer_label_type_in_options_details
+            )
             cleaned_desc = raw.get("description")
             if cleaned_label:
                 candidate = {"label": cleaned_label, "description": cleaned_desc}
@@ -259,9 +283,11 @@ class TemplateInstanceCreator:
         ]
         return filtered_answers
 
-    def _clean_answer_text(self, text: str) -> str:
+    def _clean_answer_text(self, text: str, answer_label_type_in_options_details: str) -> str:
         """Remove unwanted parenthetical fragments like (e.g., ...) and trim punctuation/whitespace."""
         if not isinstance(text, str):
+            return text
+        if answer_label_type_in_options_details == "Text":
             return text
         cleaned = text
         # Remove any parenthetical that starts with e.g. (handles (e.g ...), (e.g., ...))
@@ -291,7 +317,7 @@ class TemplateInstanceCreator:
         example = None
         if match:
             example = match.group(1).strip()
-        label = self._clean_answer_text(text)
+        label = self._clean_answer_text(text, "Text")
         if example:
             # Normalize example by removing trailing punctuation
             example = example.strip().strip(",")
