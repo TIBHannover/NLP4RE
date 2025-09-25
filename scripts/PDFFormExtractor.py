@@ -173,6 +173,7 @@ class PDFFormExtractor:
             # Get expected options from mappings to ensure completeness
             expected_options = self._get_expected_options_for_question(question_text)
             found_option_labels = set()
+            option_labels_to_info = {}  # Track unique labels to avoid duplicates
 
             for field in fields:
                 if field["type"] == "Text":
@@ -191,11 +192,34 @@ class PDFFormExtractor:
                     "is_selected": self._is_field_selected(field),
                 }
 
-                all_options.append(option_info)
-                found_option_labels.add(option_info["label"])
+                option_label = option_info["label"]
 
-                if option_info["is_selected"]:
-                    selected_options.append(option_info["label"])
+                # Handle duplicate labels by merging their information
+                if option_label in option_labels_to_info:
+                    # Merge with existing option - prefer selected state and combine field values
+                    existing_info = option_labels_to_info[option_label]
+                    if option_info["is_selected"]:
+                        existing_info["is_selected"] = True
+                    # If this field has a value and existing doesn't, or vice versa, combine them
+                    if option_info["field_value"] and not existing_info["field_value"]:
+                        existing_info["field_value"] = option_info["field_value"]
+                    elif option_info["field_value"] and existing_info["field_value"]:
+                        # Both have values, combine them with a separator
+                        existing_info["field_value"] = (
+                            f"{existing_info['field_value']}, {option_info['field_value']}"
+                        )
+                    if self.debug:
+                        self.logger.debug(
+                            "Merged duplicate option label | label='%s' existing_field=%s new_field=%s",
+                            option_label,
+                            existing_info["field_name"],
+                            option_info["field_name"],
+                        )
+                else:
+                    # New unique label
+                    option_labels_to_info[option_label] = option_info
+                    found_option_labels.add(option_label)
+
                 if self.debug:
                     self.logger.debug(
                         "Option | base=%s name=%s type=%s value=%s label=%s enhanced=%s selected=%s",
@@ -207,6 +231,16 @@ class PDFFormExtractor:
                         enhanced_label,
                         option_info.get("is_selected"),
                     )
+
+            # Convert the deduplicated options dictionary to list
+            all_options = list(option_labels_to_info.values())
+
+            # Rebuild selected_options from deduplicated options
+            selected_options = [
+                label
+                for label, info in option_labels_to_info.items()
+                if info["is_selected"]
+            ]
 
             # Add missing expected options if mappings suggest they should be present
             if expected_options and self.debug:

@@ -295,7 +295,10 @@ class TemplateInstanceCreator:
         if answer in resource_map:
             return resource_map[answer]
 
-        if prev_answer.strip().lower() in list_of_other_comments:
+        if (
+            prev_answer.strip().lower() in list_of_other_comments
+            and answer.strip().lower() not in list_of_other_comments
+        ):
             # Skip creating resources for contextual 'Other/Comments'
             try:
                 self.run_logger.log(
