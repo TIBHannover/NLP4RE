@@ -188,11 +188,18 @@ class TemplateInstanceCreator:
                 if (
                     answer
                     and answer.strip()
-                    and (
+                    and answer.strip() not in ["None"]
+                    or (
                         answer.strip() in ["None"]
                         and "None" in resource_mappings[resource_mapping_key]
                     )
                 ):
+                    self.run_logger.log(
+                        "selected_answers",
+                        "answer",
+                        answer=answer,
+                        resource_mapping_key=resource_mapping_key,
+                    )
                     # Do NOT split here. Splitting (comma_separated) is handled later per property.
                     label, desc = self._split_label_and_example(answer.strip())
                     answers.append({"label": label, "description": desc})
@@ -204,10 +211,20 @@ class TemplateInstanceCreator:
                     # Add label if it exists and is not empty
                     if option.get("label") and option["label"].strip():
                         answer_to_add = option["label"].strip()
-                        if answer_to_add and (
-                            answer_to_add in ["None"]
-                            and "None" in resource_mappings[resource_mapping_key]
+                        if (
+                            answer_to_add
+                            and answer_to_add not in ["None"]
+                            or (
+                                answer_to_add in ["None"]
+                                and "None" in resource_mappings[resource_mapping_key]
+                            )
                         ):
+                            self.run_logger.log(
+                                "options_details",
+                                "answer",
+                                answer=answer_to_add,
+                                resource_mapping_key=resource_mapping_key,
+                            )
                             label, desc = self._split_label_and_example(answer_to_add)
                             answers.append({"label": label, "description": desc})
 
