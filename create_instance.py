@@ -174,6 +174,13 @@ class TemplateInstanceCreator:
                 return option.get("source_type", "No type")
         return "No type"
 
+    def check_if_none_selected_in_options_details(self, question_data: Dict) -> bool:
+        """Check if None is selected in the options details"""
+        for option in question_data.get("options_details", []):
+            if option.get("is_selected") and option.get("label") == "None":
+                return True
+        return False
+
     def extract_answer_from_question(
         self, question_data: Dict, resource_mapping_key: str
     ) -> List[Dict[str, str]]:
@@ -195,6 +202,11 @@ class TemplateInstanceCreator:
         # Extract selected answers from multiple choice
         elif question_data.get("selected_answers"):
             for answer in question_data["selected_answers"]:
+                """
+                I Know this is complex and a mess but the logic is like below
+                either we have an answer and its not None because when answer is empty we also add non in pdf2JSON
+                or we have None and None is in the resource_mappings and None is selected in the options details which means None was in the options details itself
+                """
                 if (
                     answer
                     and answer.strip()
@@ -202,6 +214,9 @@ class TemplateInstanceCreator:
                     or (
                         answer.strip() in ["None"]
                         and "None" in resource_mappings[resource_mapping_key]
+                        and self.check_if_none_selected_in_options_details(
+                            question_data
+                        )
                     )
                 ):
                     self.run_logger.log(
@@ -283,7 +298,9 @@ class TemplateInstanceCreator:
         ]
         return filtered_answers
 
-    def _clean_answer_text(self, text: str, answer_label_type_in_options_details: str) -> str:
+    def _clean_answer_text(
+        self, text: str, answer_label_type_in_options_details: str
+    ) -> str:
         """Remove unwanted parenthetical fragments like (e.g., ...) and trim punctuation/whitespace."""
         if not isinstance(text, str):
             return text
