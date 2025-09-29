@@ -356,6 +356,7 @@ class TemplateInstanceCreator:
         resource_mapping_key: str,
         is_last_answer: bool,
         prev_answer: str,
+        allowed_to_add_not_reported: bool,
     ) -> Optional[str]:
         """Map an answer to a predefined ORKG resource if available"""
         if resource_mapping_key not in self.resource_mappings:
@@ -404,11 +405,20 @@ class TemplateInstanceCreator:
                     )
                 except Exception:
                     pass
-                if is_last_answer:
+                if is_last_answer and allowed_to_add_not_reported:
                     # Just "Other/Comments" without specific text - use "Unknown"
-                    return self.create_new_resource_for_other(
-                        "Unknown", resource_mapping_key
-                    )
+                    if (
+                        resource_mapping_key in self.resource_mappings
+                        and "Not reported"
+                        in self.resource_mappings[resource_mapping_key]
+                    ):
+                        return self.resource_mappings[resource_mapping_key][
+                            "Not reported"
+                        ]
+                    else:
+                        return self.create_new_resource_for_other(
+                            "Not reported", resource_mapping_key
+                        )
                 else:
                     return "resource should not be created"
             else:
@@ -451,6 +461,24 @@ class TemplateInstanceCreator:
     ) -> List[str]:
         """Create literals or map to resources based on the answers"""
         result_ids = []
+        allowed_to_add_not_reported = True
+        # Allow adding Not reported when we don't have an answer that is not in other/comments
+        for answer_obj in answers:
+            answer = answer_obj.get("label", "")
+
+            if not answer:
+                continue
+
+            is_other_comment = answer.strip() in list_of_other_comments
+            is_disallowed_none = (
+                answer.strip() == "None"
+                and "None" not in resource_mappings[resource_mapping_key]
+            )
+
+            if not is_other_comment and not is_disallowed_none:
+                allowed_to_add_not_reported = False
+                break
+
         # Do not allow creating new categorical resources when not explicitly mapped
         for answer_obj in answers:
             # answer_obj is dict with keys: label, description
@@ -461,7 +489,7 @@ class TemplateInstanceCreator:
             is_last_answer = index == len(answers) - 1
             prev_answer = answers[index - 1].get("label", "")
             resource_id = self.map_answer_to_resource(
-                answer, resource_mapping_key, is_last_answer, prev_answer
+                answer, resource_mapping_key, is_last_answer, prev_answer, allowed_to_add_not_reported
             )
             if resource_id == "resource should not be created":
                 self.run_logger.log(
@@ -722,6 +750,45 @@ class TemplateInstanceCreator:
 
         return result_ids  # Return all IDs to handle multiple answers
 
+    def add_not_reported(self, mapping_key: str, instance_id: str, prop_id: str):
+        if (
+            mapping_key in self.resource_mappings
+            and "Not reported" in self.resource_mappings[mapping_key]
+        ):
+            not_reported_id = self.resource_mappings[mapping_key]["Not reported"]
+            self.orkg.statements.add(
+                subject_id=instance_id,
+                predicate_id=prop_id,
+                object_id=not_reported_id,
+            )
+            print(
+                f"    ✅ Added property {prop_id} with value {not_reported_id} (Not reported)"
+            )
+        else:
+            # If not reported mapping is missing, create a text literal 'Not reported'
+            try:
+                lit = self.orkg.literals.add(label="Not reported")
+                if lit.succeeded:
+                    self.orkg.statements.add(
+                        subject_id=instance_id,
+                        predicate_id=prop_id,
+                        object_id=lit.content["id"],
+                    )
+                    print(
+                        f"    ✅ Added property {prop_id} with text literal 'Not reported'"
+                    )
+                    self.run_logger.log(
+                        "literal",
+                        "created",
+                        key=mapping_key,
+                        answer="Not reported",
+                        id=lit.content["id"],
+                    )
+                else:
+                    print(f"    ⚠️ No data found - skipping field")
+            except Exception:
+                print(f"    ⚠️ No data found - skipping field")
+
     def create_subtemplate_instance_new(
         self, subtemplate_info: Dict, json_data: Dict[str, Any], paper_title: str
     ) -> Optional[str]:
@@ -829,47 +896,7 @@ class TemplateInstanceCreator:
                                 )
                                 continue
                             # if prop_id exists in resource_mappings and the value is "Not reported", then use the mapped resource ID
-                            if (
-                                mapping_key in self.resource_mappings
-                                and "Not reported"
-                                in self.resource_mappings[mapping_key]
-                            ):
-                                not_reported_id = self.resource_mappings[mapping_key][
-                                    "Not reported"
-                                ]
-                                self.orkg.statements.add(
-                                    subject_id=instance_id,
-                                    predicate_id=prop_id,
-                                    object_id=not_reported_id,
-                                )
-                                print(
-                                    f"    ✅ Added property {prop_id} with value {not_reported_id} (Not reported)"
-                                )
-                            else:
-                                # If not reported mapping is missing, create a text literal 'Not reported'
-                                try:
-                                    lit = self.orkg.literals.add(label="Not reported")
-                                    if lit.succeeded:
-                                        self.orkg.statements.add(
-                                            subject_id=instance_id,
-                                            predicate_id=prop_id,
-                                            object_id=lit.content["id"],
-                                        )
-                                        print(
-                                            f"    ✅ Added property {prop_id} with text literal 'Not reported'"
-                                        )
-                                        self.run_logger.log(
-                                            "literal",
-                                            "created",
-                                            key=mapping_key,
-                                            answer="Not reported",
-                                            id=lit.content["id"],
-                                        )
-                                    else:
-                                        print(f"    ⚠️ No data found - skipping field")
-                                except Exception:
-                                    print(f"    ⚠️ No data found - skipping field")
-
+                            self.add_not_reported(mapping_key, instance_id, prop_id)
             # Run log: subtemplate end and closing divider
             self.run_logger.log(
                 "subtemplate",
@@ -1141,46 +1168,7 @@ class TemplateInstanceCreator:
                             )
                             continue
                         # if the field has Not reported in resource mappings
-                        if (
-                            mapping_key in self.resource_mappings
-                            and "Not reported" in self.resource_mappings[mapping_key]
-                        ):
-                            not_reported_id = self.resource_mappings[mapping_key][
-                                "Not reported"
-                            ]
-                            self.orkg.statements.add(
-                                subject_id=instance_id,
-                                predicate_id=predicate_id,
-                                object_id=not_reported_id,
-                            )
-                            print(
-                                f"  ✅ Linked to instance with predicate {predicate_id} and value {not_reported_id} (Not reported)"
-                            )
-                        else:
-                            # If not reported mapping is missing, create a text literal 'Not reported'
-                            try:
-                                lit = self.orkg.literals.add(label="Not reported")
-                                if lit.succeeded:
-                                    self.orkg.statements.add(
-                                        subject_id=instance_id,
-                                        predicate_id=predicate_id,
-                                        object_id=lit.content["id"],
-                                    )
-                                    print(
-                                        f"  ✅ Linked to instance with predicate {predicate_id} and text literal 'Not reported'"
-                                    )
-                                    self.run_logger.log(
-                                        "literal",
-                                        "created",
-                                        key=mapping_key,
-                                        answer="Not reported",
-                                        id=lit.content["id"],
-                                    )
-                                else:
-                                    print(f"  ⚠️ No data found - skipping field")
-                            except Exception:
-                                print(f"  ⚠️ No data found - skipping field")
-
+                        self.add_not_reported(mapping_key, instance_id, predicate_id)
             # Link paper to template instance if paper was found
             if paper_id:
                 self.link_paper_to_template(paper_id, instance_id)

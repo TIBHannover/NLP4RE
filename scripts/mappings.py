@@ -482,7 +482,7 @@ predicates_mapping = {
                         "cardinality": "one to many",
                         "description": "What baseline do you compare against?",
                         "question_mapping": "VII.3",
-                        "resource_mapping_key": "Baseline comparsion type",
+                        "resource_mapping_key": "Baseline comparison type",
                         "comma_separated": False,
                     },
                     "P181053": {
@@ -748,7 +748,7 @@ resource_mappings = {
         "Train-test split": "R1544445",
         "Entire dataset": "R1544446",
     },
-    "Baseline comparsion type": {
+    "Baseline comparison type": {
         "Not reported": "R1547318",
         "Theoretical / conceptual": "R1544457",
         "None": "R1544454",
@@ -792,7 +792,7 @@ class_mappings = {
     "Release format": "C121046",
     "Evaluation metric": "C121048",
     "Validation procedure": "C121049",
-    "Baseline comparsion type": "C121051",
+    "Baseline comparison type": "C121051",
 }
 
 integer_literal_keys = {"Number of data sources", "Number of annotators"}

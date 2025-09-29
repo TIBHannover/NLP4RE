@@ -25,6 +25,9 @@ class PDFFormExtractor:
         self.predicates_mapping = predicates_mapping
         self.class_mappings = class_mappings
 
+        # Precompute an index from question_mapping tokens (e.g., 'II.1') to resource_mapping_key
+        self._question_mapping_index = self._build_question_mapping_index()
+
         # logging setup
         self.debug = debug
         self.logger = logging.getLogger(__name__ + ".PDFFormExtractor")
@@ -137,6 +140,9 @@ class PDFFormExtractor:
                 base_question
             )
 
+            # Resolve the resource mapping category for this question (context for label enhancement)
+            resource_key = self._resolve_resource_key_for_question(question_text)
+
             # Branch schema by field type
             group_types = {f.get("type") for f in fields}
             if self.debug:
@@ -171,7 +177,9 @@ class PDFFormExtractor:
             text_input_value = None
 
             # Get expected options from mappings to ensure completeness
-            expected_options = self._get_expected_options_for_question(question_text)
+            expected_options = self._get_expected_options_for_question(
+                question_text, resource_key
+            )
             found_option_labels = set()
             option_labels_to_info = {}  # Track unique labels to avoid duplicates
 
@@ -182,8 +190,10 @@ class PDFFormExtractor:
                             continue
                         text_input_value = field["value"]
 
-                # Enhance the field label using mappings
-                enhanced_label = self._enhance_label_with_mappings(field["label"])
+                # Enhance the field label using mappings with contextual resource key
+                enhanced_label = self._enhance_label_with_mappings(
+                    field["label"], resource_key
+                )
 
                 option_info = {
                     "label": text_input_value or enhanced_label,
@@ -422,6 +432,7 @@ class PDFFormExtractor:
         # field_info["group_value"] = widget.field_value
 
         # Find the label for the widget using spatial analysis
+        # Keep raw label here (no mappings applied yet) to avoid cross-category leakage
         field_info["label"] = self._find_label_for_widget(widget_rect, words)
         if self.debug:
             self.logger.debug(
@@ -506,21 +517,22 @@ class PDFFormExtractor:
 
         label = " ".join(label_words)
 
-        # Enhance label using mappings if available
-        enhanced_label = self._enhance_label_with_mappings(label)
-
+        # Do NOT enhance at widget stage; enhancement is applied later with context
         if self.debug:
             self.logger.debug(
-                "Resolved label='%s' -> enhanced='%s'", label, enhanced_label
+                "Resolved label='%s' (no enhancement at widget stage)", label
             )
-        return enhanced_label or label
+        return label
 
-    def _enhance_label_with_mappings(self, label: str) -> str:
+    def _enhance_label_with_mappings(
+        self, label: str, resource_key: str | None = None
+    ) -> str:
         """
         Enhances extracted labels using predefined mappings to fix incomplete or truncated text.
 
         Args:
             label: The raw extracted label text
+            resource_key: Optional mappings category key to restrict matches (e.g., 'NLP task type')
 
         Returns:
             Enhanced label text if mapping found, otherwise original label
@@ -531,21 +543,33 @@ class PDFFormExtractor:
         # Clean the label for comparison
         clean_label = label.strip()
 
-        # Try to find a matching mapping key for this label
-        for mapping_category, mappings in self.resource_mappings.items():
-            # Direct match
-            if clean_label in mappings:
-                if self.debug:
-                    self.logger.debug(
-                        "Found direct mapping for '%s' in category '%s'",
-                        clean_label,
-                        mapping_category,
-                    )
-                return clean_label
+        # Build iterable of categories to search (restricted if resource_key provided)
+        categories_to_search = (
+            [(resource_key, self.resource_mappings.get(resource_key, {}))]
+            if resource_key
+            else list(self.resource_mappings.items())
+        )
 
-            # Partial match - look for labels that start with our extracted text
+        # Try to find a matching mapping key for this label within allowed categories
+        for mapping_category, mappings in categories_to_search:
+            # Direct match (case-insensitive)
             for mapped_label in mappings.keys():
-                if mapped_label.startswith(clean_label) and len(clean_label) > 3:
+                if clean_label.lower() == mapped_label.lower():
+                    if self.debug:
+                        self.logger.debug(
+                            "Found direct mapping for '%s' -> '%s' in category '%s'",
+                            clean_label,
+                            mapped_label,
+                            mapping_category,
+                        )
+                    return mapped_label
+
+            # Partial match - look for labels that start with our extracted text (case-insensitive)
+            for mapped_label in mappings.keys():
+                if (
+                    mapped_label.lower().startswith(clean_label.lower())
+                    and len(clean_label) > 3
+                ):
                     if self.debug:
                         self.logger.debug(
                             "Found partial mapping '%s' -> '%s' in category '%s'",
@@ -555,11 +579,26 @@ class PDFFormExtractor:
                         )
                     return mapped_label
 
-            # Fuzzy match for common truncation patterns
+            # Reverse partial match - check if our extracted text starts with a mapped label
+            for mapped_label in mappings.keys():
+                if (
+                    clean_label.lower().startswith(mapped_label.lower())
+                    and len(mapped_label) > 5
+                ):
+                    if self.debug:
+                        self.logger.debug(
+                            "Found reverse partial mapping '%s' -> '%s' in category '%s'",
+                            clean_label,
+                            mapped_label,
+                            mapping_category,
+                        )
+                    return mapped_label
+
+            # Fuzzy match for common truncation patterns (case-insensitive)
             for mapped_label in mappings.keys():
                 # Check if our label is a truncated version of a mapped label
                 if (
-                    clean_label in mapped_label
+                    clean_label.lower() in mapped_label.lower()
                     and len(clean_label) > 5
                     and abs(len(mapped_label) - len(clean_label)) < 20
                 ):
@@ -574,7 +613,89 @@ class PDFFormExtractor:
 
         return label
 
-    def _get_expected_options_for_question(self, question_text: str) -> list:
+    def _iter_predicates(self):
+        """
+        Yields predicate info dicts from top-level and nested subtemplate_properties.
+        """
+
+        def _walk(node):
+            if not isinstance(node, dict):
+                return
+            # If this looks like a predicate info (has at least a label/description), yield it
+            if "label" in node and "description" in node:
+                yield node
+            # Recurse into nested subtemplate_properties
+            subprops = (
+                node.get("subtemplate_properties") if isinstance(node, dict) else None
+            )
+            if isinstance(subprops, dict):
+                for _k, v in subprops.items():
+                    yield from _walk(v)
+
+        for _k, v in (self.predicates_mapping or {}).items():
+            yield from _walk(v)
+
+    def _build_question_mapping_index(self) -> dict:
+        """
+        Build a mapping from question_mapping token → resource_mapping_key.
+        Handles both string and list forms of question_mapping.
+        """
+        index = {}
+        for predicate_info in self._iter_predicates():
+            resource_key = predicate_info.get("resource_mapping_key")
+            if not resource_key:
+                continue
+            qmap = predicate_info.get("question_mapping")
+            if not qmap:
+                continue
+            if isinstance(qmap, list):
+                for token in qmap:
+                    if isinstance(token, str):
+                        index[token] = resource_key
+            elif isinstance(qmap, str):
+                index[qmap] = resource_key
+        return index
+
+    def _resolve_resource_key_for_question(self, question_text: str) -> str | None:
+        """
+        Determines the appropriate resource mapping category key for a given question text.
+
+        Strategy:
+        - Prefer matching by `question_mapping` token (e.g., 'II.1') parsed from question_text
+        - Fallback to matching any known token appearing in the text
+        - Fallback to matching predicate description substring across all predicate levels
+        - Return the associated `resource_mapping_key` if found
+        """
+        if not question_text:
+            return None
+
+        # First pass: extract leading token like 'II.1'
+        m = re.match(r"^\s*([IVXLCDM]+\.[0-9]+)", question_text)
+        if m:
+            token = m.group(1)
+            rkey = self._question_mapping_index.get(token)
+            if rkey and rkey in (self.resource_mappings or {}):
+                return rkey
+
+        # Second pass: any known token contained in question_text
+        for token, rkey in self._question_mapping_index.items():
+            if token in question_text and rkey in (self.resource_mappings or {}):
+                return rkey
+
+        # Third pass: match by description text across all predicates
+        lowered_q = question_text.lower()
+        for predicate_info in self._iter_predicates():
+            desc = (predicate_info or {}).get("description", "").lower()
+            if desc and (desc in lowered_q or (desc[:25] and desc[:25] in lowered_q)):
+                rkey = predicate_info.get("resource_mapping_key")
+                if rkey in (self.resource_mappings or {}):
+                    return rkey
+
+        return None
+
+    def _get_expected_options_for_question(
+        self, question_text: str, resource_key: str | None = None
+    ) -> list:
         """
         Gets expected options for a question based on mappings.
 
@@ -587,15 +708,45 @@ class PDFFormExtractor:
         if not question_text or not self.predicates_mapping:
             return []
 
-        # Try to match question text to predicate mappings
-        for predicate_id, predicate_info in self.predicates_mapping.items():
-            if predicate_info.get("description", "").lower() in question_text.lower():
-                resource_key = predicate_info.get("resource_mapping_key")
-                if resource_key and resource_key in self.resource_mappings:
-                    options = list(self.resource_mappings[resource_key].keys())
+        # If resource_key already resolved, use it directly
+        if resource_key and resource_key in self.resource_mappings:
+            options = list(self.resource_mappings[resource_key].keys())
+            if self.debug:
+                self.logger.debug(
+                    "Found %d expected options for question '%s' via key '%s'",
+                    len(options),
+                    question_text,
+                    resource_key,
+                )
+            return options
+
+        # Try resolving by leading token like 'II.1'
+        m = re.match(r"^\s*([IVXLCDM]+\.[0-9]+)", question_text)
+        if m:
+            token = m.group(1)
+            rkey = self._question_mapping_index.get(token)
+            if rkey and rkey in self.resource_mappings:
+                options = list(self.resource_mappings[rkey].keys())
+                if self.debug:
+                    self.logger.debug(
+                        "Found %d expected options for question '%s' via token '%s'",
+                        len(options),
+                        question_text,
+                        token,
+                    )
+                return options
+
+        # Fallback: Try to match question text to predicate mappings by description across all levels
+        lowered_q = question_text.lower()
+        for predicate_info in self._iter_predicates():
+            desc = (predicate_info.get("description", "") or "").lower()
+            if desc and desc in lowered_q:
+                r_key = predicate_info.get("resource_mapping_key")
+                if r_key and r_key in self.resource_mappings:
+                    options = list(self.resource_mappings[r_key].keys())
                     if self.debug:
                         self.logger.debug(
-                            "Found %d expected options for question '%s'",
+                            "Found %d expected options for question '%s' via predicate description",
                             len(options),
                             question_text,
                         )
@@ -646,19 +797,22 @@ class PDFFormExtractor:
                             list(missing_options)[:3],  # Show first 3
                         )
 
-                # Check for potential label enhancements
-                for option in question.get("options_details", []):
-                    original_label = option.get("label", "")
-                    if original_label:
-                        enhanced = self._enhance_label_with_mappings(original_label)
-                        if enhanced != original_label:
-                            validation_summary["mapping_enhancements"] += 1
-                            if self.debug:
-                                self.logger.debug(
-                                    "Enhanced option label: '%s' -> '%s'",
-                                    original_label,
-                                    enhanced,
-                                )
+            # Check for potential label enhancements using contextual resource key
+            resource_key = self._resolve_resource_key_for_question(question_text)
+            for option in question.get("options_details", []):
+                original_label = option.get("label", "")
+                if original_label:
+                    enhanced = self._enhance_label_with_mappings(
+                        original_label, resource_key
+                    )
+                    if enhanced != original_label:
+                        validation_summary["mapping_enhancements"] += 1
+                        if self.debug:
+                            self.logger.debug(
+                                "Enhanced option label: '%s' -> '%s'",
+                                original_label,
+                                enhanced,
+                            )
 
         # Add validation summary to results
         if (
