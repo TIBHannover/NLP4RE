@@ -174,7 +174,6 @@ class PDFFormExtractor:
             # Otherwise, assume choice-type (Radio / Checkbox) with options
             selected_options = []
             all_options = []
-            text_input_value = None
 
             # Get expected options from mappings to ensure completeness
             expected_options = self._get_expected_options_for_question(
@@ -184,11 +183,14 @@ class PDFFormExtractor:
             option_labels_to_info = {}  # Track unique labels to avoid duplicates
 
             for field in fields:
+                # Prefer the typed value for Text fields as the label when present
+                text_value = None
                 if field["type"] == "Text":
-                    if field["label"] is None:
-                        if not field["value"]:
-                            continue
-                        text_input_value = field["value"]
+                    value = (field.get("value") or "").strip()
+                    if not value:
+                        # Skip empty text inputs entirely
+                        continue
+                    text_value = value
 
                 # Enhance the field label using mappings with contextual resource key
                 enhanced_label = self._enhance_label_with_mappings(
@@ -196,7 +198,7 @@ class PDFFormExtractor:
                 )
 
                 option_info = {
-                    "label": text_input_value or enhanced_label,
+                    "label": text_value or enhanced_label,
                     "field_name": field["name"],
                     "field_value": field["value"],
                     "is_selected": self._is_field_selected(field),
