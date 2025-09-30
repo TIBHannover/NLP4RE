@@ -202,7 +202,12 @@ class PDFFormExtractor:
                 option_info = {
                     "label": text_value or enhanced_label,
                     "field_name": field["name"],
-                    "field_value": self._clean_field_value(field.get("value")),
+                    # Keep raw value for Text fields; clean others
+                    "field_value": (
+                        field.get("value")
+                        if field.get("type") == "Text"
+                        else self._clean_field_value(field.get("value"))
+                    ),
                     "is_selected": self._is_field_selected(field),
                 }
                 # Preserve provenance when an option originates from a Text field
@@ -229,7 +234,12 @@ class PDFFormExtractor:
                         option_info["label"] = value_label
 
                 option_label = option_info["label"]
-                option_key = self._normalize_option_key(option_label)
+                # Do NOT normalize Text-derived options to preserve user input uniqueness
+                option_key = (
+                    option_label
+                    if field.get("type") == "Text"
+                    else self._normalize_option_key(option_label)
+                )
 
                 # Handle duplicate labels by merging their information
                 if option_key in option_labels_to_info:
