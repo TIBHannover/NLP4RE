@@ -180,7 +180,9 @@ class PDFFormExtractor:
                 question_text, resource_key
             )
             found_option_labels = set()
-            option_labels_to_info = {}  # Track unique labels to avoid duplicates
+            option_labels_to_info = (
+                {}
+            )  # key: normalized_label -> option_info (label kept as display)
 
             for field in fields:
                 # Prefer the typed value for Text fields as the label when present
@@ -200,29 +202,50 @@ class PDFFormExtractor:
                 option_info = {
                     "label": text_value or enhanced_label,
                     "field_name": field["name"],
-                    "field_value": field["value"],
+                    "field_value": self._clean_field_value(field.get("value")),
                     "is_selected": self._is_field_selected(field),
                 }
                 # Preserve provenance when an option originates from a Text field
                 if field.get("type") == "Text":
                     option_info["source_type"] = "Text"
 
+                # For selected RadioButtons, prefer the widget's export value as label
+                if (
+                    field.get("type") == "RadioButton"
+                    and option_info["is_selected"]
+                    and field.get("value")
+                ):
+                    value_label = str(field.get("value") or "").strip()
+                    # Only use export value if it looks like a human-readable label
+                    if (
+                        value_label
+                        and value_label.lower() != "off"
+                        and len(value_label) > 2
+                        and re.search(r"[A-Za-z]", value_label)  # must contain a letter
+                    ):
+                        value_label = self._enhance_label_with_mappings(
+                            value_label, resource_key
+                        )
+                        option_info["label"] = value_label
+
                 option_label = option_info["label"]
+                option_key = self._normalize_option_key(option_label)
 
                 # Handle duplicate labels by merging their information
-                if option_label in option_labels_to_info:
+                if option_key in option_labels_to_info:
                     # Merge with existing option - prefer selected state and combine field values
-                    existing_info = option_labels_to_info[option_label]
+                    existing_info = option_labels_to_info[option_key]
                     if option_info["is_selected"]:
                         existing_info["is_selected"] = True
                     # If this field has a value and existing doesn't, or vice versa, combine them
-                    if option_info["field_value"] and not existing_info["field_value"]:
+                    if option_info["field_value"] and not existing_info.get(
+                        "field_value"
+                    ):
                         existing_info["field_value"] = option_info["field_value"]
-                    elif option_info["field_value"] and existing_info["field_value"]:
-                        # Both have values, combine them with a separator
-                        existing_info["field_value"] = (
-                            f"{existing_info['field_value']}, {option_info['field_value']}"
-                        )
+                    # Do not concatenate multiple values; prefer the first meaningful one
+                    # Prefer the longer, more informative display label
+                    if len(option_label or "") > len(existing_info.get("label") or ""):
+                        existing_info["label"] = option_label
                     if self.debug:
                         self.logger.debug(
                             "Merged duplicate option label | label='%s' existing_field=%s new_field=%s",
@@ -232,7 +255,7 @@ class PDFFormExtractor:
                         )
                 else:
                     # New unique label
-                    option_labels_to_info[option_label] = option_info
+                    option_labels_to_info[option_key] = option_info
                     found_option_labels.add(option_label)
 
                 if self.debug:
@@ -247,14 +270,29 @@ class PDFFormExtractor:
                         option_info.get("is_selected"),
                     )
 
-            # Convert the deduplicated options dictionary to list
+            # Before finalizing, add any expected options missing from the PDF as synthetic options
+            if expected_options:
+                for expected_label in expected_options:
+                    if expected_label in ["Not reported"]:
+                        continue
+                    expected_key = self._normalize_option_key(expected_label)
+                    if expected_key not in option_labels_to_info:
+                        option_labels_to_info[expected_key] = {
+                            "label": expected_label,
+                            "field_name": None,
+                            "field_value": "",
+                            "is_selected": False,
+                            "source_type": "Mapping",
+                        }
+
+            # Convert the (possibly supplemented) options dictionary to list
             all_options = list(option_labels_to_info.values())
 
-            # Rebuild selected_options from deduplicated options
+            # Rebuild selected_options from options after supplementation
             selected_options = [
-                label
-                for label, info in option_labels_to_info.items()
-                if info["is_selected"]
+                info.get("label")
+                for _key, info in option_labels_to_info.items()
+                if info.get("is_selected")
             ]
 
             # Add missing expected options if mappings suggest they should be present
@@ -466,7 +504,7 @@ class PDFFormExtractor:
         """
         # Define tolerances for alignment and proximity
         VERTICAL_TOLERANCE = 3  # pixels for vertical alignment
-        MAX_HORIZONTAL_DISTANCE = 150  # maximum pixels to look to the right (balanced to capture full options but avoid cross-column contamination)
+        MAX_HORIZONTAL_DISTANCE = 160  # maximum pixels to look to the right (balanced to capture full options but avoid cross-column contamination)
 
         widget_mid_y = (widget_rect.y0 + widget_rect.y1) / 2
 
@@ -539,11 +577,15 @@ class PDFFormExtractor:
         Returns:
             Enhanced label text if mapping found, otherwise original label
         """
-        if not label or not self.resource_mappings:
+        if not label:
             return label
 
-        # Clean the label for comparison
-        clean_label = label.strip()
+        # Sanitize noisy parts like "(e.g., ...)" from labels before comparing
+        clean_label = self._sanitize_label_for_mapping(label)
+
+        # If no mappings are configured, still return the sanitized label
+        if not self.resource_mappings:
+            return clean_label
 
         # Build iterable of categories to search (restricted if resource_key provided)
         categories_to_search = (
@@ -613,7 +655,79 @@ class PDFFormExtractor:
                         )
                     return mapped_label
 
-        return label
+        # If no mapping found, return sanitized label (without e.g./i.e parentheses)
+        return clean_label
+
+    def _sanitize_label_for_mapping(self, label: str) -> str:
+        """
+        Removes parenthetical clarifications that include tokens like e.g., i.e., i.g. to
+        make label matching against resource mappings more reliable.
+
+        Examples:
+            "Information extraction (e.g., features, terms) from" -> "Information extraction from"
+        """
+        if not label:
+            return label
+
+        text = label
+        # Remove any parenthetical group that contains e.g., i.e., or i.g. (case-insensitive)
+        # This targets only parentheses that include those markers to avoid deleting meaningful parts
+        pattern = r"\s*\((?=[^)]*(?:e\.g\.|i\.e\.|i\.g\.))[^)]*\)"
+        text = re.sub(pattern, "", text, flags=re.IGNORECASE)
+
+        # Remove stray double spaces introduced by removal
+        text = re.sub(r"\s+", " ", text).strip()
+
+        # Remove any space before punctuation, and fix spaces around commas
+        text = re.sub(r"\s+,", ",", text)
+        text = re.sub(r",\s+", ", ", text)
+
+        return text
+
+    def _normalize_option_key(self, label: str) -> str:
+        """
+        Normalizes option labels for de-duplication:
+        - lowercases
+        - collapses all whitespace
+        - trims punctuation spacing variants
+        - removes parenthetical e.g./i.e./i.g. clarifications
+        """
+        if not label:
+            return ""
+        text = self._sanitize_label_for_mapping(label)
+        # Normalize slashes: collapse spaces around '/'
+        text = re.sub(r"\s*/\s*", " / ", text)
+        # Lowercase
+        text = text.lower()
+        # Normalize common punctuation spacing
+        text = re.sub(r"\s+,", ",", text)
+        text = re.sub(r",\s+", ", ", text)
+        # Collapse all whitespace
+        text = re.sub(r"\s+", " ", text).strip()
+        return text
+
+    def _clean_field_value(self, value) -> str:
+        """
+        Normalizes widget field_value:
+        - returns empty string for None/"Off" (case-insensitive)
+        - strips numeric-only tokens, including comma-separated like "Off, 9"
+        - trims whitespace
+        """
+        if value is None:
+            return ""
+        text = str(value)
+        # Split by commas, remove tokens that are 'off' or purely numeric
+        parts = [p.strip() for p in text.split(",")]
+        cleaned_parts = []
+        for p in parts:
+            if not p:
+                continue
+            if p.lower() == "off":
+                continue
+            if re.fullmatch(r"\d+", p):
+                continue
+            cleaned_parts.append(p)
+        return ", ".join(cleaned_parts)
 
     def _iter_predicates(self):
         """

@@ -680,7 +680,7 @@ resource_mappings = {
         "Majority voting": "R1544336",
         "Resolution by independent expert (not an annotator)": "R1544337",
         "Resolution by authors": "R1544334",
-        "Discussion among annotators": "R1544333",
+        "Discussion among taggers": "R1544333",
     },
     "Approach type": {
         "Not reported": "R1547314",
