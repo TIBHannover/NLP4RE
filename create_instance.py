@@ -168,6 +168,8 @@ class TemplateInstanceCreator:
     def _get_answer_label_type_in_options_details(
         self, answer: str, options_details: List[Dict]
     ) -> str:
+        if len(options_details) == 0:
+            return "Text"
         """Get the type of the answer label in the options details"""
         for option in options_details:
             if option.get("label") == answer:
